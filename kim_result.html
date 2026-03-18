@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>검사결과</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Apple SD Gothic Neo','Malgun Gothic',sans-serif; background:#f8f7f5; color:#333; }
+#lockScreen {
+  position:fixed; inset:0; background:#f8f7f5;
+  display:flex; flex-direction:column; align-items:center; justify-content:center; z-index:9999;
+}
+.lock-hospital { text-align:center; margin-bottom:32px; }
+.lock-hospital .name { color:#3d5a9e; font-size:15px; font-weight:700; }
+.lock-hospital .eng { color:#888; font-size:11px; margin-top:3px; letter-spacing:0.5px; }
+.lock-icon { font-size:48px; margin-bottom:16px; }
+.lock-title { font-size:18px; font-weight:700; margin-bottom:6px; color:#333; }
+.lock-sub { font-size:13px; color:#888; margin-bottom:28px; }
+#birthInput {
+  width:220px; padding:14px 16px; font-size:20px; text-align:center;
+  border:2px solid #ddd; border-radius:12px; background:#fff; letter-spacing:4px; outline:none;
+}
+#birthInput:focus { border-color:#3d5a9e; }
+#lockBtn {
+  margin-top:16px; width:220px; padding:14px;
+  background:#3d5a9e; color:#fff; border:none; border-radius:12px;
+  font-size:16px; font-weight:700; cursor:pointer;
+}
+#lockBtn:active { background:#2e4480; }
+#lockError { margin-top:12px; color:#c0392b; font-size:13px; min-height:18px; }
+#mainContent { display:none; max-width:480px; margin:0 auto; padding:0 0 80px; }
+.header { background:#3d5a9e; color:#fff; padding:20px 20px 16px; position:sticky; top:0; z-index:100; }
+.header-hospital { font-size:11px; opacity:0.8; margin-bottom:4px; }
+.header-title { font-size:18px; font-weight:700; }
+.header-date { font-size:12px; opacity:0.75; margin-top:3px; }
+.notice-box {
+  margin:16px; padding:14px 16px; background:#fff8e1; border-left:4px solid #f9a825;
+  border-radius:10px; font-size:13px; line-height:1.6; color:#555;
+}
+.notice-box strong { color:#e65100; }
+.opinion-box {
+  margin:0 16px 16px; padding:16px; background:#fff; border-radius:12px;
+  box-shadow:0 1px 6px rgba(0,0,0,.07); font-size:13.5px; line-height:1.75; color:#444;
+  border-left:4px solid #3d5a9e;
+}
+.opinion-title { font-size:12px; font-weight:700; color:#3d5a9e; margin-bottom:8px; letter-spacing:.5px; }
+.cat-card {
+  margin:0 16px 12px; background:#fff; border-radius:14px;
+  box-shadow:0 1px 6px rgba(0,0,0,.07); overflow:hidden;
+}
+.cat-card.has-danger { border-left:4px solid #c0392b; }
+.cat-card.has-warn   { border-left:4px solid #b5813a; }
+.cat-card.has-ok     { border-left:4px solid #e0e0e0; }
+.cat-header {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:13px 16px; cursor:pointer; border-bottom:1px solid #f0f0f0; user-select:none;
+}
+.cat-header-left { display:flex; align-items:center; gap:8px; }
+.cat-icon { font-size:18px; }
+.cat-name { font-size:14px; font-weight:700; color:#333; }
+.cat-badge { font-size:11px; padding:2px 8px; border-radius:20px; font-weight:600; }
+.badge-ok     { background:#e8f5e9; color:#2e7d32; }
+.badge-warn   { background:#fff3e0; color:#b5813a; }
+.badge-danger { background:#fdecea; color:#c0392b; }
+.cat-toggle { color:#aaa; font-size:12px; transition:transform .2s; display:inline-block; }
+.cat-toggle.open { transform:rotate(180deg); }
+.item-row {
+  display:flex; align-items:center; padding:11px 16px;
+  border-bottom:1px solid #f5f5f5; cursor:pointer; transition:background .1s;
+}
+.item-row:last-child { border-bottom:none; }
+.item-row:active { background:#f5f5f5; }
+.item-row.danger-row { background:#fff5f5; }
+.item-danger-mark { color:#c0392b; font-weight:900; margin-right:6px; font-size:14px; }
+.item-name { flex:1; font-size:13px; color:#444; }
+.item-right { text-align:right; }
+.item-value { font-size:15px; font-weight:700; }
+.item-value.ok     { color:#2e7d32; }
+.item-value.warn   { color:#b5813a; }
+.item-value.danger { color:#c0392b; }
+.item-value.noref  { color:#555; }
+.item-unit { font-size:11px; color:#999; margin-top:1px; }
+.urine-val { font-size:14px; font-weight:700; color:#2e7d32; }
+.urine-val.abnormal { color:#c0392b; }
+#popupOverlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.45); z-index:500; }
+#popup {
+  position:fixed; bottom:0; left:50%; transform:translateX(-50%);
+  width:100%; max-width:480px; background:#fff; border-radius:20px 20px 0 0;
+  padding:20px 20px 36px; max-height:85vh; overflow-y:auto; z-index:501;
+}
+.popup-handle { width:40px; height:4px; background:#ddd; border-radius:2px; margin:0 auto 16px; }
+.popup-header { display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:14px; }
+.popup-name { font-size:17px; font-weight:700; color:#222; }
+.popup-val  { font-size:22px; font-weight:800; margin-top:2px; }
+.popup-val.ok     { color:#2e7d32; }
+.popup-val.warn   { color:#b5813a; }
+.popup-val.danger { color:#c0392b; }
+.popup-val.noref  { color:#555; }
+.popup-close { font-size:22px; color:#aaa; cursor:pointer; padding:0 4px; }
+.popup-tag { display:inline-block; padding:4px 12px; border-radius:20px; font-size:12px; font-weight:600; margin-bottom:16px; }
+.tag-ok     { background:#e8f5e9; color:#2e7d32; }
+.tag-warn   { background:#fff3e0; color:#b5813a; }
+.tag-danger { background:#fdecea; color:#c0392b; }
+.tag-noref  { background:#f0f0f0; color:#666; }
+.range-bar-wrap { margin-bottom:18px; }
+.range-bar-label { font-size:11px; color:#aaa; margin-bottom:6px; display:flex; justify-content:space-between; }
+.range-bar-track { position:relative; height:10px; border-radius:5px; background:#eee; margin-bottom:4px; }
+.range-bar-normal { position:absolute; height:100%; border-radius:5px; background:#a5d6a7; }
+.range-bar-marker {
+  position:absolute; top:-4px; width:18px; height:18px; background:#222; border-radius:50%;
+  transform:translateX(-50%); border:2px solid #fff; box-shadow:0 1px 4px rgba(0,0,0,.3);
+}
+.range-bar-sections { display:flex; justify-content:space-between; font-size:10px; color:#bbb; }
+.trend-wrap { margin-bottom:18px; }
+.trend-title { font-size:12px; color:#888; font-weight:600; margin-bottom:8px; }
+.trend-svg { width:100%; display:block; }
+.popup-section { margin-bottom:14px; }
+.popup-section-title { font-size:12px; font-weight:700; color:#3d5a9e; margin-bottom:5px; }
+.popup-section-body { font-size:13px; color:#555; line-height:1.65; }
+</style>
+</head>
+<body>
+
+<div id="lockScreen">
+  <div class="lock-hospital">
+    <div class="name">더봄연합내과의원</div>
+    <div class="eng">THE VOM UNION INTERNAL MEDICINE</div>
+  </div>
+  <div class="lock-icon">&#128274;</div>
+  <div class="lock-title">검사결과 확인</div>
+  <div class="lock-sub">생년월일 8자리를 입력해 주세요</div>
+  <input type="password" id="birthInput" maxlength="8" inputmode="numeric" autocomplete="off" />
+  <button id="lockBtn">확인</button>
+  <div id="lockError"></div>
+</div>
+
+<div id="mainContent">
+  <div class="header">
+    <div class="header-hospital">더봄연합내과의원</div>
+    <div class="header-title">김OO 님의 검사결과</div>
+    <div class="header-date">최근 검사일: 2026년 3월 14일</div>
+  </div>
+  <div class="notice-box">
+    이 결과지는 <strong>참고용</strong>입니다. 정확한 해석과 치료 계획은 반드시 담당 의사와 상담하세요.
+  </div>
+  <div class="opinion-box">
+    <div class="opinion-title">&#128221; 종합 소견</div>
+    이번 검사에서 혈당(101)과 당화혈색소(5.7%)가 정상 범위를 살짝 넘어 <strong>당뇨 전단계</strong> 경계에 해당하며,
+    총콜레스테롤(208)도 기준치를 소폭 초과했습니다. 혈당과 콜레스테롤은 함께 오르는 경우가 많아 식이 관리가 도움이 됩니다.
+    백혈구(3.01)는 이전 검사와 마찬가지로 기준치보다 낮은 편이나 큰 변화는 없고,
+    갑상선 호르몬(fT4 0.91, T3 80)은 경계 수준으로 추이를 지켜볼 필요가 있습니다.
+  </div>
+  <div id="categories"></div>
+</div>
+
+<div id="popupOverlay" onclick="closePopup()"></div>
+<div id="popup" style="display:none;">
+  <div class="popup-handle"></div>
+  <div class="popup-header">
+    <div>
+      <div class="popup-name" id="popupName"></div>
+      <div class="popup-val" id="popupVal"></div>
+    </div>
+    <div class="popup-close" onclick="closePopup()">&#10005;</div>
+  </div>
+  <div id="popupTag"></div>
+  <div id="popupRangeBar"></div>
+  <div id="popupTrend"></div>
+  <div id="popupDesc"></div>
+</div>
+
+<script>
+var CORRECT = '19821202';
+var failCount = 0;
+document.getElementById('birthInput').addEventListener('keydown', function(e){ if(e.key==='Enter') tryUnlock(); });
+document.getElementById('lockBtn').addEventListener('click', tryUnlock);
+function tryUnlock(){
+  var v = document.getElementById('birthInput').value.trim();
+  if(v === CORRECT){
+    document.getElementById('lockScreen').style.display='none';
+    document.getElementById('mainContent').style.display='block';
+  } else {
+    failCount++;
+    var err = document.getElementById('lockError');
+    if(failCount >= 5){
+      err.textContent = '5회 오류로 잠금되었습니다. 병원에 문의해 주세요.';
+      document.getElementById('birthInput').disabled = true;
+      document.getElementById('lockBtn').disabled = true;
+    } else {
+      err.textContent = '생년월일이 맞지 않습니다. (' + failCount + '/5)';
+    }
+    document.getElementById('birthInput').value = '';
+  }
+}
+
+var DATES = ['2026-03-14','2025-09-27'];
+
+function parseVal(v){
+  if(!v || v === '-' || v === '') return null;
+  var n = parseFloat(String(v).replace(/[^0-9.]/g,''));
+  return isNaN(n) ? null : n;
+}
+function rawStr(v){
+  if(!v) return '-';
+  return String(v).replace(/[()\u25b2\u25bc]/g,'').trim();
+}
+function parseRef(ref){
+  if(!ref) return null;
+  var s = String(ref).trim();
+  var m = s.match(/^[<=\u2264]\s*([0-9.]+)/);
+  if(m) return {lo:0, hi:parseFloat(m[1])};
+  m = s.match(/([0-9.]+)\s*[~\-]\s*([0-9.]+)/);
+  if(m) return {lo:parseFloat(m[1]), hi:parseFloat(m[2])};
+  m = s.match(/^[>=\u2265]\s*([0-9.]+)/);
+  if(m) return {lo:parseFloat(m[1]), hi:Infinity};
+  return null;
+}
+function getStatus(val, refStr){
+  var ref = parseRef(refStr);
+  if(val === null || !ref) return 'noref';
+  if(val < ref.lo) return val < ref.lo * 0.85 ? 'danger' : 'warn';
+  if(ref.hi !== Infinity && val > ref.hi) return val > ref.hi * 1.15 ? 'danger' : 'warn';
+  return 'ok';
+}
+function esc(str){
+  return String(str||'')
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+var categories = [
+  { id:'diabetes', icon:'&#127851;', name:'당뇨 검사', items:[
+    {name:'혈당', ref:'70 ~ 99', unit:'mg/dl', vals:['101','99'],
+     desc:'혈액 속 포도당 농도를 측정합니다. 공복 혈당이 높으면 당뇨 전단계나 당뇨를 의심할 수 있어요.',
+     tip:'백미 대신 잡곡밥, 단 음료 줄이기, 규칙적인 유산소 운동(주 3회 이상)이 도움이 됩니다.'},
+    {name:'당화혈색소(HbA1c)', ref:'4.5 ~ 5.6', unit:'%', vals:['5.7','5.3'],
+     desc:'최근 2~3개월간의 평균 혈당 수준을 보여주는 지표입니다. 당뇨 관리의 핵심 검사예요.',
+     tip:'5.7~6.4%는 당뇨 전단계입니다. 체중 조절과 식이요법으로 정상화가 가능합니다.'}
+  ]},
+  { id:'cbc', icon:'&#129656;', name:'일반 혈액검사 (CBC)', items:[
+    {name:'혈색소(Hb)', ref:'12 ~ 16', unit:'g/dl', vals:['13.6','12.5'],
+     desc:'적혈구 속 혈색소 양으로, 빈혈 여부를 판단하는 가장 중요한 지표입니다.',
+     tip:'정상 범위로 빈혈 없이 건강한 상태입니다.'},
+    {name:'헤마토크리트(Hct)', ref:'35 ~ 60', unit:'%', vals:['37.6','35.5'],
+     desc:'혈액 중 적혈구가 차지하는 비율입니다. 빈혈이나 탈수 상태를 파악하는 데 사용됩니다.',
+     tip:'정상 범위입니다.'},
+    {name:'백혈구(WBC)', ref:'4.2 ~ 10.5', unit:'ul', vals:['3.01','2.89'],
+     desc:'면역 세포인 백혈구의 수입니다. 낮으면 면역력이 약해질 수 있고, 높으면 염증 신호일 수 있어요.',
+     tip:'기준치보다 약간 낮은 수치입니다. 과로와 스트레스를 줄이고 충분한 수면을 취하세요. 지속 시 추가 검사가 필요합니다.'},
+    {name:'혈소판(PLT)', ref:'150 ~ 450', unit:'ul', vals:['245.3','230.4'],
+     desc:'출혈이 생겼을 때 혈액을 응고시켜 지혈하는 역할을 합니다.',
+     tip:'정상 범위입니다.'}
+  ]},
+  { id:'kidney', icon:'&#128167;', name:'신장(콩팥) 기능검사', items:[
+    {name:'BUN (혈중요소질소)', ref:'6 ~ 20', unit:'mg/dl', vals:['9.7','8.3'],
+     desc:'단백질 대사 후 생기는 노폐물로, 콩팥이 얼마나 잘 걸러내는지 보여줍니다.',
+     tip:'정상 범위입니다.'},
+    {name:'크레아티닌(Cr)', ref:'0.4 ~ 1.3', unit:'mg/dl', vals:['0.73','0.66'],
+     desc:'근육 활동 후 생기는 노폐물입니다. 신장 기능을 평가하는 핵심 수치예요.',
+     tip:'정상 범위입니다.'},
+    {name:'사구체여과율(eGFR)', ref:'60 ~ 999', unit:'', vals:['104.8','113.1'],
+     desc:'1분 동안 콩팥이 얼마나 많은 혈액을 걸러내는지 나타냅니다. 콩팥 기능의 전반적인 지표입니다.',
+     tip:'100 이상으로 콩팥 기능이 매우 좋습니다.'}
+  ]},
+  { id:'liver', icon:'&#129524;', name:'간 기능검사', items:[
+    {name:'AST', ref:'0 ~ 40', unit:'U/L', vals:['20','23'],
+     desc:'간세포 손상 시 혈액으로 나오는 효소입니다. 간 건강의 기본 지표예요.',
+     tip:'정상 범위입니다.'},
+    {name:'ALT', ref:'0 ~ 40', unit:'U/L', vals:['16','21'],
+     desc:'간에 더 특이적인 효소로, 간염이나 지방간 시 올라갑니다.',
+     tip:'정상 범위입니다.'},
+    {name:'gamma-GTP', ref:'9 ~ 39', unit:'U/L', vals:['14','13'],
+     desc:'알코올성 간 질환이나 담도 질환에서 증가합니다.',
+     tip:'정상 범위입니다.'},
+    {name:'ALP', ref:'0 ~ 240', unit:'U/L', vals:['119.7','101.4'],
+     desc:'간과 뼈에서 만들어지는 효소입니다. 담도 질환이나 골 질환 시 증가합니다.',
+     tip:'정상 범위입니다.'},
+    {name:'황달수치(T-Bil)', ref:'0.3 ~ 1.2', unit:'mg/dl', vals:['0.7','0.8'],
+     desc:'적혈구가 분해될 때 생기는 노란색 색소입니다. 높으면 황달이 생길 수 있어요.',
+     tip:'정상 범위입니다.'},
+    {name:'총단백', ref:'6.4 ~ 8.3', unit:'g/dl', vals:['7.5','6.8'],
+     desc:'혈액 속 단백질 총량으로, 영양 상태와 간 기능을 함께 반영합니다.',
+     tip:'정상 범위입니다.'},
+    {name:'알부민', ref:'3.5 ~ 5.2', unit:'g/dl', vals:['4.8','4.4'],
+     desc:'간에서 만드는 단백질로, 영양 상태와 간 기능의 대표 지표입니다.',
+     tip:'정상 범위입니다.'}
+  ]},
+  { id:'lipid', icon:'&#129480;', name:'지질(콜레스테롤) 검사', items:[
+    {name:'총콜레스테롤', ref:'0 ~ 199', unit:'mg/dl', vals:['208','190'],
+     desc:'혈액 속 총 콜레스테롤 양입니다. 너무 높으면 동맥경화, 심혈관 질환 위험이 높아집니다.',
+     tip:'200~239는 경계 수준입니다. 포화지방(삼겹살, 버터, 치즈)을 줄이고 등푸른 생선, 견과류를 늘려보세요.'},
+    {name:'HDL (좋은 콜레스테롤)', ref:'60 ~ 999', unit:'mg/dl', vals:['90','80'],
+     desc:'혈관 벽의 콜레스테롤을 청소하는 착한 콜레스테롤입니다. 높을수록 좋아요.',
+     tip:'매우 좋은 수치입니다. 유산소 운동이 HDL을 높이는 데 효과적입니다.'},
+    {name:'중성지방(TG)', ref:'0 ~ 149', unit:'mg/dl', vals:['56','51'],
+     desc:'음식에서 섭취한 지방이 에너지로 사용되고 남은 것입니다. 높으면 심혈관 질환 위험이 높아져요.',
+     tip:'정상 범위입니다.'},
+    {name:'LDL (나쁜 콜레스테롤)', ref:'0 ~ 129', unit:'', vals:['106.8','99.8'],
+     desc:'혈관 벽에 쌓여 동맥경화를 일으키는 나쁜 콜레스테롤입니다.',
+     tip:'정상 범위입니다.'}
+  ]},
+  { id:'thyroid', icon:'&#129419;', name:'갑상선 검사', items:[
+    {name:'TSH (갑상선자극호르몬)', ref:'0.27 ~ 4.20', unit:'uIU/mL', vals:['1.35','1.33'],
+     desc:'뇌하수체에서 분비되어 갑상선을 조절하는 호르몬입니다.',
+     tip:'정상 범위입니다.'},
+    {name:'Free T4', ref:'0.92 ~ 1.68', unit:'ng/dL', vals:['0.91','0.89'],
+     desc:'갑상선에서 만드는 호르몬으로, 신진대사 전반을 조절합니다.',
+     tip:'기준치 하한에 근접한 수치입니다. 추이를 지켜보며 정기 검사를 받으세요.'},
+    {name:'T3 (갑상선호르몬)', ref:'80 ~ 200', unit:'ng/dL', vals:['80','68'],
+     desc:'갑상선 호르몬 중 활성형으로, 체온 유지, 심박수, 에너지 대사에 관여합니다.',
+     tip:'이전보다 수치가 올라왔습니다. 경계 수준이므로 지속 관찰이 필요합니다.'}
+  ]},
+  { id:'electrolyte', icon:'&#9889;', name:'전해질 검사', items:[
+    {name:'나트륨(Na)', ref:'136 ~ 145', unit:'mmol/L', vals:['142','144'],
+     desc:'체액 균형과 신경, 근육 기능에 중요한 전해질입니다.',
+     tip:'정상 범위입니다.'},
+    {name:'칼륨(K)', ref:'3.5 ~ 5.1', unit:'mmol/L', vals:['4.4','4.0'],
+     desc:'심장 박동과 근육 수축에 필수적인 전해질입니다.',
+     tip:'정상 범위입니다.'},
+    {name:'염소(Cl)', ref:'98 ~ 107', unit:'mmol/L', vals:['104','106'],
+     desc:'나트륨과 함께 체액 삼투압을 유지하는 역할을 합니다.',
+     tip:'정상 범위입니다.'}
+  ]},
+  { id:'etc', icon:'&#128302;', name:'기타 검사', items:[
+    {name:'요산(Uric Acid)', ref:'2.4 ~ 5.7', unit:'mg/dL', vals:['3.3','3.2'],
+     desc:'통풍의 원인 물질입니다. 높으면 관절에 요산 결정이 쌓여 통증을 일으킬 수 있어요.',
+     tip:'정상 범위입니다.'},
+    {name:'CRP (염증수치)', ref:'0 ~ 5', unit:'', vals:['0.00','0.00'],
+     desc:'몸 안에 염증이 있을 때 증가하는 단백질입니다.',
+     tip:'0.00으로 염증이 없는 매우 좋은 상태입니다.'},
+    {name:'총칼슘', ref:'8.6 ~ 10.0', unit:'mg/dL', vals:['9.4','9.4'],
+     desc:'뼈 건강, 근육 수축, 신경 전달에 필요한 미네랄입니다.',
+     tip:'정상 범위입니다.'},
+    {name:'인', ref:'2.5 ~ 4.5', unit:'mg/dL', vals:['3.7','3.6'],
+     desc:'칼슘과 함께 뼈와 치아를 구성하며 에너지 대사에 관여합니다.',
+     tip:'정상 범위입니다.'},
+    {name:'마그네슘', ref:'1.6 ~ 2.6', unit:'mg/dL', vals:['2.1',''],
+     desc:'근육 이완, 혈압 조절, 당 대사에 관여하는 미네랄입니다.',
+     tip:'정상 범위입니다.'},
+    {name:'CA19-9 (췌장 담관암)', ref:'0.00 ~ 34.00', unit:'U/mL', vals:['7.46',''],
+     desc:'췌장암과 담관암의 종양 표지자입니다.',
+     tip:'정상 범위입니다.'},
+    {name:'AFP (간암)', ref:'0 ~ 7.00', unit:'ng/mL', vals:['3.35',''],
+     desc:'간암의 종양 표지자입니다.',
+     tip:'정상 범위입니다.'},
+    {name:'CEA (대장 폐암)', ref:'0.20 ~ 3.80', unit:'ng/mL', vals:['0.96','0.97'],
+     desc:'대장암, 폐암 등의 종양 표지자입니다.',
+     tip:'정상 범위입니다.'}
+  ]},
+  { id:'urine', icon:'&#129514;', name:'소변 검사', isUrine:true, items:[
+    {name:'잠혈(Blood)',        val:'-', normal:'-'},
+    {name:'단백(Protein)',      val:'-', normal:'-'},
+    {name:'당(Glucose)',        val:'-', normal:'-'},
+    {name:'백혈구(Leukocyte)',  val:'-', normal:'-'}
+  ]},
+  { id:'micro', icon:'&#128301;', name:'요침사 (현미경 검사)', isMicro:true, items:[
+    {name:'Micro RBC', val:'0-1', normal:'0~2'},
+    {name:'Micro WBC', val:'0-1', normal:'0~4'}
+  ]}
+];
+
+function buildCatStatus(cat){
+  if(cat.isUrine || cat.isMicro) return 'ok';
+  var worst='ok';
+  for(var i=0;i<cat.items.length;i++){
+    var s=getStatus(parseVal(cat.items[i].vals[0]), cat.items[i].ref);
+    if(s==='danger') return 'danger';
+    if(s==='warn') worst='warn';
+  }
+  return worst;
+}
+function statusLabel(s){ return s==='danger'?'관리 필요':s==='warn'?'주의':'정상'; }
+
+var container = document.getElementById('categories');
+
+categories.forEach(function(cat, catIdx){
+  var catStatus = buildCatStatus(cat);
+  var badgeClass = catStatus==='danger'?'badge-danger':catStatus==='warn'?'badge-warn':'badge-ok';
+
+  var card = document.createElement('div');
+  card.className = 'cat-card has-' + catStatus;
+
+  var header = document.createElement('div');
+  header.className = 'cat-header';
+  header.innerHTML =
+    '<div class="cat-header-left">' +
+      '<span class="cat-icon">' + cat.icon + '</span>' +
+      '<span class="cat-name">' + esc(cat.name) + '</span>' +
+    '</div>' +
+    '<div style="display:flex;align-items:center;gap:8px;">' +
+      '<span class="cat-badge ' + badgeClass + '">' + statusLabel(catStatus) + '</span>' +
+      '<span class="cat-toggle">&#9660;</span>' +
+    '</div>';
+  header.addEventListener('click', function(){ toggleCat(this); });
+
+  var body = document.createElement('div');
+  body.className = 'cat-body';
+
+  if(cat.isUrine || cat.isMicro){
+    cat.items.forEach(function(item){
+      var row = document.createElement('div');
+      row.className = 'item-row';
+      var v = item.val||'-';
+      var isAbn = cat.isUrine && v!=='-';
+      row.innerHTML =
+        '<span class="item-name">' + esc(item.name) + '</span>' +
+        '<span class="urine-val' + (isAbn?' abnormal':'') + '">' + esc(v) + '</span>';
+      row.addEventListener('click', function(e){
+        e.stopPropagation();
+        showUrinePopup(item.name, v, item.normal||'');
+      });
+      body.appendChild(row);
+    });
+  } else {
+    cat.items.forEach(function(item, itemIdx){
+      var v = parseVal(item.vals[0]);
+      var s = getStatus(v, item.ref);
+      var disp = rawStr(item.vals[0]);
+      var row = document.createElement('div');
+      row.className = 'item-row' + (s==='danger'?' danger-row':'');
+      row.innerHTML =
+        (s==='danger'?'<span class="item-danger-mark">!</span>':'') +
+        '<span class="item-name">' + esc(item.name) + '</span>' +
+        '<div class="item-right">' +
+          '<div class="item-value ' + s + '">' + esc(disp||'-') + '</div>' +
+          '<div class="item-unit">' + esc(item.unit||'') + '</div>' +
+        '</div>';
+      (function(ci,ii){
+        row.addEventListener('click', function(e){
+          e.stopPropagation();
+          showPopup(ci, ii);
+        });
+      })(catIdx, itemIdx);
+      body.appendChild(row);
+    });
+  }
+
+  card.appendChild(header);
+  card.appendChild(body);
+  container.appendChild(card);
+});
+
+function toggleCat(header){
+  var body = header.nextElementSibling;
+  var toggle = header.querySelector('.cat-toggle');
+  var isOpen = body.style.display !== 'none';
+  body.style.display = isOpen ? 'none' : 'block';
+  if(isOpen) toggle.classList.remove('open');
+  else toggle.classList.add('open');
+}
+
+document.querySelectorAll('.cat-card').forEach(function(card){
+  var body = card.querySelector('.cat-body');
+  var toggle = card.querySelector('.cat-toggle');
+  if(card.classList.contains('has-danger') || card.classList.contains('has-warn')){
+    body.style.display = 'block';
+    toggle.classList.add('open');
+  } else {
+    body.style.display = 'none';
+  }
+});
+
+function showPopup(catIdx, itemIdx){
+  var cat = categories[catIdx];
+  var item = cat.items[itemIdx];
+  var v0 = parseVal(item.vals[0]);
+  var s = getStatus(v0, item.ref);
+  var ref = parseRef(item.ref);
+
+  document.getElementById('popupName').textContent = item.name;
+  document.getElementById('popupVal').textContent = (rawStr(item.vals[0])||'-') + (item.unit?' '+item.unit:'');
+  document.getElementById('popupVal').className = 'popup-val ' + s;
+
+  var tagClass = s==='ok'?'tag-ok':s==='warn'?'tag-warn':s==='noref'?'tag-noref':'tag-danger';
+  var tagText  = s==='ok'?'&#9989; 정상 범위':s==='warn'?'&#9888;&#65039; 주의 - 경계 수치':s==='noref'?'참고치 없음':'&#128308; 관리 필요 - 이상 수치';
+  document.getElementById('popupTag').innerHTML = '<span class="popup-tag ' + tagClass + '">' + tagText + '</span>';
+
+  var barEl = document.getElementById('popupRangeBar');
+  if(ref && v0!==null && ref.hi!==Infinity){
+    var lo=ref.lo, hi=ref.hi;
+    var dMin=Math.max(0,lo-(hi-lo)*0.5), dMax=hi+(hi-lo)*0.5, rng=dMax-dMin;
+    var nL=((lo-dMin)/rng*100).toFixed(1);
+    var nW=((hi-lo)/rng*100).toFixed(1);
+    var mL=Math.min(100,Math.max(0,(v0-dMin)/rng*100)).toFixed(1);
+    barEl.innerHTML =
+      '<div class="range-bar-wrap">' +
+        '<div class="range-bar-label"><span>낮음</span><span>정상</span><span>높음</span></div>' +
+        '<div class="range-bar-track">' +
+          '<div class="range-bar-normal" style="left:'+nL+'%;width:'+nW+'%"></div>' +
+          '<div class="range-bar-marker" style="left:'+mL+'%"></div>' +
+        '</div>' +
+        '<div class="range-bar-sections"><span>'+lo+'</span><span>'+hi+'</span></div>' +
+      '</div>';
+  } else { barEl.innerHTML=''; }
+
+  var trendEl = document.getElementById('popupTrend');
+  var allV=[], allDates=[];
+  for(var i=0;i<item.vals.length;i++){
+    var pv=parseVal(item.vals[i]);
+    if(pv!==null){ allV.push(pv); allDates.push(DATES[i]); }
+  }
+  if(allV.length>=2 && ref && ref.hi!==Infinity){
+    var rawMin=Math.min.apply(null,allV), rawMax=Math.max.apply(null,allV);
+    var rr=rawMax-rawMin||rawMax||1;
+    var mn=Math.max(0,rawMin-rr*0.4), mx=rawMax+rr*0.3;
+    mn=Math.min(mn,ref.lo*0.85); mx=Math.max(mx,ref.hi*1.1);
+    var W=320,H=130,PL=34,PR=20,PT=18,PB=32;
+    var gW=W-PL-PR, gH=H-PT-PB;
+    function xS(i){ return PL+(allV.length===1?gW/2:i/(allV.length-1)*gW); }
+    function yS(v){ return PT+gH-((v-mn)/(mx-mn)*gH); }
+    var nY1=yS(ref.hi), nY2=yS(ref.lo), nRH=nY2-nY1;
+    var pts=allV.map(function(v,i){ return xS(i)+','+yS(v); }).join(' ');
+    var circ='', labs='';
+    allV.forEach(function(v,i){
+      circ+='<circle cx="'+xS(i)+'" cy="'+yS(v)+'" r="4" fill="#3d5a9e" stroke="#fff" stroke-width="2"/>';
+      labs+='<text x="'+xS(i)+'" y="'+(yS(v)-8)+'" text-anchor="middle" font-size="10" fill="#333" font-weight="600">'+v+'</text>';
+      labs+='<text x="'+xS(i)+'" y="'+(H-PB+14)+'" text-anchor="middle" font-size="9" fill="#aaa">'+allDates[i].slice(2).replace(/-/g,'/')+'</text>';
+    });
+    trendEl.innerHTML =
+      '<div class="trend-wrap">' +
+        '<div class="trend-title">&#128200; 검사 추이</div>' +
+        '<svg viewBox="0 0 '+W+' '+H+'" class="trend-svg">' +
+          '<rect x="'+PL+'" y="'+Math.max(PT,nY1)+'" width="'+gW+'" height="'+Math.min(nRH,gH)+'" fill="#e8f5e9" rx="2"/>' +
+          '<polyline points="'+pts+'" fill="none" stroke="#3d5a9e" stroke-width="2.5" stroke-linejoin="round"/>' +
+          circ+labs+
+          '<text x="'+(PL-4)+'" y="'+yS(ref.hi)+'" text-anchor="end" font-size="9" fill="#81c784">'+ref.hi+'</text>'+
+          '<text x="'+(PL-4)+'" y="'+yS(ref.lo)+'" text-anchor="end" font-size="9" fill="#81c784">'+ref.lo+'</text>'+
+        '</svg>' +
+      '</div>';
+  } else { trendEl.innerHTML=''; }
+
+  document.getElementById('popupDesc').innerHTML =
+    '<div class="popup-section">' +
+      '<div class="popup-section-title">&#128269; 이게 무슨 검사인가요?</div>' +
+      '<div class="popup-section-body">' + esc(item.desc||'') + '</div>' +
+    '</div>' +
+    '<div class="popup-section">' +
+      '<div class="popup-section-title">&#128161; 어떻게 하면 좋을까요?</div>' +
+      '<div class="popup-section-body">' + esc(item.tip||'') + '</div>' +
+    '</div>';
+
+  document.getElementById('popupOverlay').style.display='block';
+  document.getElementById('popup').style.display='block';
+}
+
+function showUrinePopup(name, val, normal){
+  document.getElementById('popupName').textContent = name;
+  document.getElementById('popupVal').textContent = val||'-';
+  document.getElementById('popupVal').className = 'popup-val noref';
+  document.getElementById('popupTag').innerHTML = '<span class="popup-tag tag-noref">소변 검사 항목</span>';
+  document.getElementById('popupRangeBar').innerHTML = '';
+  document.getElementById('popupTrend').innerHTML = '';
+  document.getElementById('popupDesc').innerHTML =
+    '<div class="popup-section">' +
+      '<div class="popup-section-title">&#128203; 결과</div>' +
+      '<div class="popup-section-body">측정값: <strong>' + esc(val||'-') + '</strong>' +
+        (normal ? ' &nbsp;|&nbsp; 정상: ' + esc(normal) : '') +
+      '</div>' +
+    '</div>';
+  document.getElementById('popupOverlay').style.display='block';
+  document.getElementById('popup').style.display='block';
+}
+
+function closePopup(){
+  document.getElementById('popupOverlay').style.display='none';
+  document.getElementById('popup').style.display='none';
+}
+</script>
+</body>
+</html>

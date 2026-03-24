@@ -66,9 +66,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans KR',sans
 .mb{background:#f8f7f5;border-radius:8px;padding:12px 14px;margin-bottom:10px;font-size:15px;color:#333;line-height:1.7;}
 .ab{border-radius:8px;padding:12px 14px;margin-bottom:18px;font-size:15px;line-height:1.7;}
 .aok{background:#e8f5e9;color:#1b5e20;}.awn{background:#fff3e0;color:#8a5c00;}.adk{background:#fdecea;color:#922b21;}
-.gw{width:100%;margin-bottom:6px;}.gs{width:100%;overflow:visible;display:block;}
-.gnt{font-size:11px;color:#bbb;margin-bottom:14px;}
-.tl{fill:none;stroke-width:2.5;stroke-linejoin:round;stroke-linecap:round;}
 .cb2{width:100%;padding:14px;border-radius:10px;border:1px solid #ddd;background:#f8f7f5;color:#333;font-size:15px;cursor:pointer;font-weight:500;}
 .cb2:hover{background:#f0ede8;}
 .footer{text-align:center;font-size:12px;color:#bbb;padding:1.5rem 0 2rem;line-height:1.8;}
@@ -92,13 +89,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans KR',sans
 <div id="rs">
   <div class="wrap">
     <div class="ph">
-      <div class="ph-n">변정태 님의 검사결과</div>
-      <div class="ph-s">최근 검사일: 2026.03.23 &nbsp;|&nbsp; 이전 검사: 2025.09.16</div>
+      <div class="ph-n">황지원 님의 검사결과</div>
+      <div class="ph-s">검사일: 2026.03.21</div>
     </div>
     <div class="notice">항목을 클릭하면 쉬운 설명과 관리 방법을 볼 수 있어요. 궁금한 점은 진료 시 꼭 말씀해 주세요!</div>
     <div class="summary">
       <div class="summary-title">📋 이번 검사 종합 소견</div>
-      <div class="summary-text">당화혈색소 6.1%로 당뇨 전단계예요. 혈당은 이번에 정상으로 돌아왔지만 꾸준한 관리가 필요해요. 총 콜레스테롤(230)과 LDL(138), 중성지방(190)이 모두 높아요. 중성지방은 이전보다 더 올랐어요. 식단 조절이 필요해요. 간·콩팥 기능은 모두 정상이에요.</div>
+      <div class="summary-text">전반적으로 검사 결과가 매우 좋아요. 갑상선 호르몬(T3)이 73으로 정상 범위보다 약간 낮아요. 다른 갑상선 수치(TSH, fT4)는 정상이어서 크게 걱정할 수준은 아니지만 꾸준히 관찰이 필요해요. 혈당·콜레스테롤·간·콩팥 기능은 모두 정상이에요.</div>
     </div>
     <div id="cats"></div>
     <div class="footer">본 결과지는 참고용이며 정확한 진단은 의사와 상담하세요.<br>© 진료실 검사결과 안내 서비스</div>
@@ -121,8 +118,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans KR',sans
     <div class="divl"></div>
     <div id="ptw" style="display:none">
       <div class="st">최근 추이</div>
-      <div class="gw"><svg class="gs" id="tsvg" height="110"></svg></div>
-      <div class="gnt" id="gnt"></div>
+      <div class="gw"><svg class="gs" id="tsvg" height="110" style="width:100%;overflow:visible;display:block;"></svg></div>
+      <div class="gnt" id="gnt" style="font-size:11px;color:#bbb;margin-bottom:14px;"></div>
       <div class="divl"></div>
     </div>
     <div class="st">이게 무슨 검사인가요?</div>
@@ -133,7 +130,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans KR',sans
   </div>
 </div>
 <script>
-const DOB='19710120';
+const DOB='19850518';
 let att=0;
 function chk(){
   const v=document.getElementById('di').value.trim();
@@ -150,77 +147,77 @@ function chk(){
 document.addEventListener('DOMContentLoaded',()=>{document.getElementById('di').addEventListener('keydown',e=>{if(e.key==='Enter')chk();});});
 const D=[
   {id:'dm',icon:'🍬',title:'당뇨 검사',items:[
-    {n:'당화혈색소 (HbA1c)',s2:'3개월 평균 혈당',v:'6.1',u:'%',nlo:4.5,nhi:5.6,nv:6.1,st:'warn',a1c:true,tr:[],
-     m:'최근 3개월간 평균 혈당이에요. 5.7~6.4%는 당뇨 전단계예요.',
-     a:'당뇨 전단계 범위예요. 식사 조절과 규칙적인 운동이 필요해요.'},
-    {n:'혈당 (Glucose)',s2:'혈액 속 포도당',v:'94',u:'mg/dL',nlo:70,nhi:99,nv:94,st:'ok',glucose:true,
-     tr:[{d:'25.09',v:'113'},{d:'26.03',v:'94'}],
-     m:'혈액 속 당분의 양이에요. 공복 기준 99mg/dL 이하가 정상이에요.',
-     a:'정상이에요. 이전(113)보다 좋아졌어요!'},
+    {n:'당화혈색소 (HbA1c)',s2:'3개월 평균 혈당',v:'5.5',u:'%',nlo:4.5,nhi:5.6,nv:5.5,st:'ok',a1c:true,tr:[],
+     m:'최근 3개월간 평균 혈당이에요. 5.6% 이하가 정상이에요.',
+     a:'정상이에요.'},
+    {n:'혈당 (Glucose)',s2:'혈액 속 포도당',v:'94',u:'mg/dL',nlo:70,nhi:99,nv:94,st:'ok',glucose:true,tr:[],
+     m:'혈액 속 당분의 양이에요.',a:'정상이에요.'},
   ]},
   {id:'cbc',icon:'🩸',title:'일반 혈액검사 (CBC)',items:[
-    {n:'혈색소 (Hb)',s2:'빈혈 여부',v:'16.5',u:'g/dL',nlo:13.5,nhi:18,nv:16.5,st:'ok',
-     tr:[{d:'25.09',v:'15.5'},{d:'26.03',v:'16.5'}],
+    {n:'혈색소 (Hb)',s2:'빈혈 여부',v:'15.4',u:'g/dL',nlo:12,nhi:16,nv:15.4,st:'ok',tr:[],
      m:'혈액 속 산소를 운반하는 단백질이에요.',a:'정상이에요.'},
-    {n:'헤마토크리트 (Hct)',s2:'적혈구 비율',v:'45.7',u:'%',nlo:35,nhi:60,nv:45.7,st:'ok',tr:[],
+    {n:'헤마토크리트 (Hct)',s2:'적혈구 비율',v:'43.3',u:'%',nlo:35,nhi:60,nv:43.3,st:'ok',tr:[],
      m:'혈액 전체에서 적혈구가 차지하는 비율이에요.',a:'정상이에요.'},
-    {n:'백혈구 (WBC)',s2:'면역세포 수',v:'5.93',u:'×10³/µL',nlo:4.2,nhi:10.5,nv:5.93,st:'ok',tr:[],
+    {n:'백혈구 (WBC)',s2:'면역세포 수',v:'7.92',u:'×10³/µL',nlo:4.2,nhi:10.5,nv:7.92,st:'ok',tr:[],
      m:'몸에 세균·바이러스가 들어오면 싸워주는 면역 세포예요.',a:'정상이에요.'},
-    {n:'혈소판 (PLT)',s2:'지혈 역할',v:'206.3',u:'×10³/µL',nlo:150,nhi:450,nv:206.3,st:'ok',tr:[],
+    {n:'혈소판 (PLT)',s2:'지혈 역할',v:'265.3',u:'×10³/µL',nlo:150,nhi:450,nv:265.3,st:'ok',tr:[],
      m:'상처가 났을 때 피가 멈추도록 도와주는 세포예요.',a:'정상이에요.'},
   ]},
   {id:'kidney',icon:'💧',title:'신장(콩팥) 기능검사',items:[
-    {n:'BUN',s2:'단백질 노폐물',v:'15.9',u:'mg/dL',nlo:6,nhi:20,nv:15.9,st:'ok',tr:[],
+    {n:'BUN',s2:'단백질 노폐물',v:'14.1',u:'mg/dL',nlo:6,nhi:20,nv:14.1,st:'ok',tr:[],
      m:'단백질이 분해될 때 생기는 노폐물이에요.',a:'정상이에요.'},
-    {n:'크레아티닌 (Cr)',s2:'콩팥 노폐물',v:'0.71',u:'mg/dL',nlo:0.4,nhi:1.3,nv:0.71,st:'ok',
-     tr:[{d:'25.09',v:'0.76'},{d:'26.03',v:'0.71'}],
+    {n:'크레아티닌 (Cr)',s2:'콩팥 노폐물',v:'0.65',u:'mg/dL',nlo:0.4,nhi:1.3,nv:0.65,st:'ok',tr:[],
      m:'근육 활동 시 생기는 노폐물로 콩팥 기능의 핵심 지표예요.',a:'정상이에요.'},
-    {n:'사구체여과율 (eGFR)',s2:'콩팥 여과 능력',v:'111.2',u:'mL/min',nlo:60,nhi:150,nv:111.2,st:'ok',
-     tr:[{d:'25.09',v:'108.8'},{d:'26.03',v:'111.2'}],
+    {n:'사구체여과율 (eGFR)',s2:'콩팥 여과 능력',v:'115.1',u:'mL/min',nlo:60,nhi:150,nv:115.1,st:'ok',tr:[],
      m:'콩팥이 1분에 혈액을 얼마나 깨끗하게 만드는지 나타내요.',a:'정상이에요.'},
   ]},
   {id:'liver',icon:'🟤',title:'간 기능검사',items:[
-    {n:'AST',s2:'간세포 손상 지표',v:'20',u:'U/L',nlo:0,nhi:40,nv:20,st:'ok',
-     tr:[{d:'25.09',v:'17'},{d:'26.03',v:'20'}],
+    {n:'AST',s2:'간세포 손상 지표',v:'15',u:'U/L',nlo:0,nhi:40,nv:15,st:'ok',tr:[],
      m:'간세포가 손상되면 혈액으로 흘러나오는 효소예요.',a:'정상이에요.'},
-    {n:'ALT',s2:'간 특이 효소',v:'17',u:'U/L',nlo:0,nhi:40,nv:17,st:'ok',
-     tr:[{d:'25.09',v:'17'},{d:'26.03',v:'17'}],
+    {n:'ALT',s2:'간 특이 효소',v:'9',u:'U/L',nlo:0,nhi:40,nv:9,st:'ok',tr:[],
      m:'간에 더 특이적인 효소로 간염·지방간 때 올라가요.',a:'정상이에요.'},
-    {n:'γ-GTP',s2:'음주·담도 지표',v:'42',u:'U/L',nlo:11,nhi:61,nv:42,st:'ok',
-     tr:[{d:'25.09',v:'64'},{d:'26.03',v:'42'}],
-     m:'음주, 약물, 담도 질환 때 올라가요.',
-     a:'정상이에요. 이전(64)보다 좋아졌어요!'},
-    {n:'ALP',s2:'담도·뼈 지표',v:'95.2',u:'U/L',nlo:0,nhi:270,nv:95.2,st:'ok',tr:[],
+    {n:'γ-GTP',s2:'음주·담도 지표',v:'13',u:'U/L',nlo:9,nhi:39,nv:13,st:'ok',tr:[],
+     m:'음주, 약물, 담도 질환 때 올라가요.',a:'정상이에요.'},
+    {n:'ALP',s2:'담도·뼈 지표',v:'65.6',u:'U/L',nlo:0,nhi:240,nv:65.6,st:'ok',tr:[],
      m:'담도나 뼈에 문제가 있을 때 올라가는 효소예요.',a:'정상이에요.'},
-    {n:'황달수치 (T-Bil)',s2:'황달 지표',v:'1.1',u:'mg/dL',nlo:0.3,nhi:1.2,nv:1.1,st:'ok',tr:[],
+    {n:'황달수치 (T-Bil)',s2:'황달 지표',v:'0.8',u:'mg/dL',nlo:0.3,nhi:1.2,nv:0.8,st:'ok',tr:[],
      m:'적혈구가 분해될 때 나오는 물질이에요.',a:'정상이에요.'},
-    {n:'총단백',s2:'영양·간 기능',v:'7.3',u:'g/dL',nlo:6.4,nhi:8.3,nv:7.3,st:'ok',tr:[],
+    {n:'총단백',s2:'영양·간 기능',v:'7.0',u:'g/dL',nlo:6.4,nhi:8.3,nv:7.0,st:'ok',tr:[],
      m:'혈액 속 단백질 총량으로 영양 상태와 간 기능을 반영해요.',a:'정상이에요.'},
-    {n:'알부민',s2:'영양 상태',v:'4.7',u:'g/dL',nlo:3.5,nhi:5.2,nv:4.7,st:'ok',tr:[],
+    {n:'알부민',s2:'영양 상태',v:'4.5',u:'g/dL',nlo:3.5,nhi:5.2,nv:4.5,st:'ok',tr:[],
      m:'간에서 만드는 주요 단백질로 영양 상태의 좋은 지표예요.',a:'정상이에요.'},
   ]},
   {id:'lipid',icon:'🧈',title:'지질(콜레스테롤) 검사',items:[
-    {n:'총 콜레스테롤',s2:'혈관 건강 지표',v:'230',u:'mg/dL',nlo:0,nhi:199,nv:230,st:'danger',
-     tr:[{d:'25.09',v:'236'},{d:'26.03',v:'230'}],
-     m:'혈액 속 전체 콜레스테롤 양이에요. 200 이상이면 고콜레스테롤혈증이에요.',
-     a:'높아요. 이전(236)보다 약간 낮아졌지만 아직 관리가 필요해요. 선생님과 상담하세요.'},
-    {n:'좋은 콜레스테롤 (HDL)',s2:'혈관 청소부',v:'54',u:'mg/dL',nlo:60,nhi:150,nv:54,st:'warn',
-     tr:[{d:'25.09',v:'58'},{d:'26.03',v:'54'}],
-     m:'혈관의 나쁜 콜레스테롤을 청소해주는 좋은 콜레스테롤이에요. 높을수록 좋아요!',
-     a:'기준(60)보다 낮아요. 유산소 운동을 꾸준히 하면 높이는 데 도움이 돼요.'},
-    {n:'중성지방 (TG)',s2:'혈중 지방',v:'190',u:'mg/dL',nlo:0,nhi:149,nv:190,st:'danger',
-     tr:[{d:'25.09',v:'166'},{d:'26.03',v:'190'}],
-     m:'혈액 속 지방으로 탄수화물을 많이 먹거나 술을 마시면 올라가요.',
-     a:'높아요. 이전보다 더 올랐어요. 단 음식·흰쌀·음주를 줄이고 꾸준히 운동해 주세요.'},
-    {n:'나쁜 콜레스테롤 (LDL)',s2:'혈관 위험 인자',v:'138.0',u:'mg/dL',nlo:0,nhi:129,nv:138.0,st:'danger',
-     tr:[{d:'25.09',v:'144.8'},{d:'26.03',v:'138.0'}],
-     m:'혈관 벽에 쌓여 동맥경화를 일으키는 나쁜 콜레스테롤이에요.',
-     a:'높아요. 이전(144.8)보다 조금 낮아졌어요. 선생님과 치료 계획을 상담하세요.'},
+    {n:'총 콜레스테롤',s2:'혈관 건강 지표',v:'194',u:'mg/dL',nlo:0,nhi:199,nv:194,st:'ok',tr:[],
+     m:'혈액 속 전체 콜레스테롤 양이에요.',a:'정상이에요.'},
+    {n:'좋은 콜레스테롤 (HDL)',s2:'혈관 청소부',v:'74',u:'mg/dL',nlo:60,nhi:150,nv:74,st:'ok',tr:[],
+     m:'혈관의 나쁜 콜레스테롤을 청소해주는 좋은 콜레스테롤이에요.',a:'정상이에요.'},
+    {n:'중성지방 (TG)',s2:'혈중 지방',v:'25',u:'mg/dL',nlo:0,nhi:149,nv:25,st:'ok',tr:[],
+     m:'혈액 속 지방이에요.',a:'정상이에요.'},
+    {n:'나쁜 콜레스테롤 (LDL)',s2:'혈관 위험 인자',v:'115.0',u:'mg/dL',nlo:0,nhi:129,nv:115.0,st:'ok',tr:[],
+     m:'혈관 벽에 쌓여 동맥경화를 일으키는 나쁜 콜레스테롤이에요.',a:'정상이에요.'},
+  ]},
+  {id:'thyroid',icon:'🦋',title:'갑상선 검사',items:[
+    {n:'TSH',s2:'갑상선 조절 호르몬',v:'1.17',u:'mIU/L',nlo:0.27,nhi:4.20,nv:1.17,st:'ok',tr:[],
+     m:'뇌에서 갑상선에 호르몬을 만들라고 명령하는 신호예요.',a:'정상이에요.'},
+    {n:'유리 T4 (fT4)',s2:'갑상선 호르몬',v:'1.26',u:'ng/dL',nlo:0.92,nhi:1.68,nv:1.26,st:'ok',tr:[],
+     m:'갑상선에서 만드는 주요 호르몬이에요.',a:'정상이에요.'},
+    {n:'T3',s2:'활성 갑상선 호르몬',v:'73',u:'ng/dL',nlo:80,nhi:200,nv:73,st:'warn',tr:[],
+     m:'가장 활성화된 갑상선 호르몬이에요. 낮으면 갑상선 기능 저하와 관련될 수 있어요.',
+     a:'기준(80)보다 약간 낮아요. TSH·fT4는 정상이라 크게 걱정할 수준은 아니지만 꾸준히 관찰해 주세요.'},
+  ]},
+  {id:'elec',icon:'⚡',title:'전해질 검사',items:[
+    {n:'나트륨 (Na)',s2:'체액 균형',v:'140',u:'mmol/L',nlo:136,nhi:145,nv:140,st:'ok',tr:[],
+     m:'몸의 수분 균형과 신경·근육 기능을 조절해요.',a:'정상이에요.'},
+    {n:'칼륨 (K)',s2:'심장·근육 기능',v:'5.1',u:'mmol/L',nlo:3.5,nhi:5.1,nv:5.1,st:'ok',tr:[],
+     m:'심장 박동과 근육 수축에 매우 중요해요.',a:'정상이에요.'},
+    {n:'염소 (Cl)',s2:'산염기 균형',v:'107',u:'mmol/L',nlo:98,nhi:107,nv:107,st:'ok',tr:[],
+     m:'몸의 산성-알칼리성 균형을 유지해요.',a:'정상이에요.'},
   ]},
   {id:'etc',icon:'🔬',title:'기타 검사',items:[
-    {n:'요산 (Uric acid)',s2:'통풍 수치',v:'6.1',u:'mg/dL',nlo:3.4,nhi:7.0,nv:6.1,st:'ok',tr:[],
+    {n:'요산 (Uric acid)',s2:'통풍 수치',v:'3.9',u:'mg/dL',nlo:2.4,nhi:5.7,nv:3.9,st:'ok',tr:[],
      m:'통풍을 일으키는 물질이에요.',a:'정상이에요.'},
-    {n:'CRP (염증 수치)',s2:'체내 염증 여부',v:'0.05',u:'mg/dL',nlo:0,nhi:5,nv:0.05,st:'ok',tr:[],
+    {n:'CRP (염증 수치)',s2:'체내 염증 여부',v:'0.00',u:'mg/dL',nlo:0,nhi:5,nv:0,st:'ok',tr:[],
      m:'몸 어딘가에 염증이 있으면 올라가는 수치예요.',a:'정상이에요.'},
   ]},
 ];
@@ -294,35 +291,6 @@ function buildBar(it){
   }
   return true;
 }
-function drawG(svgId,data,nlo,nhi,color){
-  const svg=document.getElementById(svgId);svg.innerHTML='';
-  if(!data||data.length<2)return false;
-  const W=svg.parentElement.offsetWidth||340;svg.setAttribute('viewBox','0 0 '+W+' 110');
-  const PL=34,PR=20,PT=22,PB=28,gW=W-PL-PR,gH=110-PT-PB;
-  const vals=data.map(d=>parseFloat(d.v)).filter(v=>!isNaN(v));if(!vals.length)return false;
-  const allV=[...vals];if(nlo!=null&&nlo>0)allV.push(nlo);if(nhi!=null&&nhi<900)allV.push(nhi);
-  const rawMin=Math.min(...allV),rawMax=Math.max(...allV),rng=rawMax-rawMin||rawMax||1;
-  let mn=Math.max(0,rawMin-rng*0.4),mx=rawMax+rng*0.3;if(mx<=mn)mx=mn+1;
-  const toY=v=>PT+gH-(((v-mn)/(mx-mn))*gH);const toX=i=>PL+(i/(data.length-1))*gW;
-  const ns='http://www.w3.org/2000/svg';
-  function el(tag,a){const e=document.createElementNS(ns,tag);Object.entries(a).forEach(([k,v])=>e.setAttribute(k,v));return e;}
-  if(nlo!=null&&nhi!=null&&nhi<900){
-    const yT=toY(nhi),yB=toY(nlo>0?nlo:mn);
-    svg.appendChild(el('rect',{x:PL,y:yT,width:gW,height:Math.max(0,yB-yT),fill:'#f0faf0',rx:3}));
-    if(nlo>0){const t=el('text',{x:PL-2,y:yB+4,'text-anchor':'end','font-size':9,fill:'#bbb'});t.textContent=nlo;svg.appendChild(t);}
-    const t2=el('text',{x:PL-2,y:yT+9,'text-anchor':'end','font-size':9,fill:'#bbb'});t2.textContent=nhi;svg.appendChild(t2);
-  }
-  const pts=data.map((d,i)=>{const v=parseFloat(d.v);return isNaN(v)?null:toX(i)+','+toY(v);}).filter(Boolean).join(' ');
-  if(pts)svg.appendChild(el('polyline',{points:pts,class:'tl',stroke:color}));
-  data.forEach((d,i)=>{
-    const v=parseFloat(d.v);if(isNaN(v))return;
-    const x=toX(i),y=toY(v),isL=i===data.length-1;
-    svg.appendChild(el('circle',{cx:x,cy:y,r:isL?6:4,fill:isL?color:'#ccc',stroke:'#fff','stroke-width':2}));
-    if(isL||i===0){const t=el('text',{x,y:y-10,'text-anchor':'middle','font-size':11,'font-weight':'500',fill:isL?color:'#999'});t.textContent=d.v;svg.appendChild(t);}
-    const dt=el('text',{x,y:110-6,'text-anchor':'middle','font-size':10,fill:'#aaa'});dt.textContent=d.d;svg.appendChild(dt);
-  });
-  return true;
-}
 function op(cid,nm){
   const cat=D.find(c=>c.id===cid);const it=cat.items.find(i=>i.n===nm);const s=it.st;
   const col=s==='ok'?'#2e7d32':s==='warn'?'#b5813a':'#c0392b';
@@ -335,13 +303,7 @@ function op(cid,nm){
   resetLegend();
   const barOk=it.nv!==null&&it.nv!==undefined&&(it.a1c?buildA1cBar(it):it.glucose?buildGlucoseBar(it):buildBar(it));
   document.getElementById('rbo').style.display=barOk?'block':'none';
-  const tw=document.getElementById('ptw');
-  if(it.tr&&it.tr.length>=2){
-    tw.style.display='block';
-    setTimeout(()=>drawG('tsvg',it.tr,it.nlo,it.nhi,col),50);
-    const nloStr=it.nlo&&it.nlo>0?it.nlo:'—';const nhiStr=it.nhi&&it.nhi<900?it.nhi:'—';
-    document.getElementById('gnt').textContent='정상 범위: '+nloStr+' ~ '+nhiStr+' '+it.u;
-  } else tw.style.display='none';
+  document.getElementById('ptw').style.display='none';
   document.getElementById('pm').textContent=it.m||'';
   const ab=document.getElementById('pa');ab.textContent=it.a||'';
   ab.className='ab '+(s==='ok'?'aok':s==='warn'?'awn':'adk');

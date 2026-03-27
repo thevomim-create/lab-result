@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>검사결과 확인</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans KR',sans-serif;background:#f8f7f5;color:#1a1a1a;}
+#lock{position:fixed;inset:0;background:#f8f7f5;z-index:999;display:flex;align-items:center;justify-content:center;padding:1.5rem;}
+.lb{background:#fff;border-radius:16px;border:1px solid #e0ddd8;padding:2rem 1.5rem;width:100%;max-width:360px;text-align:center;}
+.li{font-size:44px;margin-bottom:1rem;}.lt{font-size:18px;font-weight:500;margin-bottom:6px;}
+.ls{font-size:14px;color:#888;margin-bottom:1.5rem;line-height:1.7;}
+.ll{font-size:13px;color:#555;text-align:left;margin-bottom:6px;font-weight:500;}
+.lin{width:100%;padding:14px;border:1.5px solid #e0ddd8;border-radius:10px;font-size:20px;text-align:center;letter-spacing:6px;color:#1a1a1a;outline:none;transition:border .2s;}
+.lin:focus{border-color:#6b8cce;}.lin.err{border-color:#c0392b;animation:sh .3s;}
+.lbtn{width:100%;margin-top:14px;padding:14px;background:#3d5a9e;color:#fff;border:none;border-radius:10px;font-size:16px;font-weight:500;cursor:pointer;}
+.lbtn:disabled{background:#ccc;}
+.le{color:#c0392b;font-size:13px;margin-top:10px;min-height:18px;}
+.la{color:#aaa;font-size:12px;margin-top:6px;min-height:16px;}
+@keyframes sh{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+#rs{display:none;}
+.wrap{max-width:480px;margin:0 auto;padding:1rem;}
+.ph{background:#fff;border-radius:12px;padding:1rem 1.25rem;margin-bottom:.75rem;border:1px solid #e0ddd8;}
+.ph-n{font-size:19px;font-weight:500;}.ph-s{font-size:13px;color:#888;margin-top:3px;}
+.notice{background:#f0f4ff;border-left:3px solid #6b8cce;border-radius:0 8px 8px 0;padding:10px 14px;margin-bottom:.75rem;font-size:14px;color:#3d5a9e;line-height:1.6;}
+.summary{background:#fff;border:1px solid #e0ddd8;border-left:4px solid #3d5a9e;border-radius:0 12px 12px 0;padding:1rem 1.25rem;margin-bottom:.75rem;}
+.summary-title{font-size:12px;font-weight:600;color:#3d5a9e;margin-bottom:6px;}
+.summary-text{font-size:15px;color:#333;line-height:1.8;}
+.sec-title{font-size:11px;font-weight:700;color:#aaa;letter-spacing:.1em;margin:16px 0 8px;padding:0 2px;}
+.cb{background:#fff;border:1px solid #e0ddd8;border-radius:12px;margin-bottom:8px;overflow:hidden;}
+.cb.hd{border-left:4px solid #c0392b;}.cb.hw{border-left:4px solid #b5813a;}
+.ch{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;cursor:pointer;user-select:none;}
+.ch:hover{background:#faf9f7;}
+.cl{display:flex;align-items:center;gap:10px;}
+.ci{width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;background:#f3f2ef;flex-shrink:0;}
+.ct{font-size:16px;font-weight:500;}
+.cbg{font-size:13px;padding:3px 10px;border-radius:99px;margin-left:6px;font-weight:500;}
+.bok{background:#e8f5e9;color:#2e7d32;}.bwn{background:#fff3e0;color:#b5813a;}.bdk{background:#fdecea;color:#c0392b;font-weight:700;}
+.cv{font-size:11px;color:#aaa;transition:transform .2s;}.cv.op{transform:rotate(180deg);}
+.cbody{border-top:1px solid #f0ede8;display:none;}.cbody.op{display:block;}
+.ir{display:flex;align-items:center;justify-content:space-between;padding:13px 16px;border-bottom:1px solid #f5f3f0;cursor:pointer;}
+.ir:last-child{border-bottom:none;}.ir.dr{background:#fdf5f5;}.ir:hover{background:#faf9f7;}
+.in{font-size:16px;font-weight:500;}.is{font-size:13px;color:#999;margin-top:2px;}
+.irr{display:flex;align-items:center;gap:6px;}
+.iv{font-size:18px;font-weight:500;}.vok{color:#2e7d32;}.vwn{color:#b5813a;}.vdk{color:#c0392b;}
+.iu{font-size:13px;color:#aaa;}.ia{font-size:14px;color:#ccc;}
+.dm{font-size:14px;color:#c0392b;margin-right:2px;font-weight:700;}
+.pbg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200;align-items:flex-end;justify-content:center;}
+.pbg.op{display:flex;}
+.pop{background:#fff;border-radius:20px 20px 0 0;padding:1.5rem 1.25rem 2.5rem;width:100%;max-width:480px;max-height:82vh;overflow-y:auto;}
+.ph2{width:40px;height:4px;background:#ddd;border-radius:2px;margin:0 auto 1.25rem;}
+.pnm{font-size:18px;font-weight:500;margin-bottom:6px;}
+.pvr{display:flex;align-items:baseline;gap:8px;margin-bottom:6px;}
+.pv{font-size:32px;font-weight:500;}.pu{font-size:14px;color:#888;}
+.ptg{display:inline-block;font-size:13px;padding:4px 12px;border-radius:99px;font-weight:500;margin-bottom:14px;}
+.tok{background:#e8f5e9;color:#2e7d32;}.twn{background:#fff3e0;color:#b5813a;}.tdk{background:#fdecea;color:#c0392b;}
+.rbo{position:relative;margin-bottom:6px;}
+.rtr{display:flex;height:12px;border-radius:99px;overflow:hidden;}
+.rmk{position:absolute;top:-4px;width:4px;height:20px;background:#1a1a1a;border-radius:2px;transform:translateX(-50%);}
+.rll{display:flex;justify-content:space-between;font-size:11px;color:#aaa;margin-top:5px;}
+.rlg{display:flex;gap:12px;margin-top:8px;flex-wrap:wrap;margin-bottom:16px;}
+.lgi{display:flex;align-items:center;gap:5px;font-size:12px;color:#888;}
+.lgd{width:10px;height:10px;border-radius:50%;}
+.divl{height:1px;background:#f0ede8;margin:4px 0 14px;}
+.st{font-size:12px;font-weight:500;color:#aaa;margin-bottom:8px;letter-spacing:.06em;}
+.mb{background:#f8f7f5;border-radius:8px;padding:12px 14px;margin-bottom:10px;font-size:16px;color:#333;line-height:1.7;}
+.ab{border-radius:8px;padding:12px 14px;margin-bottom:18px;font-size:16px;line-height:1.7;}
+.aok{background:#e8f5e9;color:#1b5e20;}.awn{background:#fff3e0;color:#8a5c00;}.adk{background:#fdecea;color:#922b21;}
+.gw{width:100%;margin-bottom:6px;}.gs{width:100%;overflow:visible;display:block;}
+.gnt{font-size:11px;color:#bbb;margin-bottom:14px;}
+.tl{fill:none;stroke-width:2.5;stroke-linejoin:round;stroke-linecap:round;}
+.cb2{width:100%;padding:14px;border-radius:10px;border:1px solid #ddd;background:#f8f7f5;color:#333;font-size:16px;cursor:pointer;font-weight:500;}
+.cb2:hover{background:#f0ede8;}
+.rcard{background:#fff;border:1px solid #e0ddd8;border-radius:12px;margin-bottom:8px;overflow:hidden;}
+.rcard.ok{border-left:4px solid #2e7d32;}.rcard.caution{border-left:4px solid #b5813a;}
+.rcard-head{padding:14px 16px;display:flex;align-items:center;gap:12px;cursor:pointer;user-select:none;}
+.rcard-head:hover{background:#faf9f7;}
+.rcard-icon{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+.icon-ok{background:#e8f5e9;}.icon-caution{background:#fff3e0;}
+.rcard-title{font-size:16px;font-weight:600;}
+.rcard-badge{font-size:13px;padding:3px 10px;border-radius:99px;margin-left:8px;font-weight:600;}
+.badge-ok{background:#e8f5e9;color:#2e7d32;}.badge-caution{background:#fff3e0;color:#b5813a;}
+.rcard-body{border-top:1px solid #f0ede8;padding:14px 16px;display:none;}
+.rcard-body.op{display:block;}
+.rcard-desc{font-size:15px;color:#333;line-height:1.8;margin-bottom:10px;}
+.rcard-action{border-radius:8px;padding:12px 14px;font-size:15px;line-height:1.7;}
+.ra-ok{background:#f0faf0;color:#1b5e20;}.ra-caution{background:#fffbeb;color:#78350f;}
+.find-list{background:#f8f7f5;border-radius:8px;padding:10px 14px;margin-bottom:10px;}
+.find-item{display:flex;align-items:flex-start;gap:8px;padding:6px 0;border-bottom:1px solid #ede;font-size:14px;line-height:1.6;}
+.find-item:last-child{border-bottom:none;}
+.find-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:5px;}
+.dot-green{background:#2e7d32;}.dot-yellow{background:#b5813a;}
+.path-no{font-size:11px;color:#bbb;margin-top:8px;text-align:right;}
+.footer{text-align:center;font-size:12px;color:#bbb;padding:1.5rem 0 2rem;line-height:1.8;}
+</style>
+</head>
+<body>
+<div id="lock">
+  <div class="lb">
+    <div style="font-size:15px;font-weight:600;color:#3d5a9e;margin-bottom:2px;letter-spacing:.03em;">더봄연합내과의원</div>
+    <div style="font-size:11px;color:#aaa;margin-bottom:1.2rem;">THE VOM UNION INTERNAL MEDICINE</div>
+    <div class="li">🔒</div>
+    <div class="lt">검사결과 확인</div>
+    <div class="ls">본인 확인을 위해<br>생년월일 8자리를 입력해 주세요</div>
+    <div class="ll">생년월일 8자리</div>
+    <input class="lin" id="di" type="tel" maxlength="8" placeholder="" oninput="this.value=this.value.replace(/\D/g,'')">
+    <button class="lbtn" id="lbtn" onclick="chk()">확인</button>
+    <div class="le" id="le"></div>
+    <div class="la" id="la"></div>
+  </div>
+</div>
+<div id="rs">
+  <div class="wrap">
+    <div class="ph">
+      <div class="ph-n">문O영 님의 검사결과</div>
+      <div class="ph-s">최근 검사일: 2026.03.20 &nbsp;|&nbsp; 혈액검사 + 조직검사</div>
+    </div>
+    <div class="notice">항목을 클릭하면 쉬운 설명과 관리 방법을 볼 수 있어요. 궁금한 점은 진료 시 꼭 말씀해 주세요!</div>
+    <div class="summary">
+      <div class="summary-title">📋 이번 검사 종합 소견</div>
+      <div class="summary-text">혈당이 이전보다 조금씩 좋아지고 있어요. 식단 관리를 계속 유지해 주세요. 위 조직검사에서 장상피화생이 있어 정기 내시경이 필요해요. 황색종과 위저선 용종은 모두 암과 관계없는 양성이에요. 대장 용종(과증식성)도 제거했고 암과 무관한 양성이에요. 콜레스테롤·간·콩팥은 모두 정상이에요.</div>
+    </div>
+
+    <div class="sec-title">🩺 혈액검사 결과</div>
+    <div id="cats"></div>
+
+    <div class="sec-title">🔬 조직검사 결과</div>
+
+    <!-- 위 조직검사 -->
+    <div class="rcard caution">
+      <div class="rcard-head" onclick="tgR('bio1')">
+        <div class="rcard-icon icon-caution">🟡</div>
+        <div style="flex:1;">
+          <div class="rcard-title">위 조직검사<span class="rcard-badge badge-caution">정기 관찰 필요</span></div>
+          <div style="font-size:13px;color:#888;margin-top:2px;">4곳 채취 · 헬리코박터 음성</div>
+        </div>
+        <span class="cv" id="cv-bio1">▼</span>
+      </div>
+      <div class="rcard-body" id="bd-bio1">
+        <div class="rcard-desc">내시경 중 4곳에서 조직을 채취해 검사했어요. 결과는 아래와 같아요.</div>
+        <div class="find-list">
+          <div class="find-item">
+            <div class="find-dot dot-yellow"></div>
+            <div><strong>위 전정부·체부 하부 (A, D)</strong> — 만성 미란성 위염 + 장상피화생<br>
+            <span style="font-size:13px;color:#888;">위 점막에 염증과 함께 장 세포처럼 변한 부위가 있어요. 정기 내시경이 필요해요.</span></div>
+          </div>
+          <div class="find-item">
+            <div class="find-dot dot-green"></div>
+            <div><strong>위 체부 (B)</strong> — 황색종(Xanthoma)<br>
+            <span style="font-size:13px;color:#888;">지방 성분이 쌓인 노란 점으로, 암과 전혀 관계없는 양성이에요.</span></div>
+          </div>
+          <div class="find-item">
+            <div class="find-dot dot-green"></div>
+            <div><strong>위 체부 (C)</strong> — 위저선 용종<br>
+            <span style="font-size:13px;color:#888;">암으로 진행하지 않는 완전한 양성 용종이에요.</span></div>
+          </div>
+        </div>
+        <div class="rcard-action ra-caution">
+          장상피화생은 위암의 위험인자 중 하나예요. 지금 당장 심각한 상태는 아니지만 짜고 매운 음식·흡연을 줄이고 정기적으로 위 내시경을 받아주세요.
+        </div>
+        <div class="path-no">병리번호: S2026-034674</div>
+      </div>
+    </div>
+
+    <!-- 대장 조직검사 -->
+    <div class="rcard ok">
+      <div class="rcard-head" onclick="tgR('bio2')">
+        <div class="rcard-icon icon-ok">🟢</div>
+        <div style="flex:1;">
+          <div class="rcard-title">대장 용종 조직검사<span class="rcard-badge badge-ok">이상 없음</span></div>
+          <div style="font-size:13px;color:#888;margin-top:2px;">간굴곡부 0.5cm · 용종 제거 완료</div>
+        </div>
+        <span class="cv" id="cv-bio2">▼</span>
+      </div>
+      <div class="rcard-body" id="bd-bio2">
+        <div class="rcard-desc">
+          <strong>과증식성 용종(Hyperplastic polyp)</strong>으로 확인됐어요.<br><br>
+          과증식성 용종은 암으로 진행하지 않는 완전한 양성 용종이에요. 내시경 시술로 완전히 제거됐어요. <strong>악성(암) 소견은 없어요.</strong>
+        </div>
+        <div class="rcard-action ra-ok">
+          걱정하지 않아도 돼요! 제거가 잘 됐어요. 정기적으로 대장내시경을 받아주세요.
+        </div>
+        <div class="path-no">병리번호: S2026-034665</div>
+      </div>
+    </div>
+
+    <div class="footer">본 결과지는 참고용이며 정확한 진단은 의사와 상담하세요.<br>© 더봄연합내과의원</div>
+  </div>
+</div>
+
+<div class="pbg" id="pbg" onclick="cp(event)">
+  <div class="pop">
+    <div class="ph2"></div>
+    <div class="pnm" id="pnm"></div>
+    <div class="pvr"><span class="pv" id="pv"></span><span class="pu" id="pu"></span></div>
+    <div class="ptg" id="ptg"></div>
+    <div class="rbo" id="rbo"><div class="rtr" id="rtr"></div><div class="rmk" id="rmk"></div></div>
+    <div class="rll" id="rll"></div>
+    <div class="rlg" id="rlg">
+      <div class="lgi"><div class="lgd" style="background:#aac4e0"></div>낮음</div>
+      <div class="lgi"><div class="lgd" style="background:#7db87d"></div>정상</div>
+      <div class="lgi"><div class="lgd" style="background:#d9736a"></div>높음</div>
+      <div class="lgi"><span style="display:inline-block;width:4px;height:14px;background:#1a1a1a;border-radius:2px;vertical-align:middle;margin-right:5px;"></span>내 수치</div>
+    </div>
+    <div class="divl"></div>
+    <div id="ptw" style="display:none">
+      <div class="st">최근 추이</div>
+      <div class="gw"><svg class="gs" id="tsvg" height="110"></svg></div>
+      <div class="gnt" id="gnt"></div>
+      <div class="divl"></div>
+    </div>
+    <div class="st">이게 무슨 검사인가요?</div>
+    <div class="mb" id="pm"></div>
+    <div class="st">어떻게 하면 좋을까요?</div>
+    <div class="ab" id="pa"></div>
+    <button class="cb2" onclick="cp()">닫기</button>
+  </div>
+</div>
+
+<script>
+const DOB='19800226';
+let att=0;
+function chk(){
+  const v=document.getElementById('di').value.trim();
+  const le=document.getElementById('le'),la=document.getElementById('la'),inp=document.getElementById('di');
+  if(v.length!==8){le.textContent='8자리를 모두 입력해 주세요.';return;}
+  if(v===DOB){document.getElementById('lock').style.display='none';document.getElementById('rs').style.display='block';}
+  else{
+    att++;inp.value='';inp.classList.add('err');setTimeout(()=>inp.classList.remove('err'),400);
+    const left=5-att;
+    if(left<=0){le.textContent='5회 오류로 잠겼습니다. 진료실에 문의해 주세요.';document.getElementById('lbtn').disabled=true;la.textContent='';}
+    else{le.textContent='생년월일이 맞지 않아요.';la.textContent='남은 시도: '+left+'회';}
+  }
+}
+document.addEventListener('DOMContentLoaded',()=>{document.getElementById('di').addEventListener('keydown',e=>{if(e.key==='Enter')chk();});});
+function tgR(id){document.getElementById('bd-'+id).classList.toggle('op');document.getElementById('cv-'+id).classList.toggle('op');}
+
+const D=[
+  {id:'dm',icon:'🍬',title:'당뇨 검사',items:[
+    {n:'혈당 (Glucose)',s2:'혈액 속 포도당',v:'103',u:'mg/dL',nlo:70,nhi:99,nv:103,st:'warn',glucose:true,
+     tr:[{d:'25.07',v:'100'},{d:'25.09',v:'115'},{d:'25.11',v:'109'},{d:'26.03',v:'103'}],
+     m:'혈액 속 당분의 양이에요. 공복 기준 100~125mg/dL는 당뇨 전단계예요.',
+     a:'경계 수치예요. 꾸준히 좋아지고 있어요. 식단 관리를 유지해 주세요!'},
+  ]},
+  {id:'cbc',icon:'🩸',title:'일반 혈액검사',items:[
+    {n:'혈색소 (Hb)',s2:'빈혈 여부',v:'15.2',u:'g/dL',nlo:12,nhi:16,nv:15.2,st:'ok',
+     tr:[{d:'25.07',v:'12.7'},{d:'25.09',v:'12.9'},{d:'26.03',v:'15.2'}],
+     m:'혈액 속 산소를 운반하는 단백질이에요.',
+     a:'정상이에요. 이전보다 많이 좋아졌어요!'},
+  ]},
+  {id:'kidney',icon:'💧',title:'신장(콩팥) 기능검사',items:[
+    {n:'크레아티닌 (Cr)',s2:'콩팥 노폐물',v:'0.78',u:'mg/dL',nlo:0.4,nhi:1.3,nv:0.78,st:'ok',
+     tr:[{d:'25.07',v:'0.63'},{d:'25.09',v:'0.71'},{d:'26.03',v:'0.78'}],
+     m:'근육 활동 시 생기는 노폐물로 콩팥 기능의 핵심 지표예요.',a:'정상이에요.'},
+    {n:'사구체여과율 (eGFR)',s2:'콩팥 여과 능력',v:'94.9',u:'mL/min',nlo:60,nhi:150,nv:94.9,st:'ok',tr:[],
+     m:'콩팥이 1분에 혈액을 얼마나 깨끗하게 만드는지 나타내요.',a:'정상이에요.'},
+  ]},
+  {id:'liver',icon:'🟤',title:'간 기능검사',items:[
+    {n:'AST',s2:'간세포 손상 지표',v:'34',u:'U/L',nlo:0,nhi:40,nv:34,st:'ok',
+     tr:[{d:'25.07',v:'27'},{d:'25.09',v:'17'},{d:'26.03',v:'34'}],
+     m:'간세포가 손상되면 혈액으로 흘러나오는 효소예요.',a:'정상이에요.'},
+    {n:'ALT',s2:'간 특이 효소',v:'36',u:'U/L',nlo:0,nhi:40,nv:36,st:'ok',
+     tr:[{d:'25.07',v:'29'},{d:'25.09',v:'17'},{d:'26.03',v:'36'}],
+     m:'간에 더 특이적인 효소로 간염·지방간 때 올라가요.',a:'정상이에요.'},
+    {n:'γ-GTP',s2:'음주·담도 지표',v:'21',u:'U/L',nlo:9,nhi:39,nv:21,st:'ok',tr:[],
+     m:'음주, 약물, 담도 질환 때 올라가요.',a:'정상이에요.'},
+  ]},
+  {id:'lipid',icon:'🧈',title:'지질(콜레스테롤) 검사',items:[
+    {n:'총 콜레스테롤',s2:'혈관 건강 지표',v:'179',u:'mg/dL',nlo:0,nhi:199,nv:179,st:'ok',
+     tr:[{d:'25.07',v:'145'},{d:'25.09',v:'157'},{d:'26.03',v:'179'}],
+     m:'혈액 속 전체 콜레스테롤 양이에요.',a:'정상이에요.'},
+    {n:'좋은 콜레스테롤 (HDL)',s2:'혈관 청소부',v:'111',u:'mg/dL',nlo:60,nhi:150,nv:111,st:'ok',
+     tr:[{d:'25.07',v:'86'},{d:'25.09',v:'94'},{d:'26.03',v:'111'}],
+     m:'혈관의 나쁜 콜레스테롤을 청소해주는 좋은 콜레스테롤이에요. 높을수록 좋아요!',
+     a:'정상이에요. 수치가 매우 좋아요!'},
+    {n:'중성지방 (TG)',s2:'혈중 지방',v:'80',u:'mg/dL',nlo:0,nhi:149,nv:80,st:'ok',
+     tr:[{d:'25.07',v:'67'},{d:'25.09',v:'69'},{d:'26.03',v:'80'}],
+     m:'혈액 속 지방이에요.',a:'정상이에요.'},
+    {n:'나쁜 콜레스테롤 (LDL)',s2:'혈관 위험 인자',v:'52.0',u:'mg/dL',nlo:0,nhi:129,nv:52.0,st:'ok',
+     tr:[{d:'25.07',v:'45.6'},{d:'25.09',v:'49.2'},{d:'26.03',v:'52.0'}],
+     m:'혈관 벽에 쌓여 동맥경화를 일으키는 나쁜 콜레스테롤이에요.',a:'정상이에요.'},
+  ]},
+  {id:'thyroid',icon:'🦋',title:'갑상선 검사',items:[
+    {n:'TSH',s2:'갑상선 조절 호르몬',v:'1.61',u:'mIU/L',nlo:0.27,nhi:4.20,nv:1.61,st:'ok',
+     tr:[{d:'25.09',v:'0.69'},{d:'26.03',v:'1.61'}],
+     m:'뇌에서 갑상선에 호르몬을 만들라고 명령하는 신호예요.',a:'정상이에요.'},
+    {n:'유리 T4 (fT4)',s2:'갑상선 호르몬',v:'1.09',u:'ng/dL',nlo:0.92,nhi:1.68,nv:1.09,st:'ok',tr:[],
+     m:'갑상선에서 만드는 주요 호르몬이에요.',a:'정상이에요.'},
+    {n:'T3',s2:'활성 갑상선 호르몬',v:'99',u:'ng/dL',nlo:80,nhi:200,nv:99,st:'ok',tr:[],
+     m:'가장 활성화된 갑상선 호르몬이에요.',a:'정상이에요.'},
+  ]},
+  {id:'etc',icon:'🔬',title:'기타 검사',items:[
+    {n:'CRP (염증 수치)',s2:'체내 염증 여부',v:'0.02',u:'mg/dL',nlo:0,nhi:5,nv:0.02,st:'ok',tr:[],
+     m:'몸 어딘가에 염증이 있으면 올라가는 수치예요.',a:'정상이에요.'},
+  ]},
+];
+function ov(it){if(it.some(i=>i.st==='danger'))return'danger';if(it.some(i=>i.st==='warn'))return'warn';return'ok';}
+function bl(s){return s==='ok'?'정상':s==='warn'?'주의':'관리 필요';}
+function build(){
+  const c=document.getElementById('cats');
+  D.forEach(cat=>{
+    const os=ov(cat.items);const b=document.createElement('div');
+    b.className='cb'+(os==='danger'?' hd':os==='warn'?' hw':'');
+    const rows=cat.items.map(it=>{
+      const esc=it.n.replace(/'/g,"\\'");const vc=it.st==='ok'?'vok':it.st==='warn'?'vwn':'vdk';
+      return '<div class="ir'+(it.st==='danger'?' dr':'')+'" onclick="op(\''+cat.id+'\',\''+esc+'\')"><div style="display:flex;align-items:center;gap:8px;">'+(it.st==='danger'?'<span class="dm">!</span>':'')+'<div><div class="in">'+it.n+'</div><div class="is">'+it.s2+'</div></div></div><div class="irr"><span class="iv '+vc+'">'+it.v+'</span><span class="iu">'+it.u+'</span><span class="ia">›</span></div></div>';
+    }).join('');
+    b.innerHTML='<div class="ch" onclick="tg(\''+cat.id+'\')"><div class="cl"><div class="ci">'+cat.icon+'</div><span class="ct">'+cat.title+'</span><span class="cbg '+(os==='ok'?'bok':os==='warn'?'bwn':'bdk')+'">'+bl(os)+'</span></div><span class="cv" id="cv-'+cat.id+'">▼</span></div><div class="cbody" id="bd-'+cat.id+'">'+rows+'</div>';
+    c.appendChild(b);
+  });
+}
+function tg(id){document.getElementById('bd-'+id).classList.toggle('op');document.getElementById('cv-'+id).classList.toggle('op');}
+function resetLegend(){
+  document.getElementById('rlg').innerHTML='<div class="lgi"><div class="lgd" style="background:#aac4e0"></div>낮음</div><div class="lgi"><div class="lgd" style="background:#7db87d"></div>정상</div><div class="lgi"><div class="lgd" style="background:#d9736a"></div>높음</div><div class="lgi"><span style="display:inline-block;width:4px;height:14px;background:#1a1a1a;border-radius:2px;vertical-align:middle;margin-right:5px;"></span>내 수치</div>';
+}
+function buildGlucoseBar(it){
+  if(it.nv===null||it.nv===undefined)return false;
+  const mn=60,mx=200,total=mx-mn;
+  document.getElementById('rtr').innerHTML='<div style="flex:1;background:#7db87d;"></div><div style="flex:1;background:#e8a838;"></div><div style="flex:1;background:#d9736a;"></div>';
+  const pct=Math.min(97,Math.max(3,Math.round((it.nv-mn)/total*100)));
+  document.getElementById('rmk').style.left=pct+'%';document.getElementById('rmk').style.display='block';
+  document.getElementById('rll').innerHTML='<span>정상 (~99)</span><span>전단계 (~125)</span><span>당뇨 (126+)</span>';
+  document.getElementById('rlg').innerHTML='<div class="lgi"><div class="lgd" style="background:#7db87d"></div>정상</div><div class="lgi"><div class="lgd" style="background:#e8a838"></div>전단계</div><div class="lgi"><div class="lgd" style="background:#d9736a"></div>당뇨</div><div class="lgi"><span style="display:inline-block;width:4px;height:14px;background:#1a1a1a;border-radius:2px;vertical-align:middle;margin-right:5px;"></span>내 수치</div>';
+  return true;
+}
+function buildBar(it){
+  if(it.nhi===null||it.nhi===undefined||it.nhi>=900)return false;
+  const isSingle=(it.nlo===null||it.nlo===undefined||it.nlo===0);
+  const range=isSingle?it.nhi:(it.nhi-it.nlo);if(range<=0)return false;
+  if(isSingle){
+    document.getElementById('rtr').innerHTML='<div style="flex:1;background:#7db87d;"></div><div style="flex:1;background:#d9736a;"></div>';
+    if(it.nv!==null&&it.nv!==undefined){
+      let pct=it.nv<=it.nhi?Math.round((it.nv/it.nhi)*50):Math.round(50+((it.nv-it.nhi)/it.nhi)*50);
+      pct=Math.min(97,Math.max(3,pct));
+      document.getElementById('rmk').style.left=pct+'%';document.getElementById('rmk').style.display='block';
+    }else document.getElementById('rmk').style.display='none';
+    const u=it.u||'';
+    document.getElementById('rll').innerHTML='<span>정상</span><span>'+it.nhi+u+'</span><span>높음</span><span></span>';
+    document.getElementById('rlg').innerHTML='<div class="lgi"><div class="lgd" style="background:#7db87d"></div>정상</div><div class="lgi"><div class="lgd" style="background:#d9736a"></div>높음</div><div class="lgi"><span style="display:inline-block;width:4px;height:14px;background:#1a1a1a;border-radius:2px;vertical-align:middle;margin-right:5px;"></span>내 수치</div>';
+  }else{
+    document.getElementById('rtr').innerHTML='<div style="flex:1;background:#aac4e0;"></div><div style="flex:1;background:#7db87d;"></div><div style="flex:1;background:#d9736a;"></div>';
+    if(it.nv!==null&&it.nv!==undefined){
+      let pct;
+      if(it.nv<=it.nlo)pct=Math.round(((it.nv-(it.nlo-range))/range)*33);
+      else if(it.nv<=it.nhi)pct=Math.round(33+((it.nv-it.nlo)/range)*34);
+      else pct=Math.round(67+((it.nv-it.nhi)/range)*33);
+      pct=Math.min(97,Math.max(3,pct));
+      document.getElementById('rmk').style.left=pct+'%';document.getElementById('rmk').style.display='block';
+    }else document.getElementById('rmk').style.display='none';
+    const u=it.u||'';
+    document.getElementById('rll').innerHTML='<span>낮음</span><span>'+it.nlo+u+'</span><span>'+it.nhi+u+'</span><span>높음</span>';
+    document.getElementById('rlg').innerHTML='<div class="lgi"><div class="lgd" style="background:#aac4e0"></div>낮음</div><div class="lgi"><div class="lgd" style="background:#7db87d"></div>정상</div><div class="lgi"><div class="lgd" style="background:#d9736a"></div>높음</div><div class="lgi"><span style="display:inline-block;width:4px;height:14px;background:#1a1a1a;border-radius:2px;vertical-align:middle;margin-right:5px;"></span>내 수치</div>';
+  }
+  return true;
+}
+function drawG(svgId,data,nlo,nhi,color){
+  const svg=document.getElementById(svgId);svg.innerHTML='';
+  if(!data||data.length<2)return false;
+  const W=svg.parentElement.offsetWidth||340;svg.setAttribute('viewBox','0 0 '+W+' 110');
+  const PL=34,PR=20,PT=22,PB=28,gW=W-PL-PR,gH=110-PT-PB;
+  const vals=data.map(d=>parseFloat(d.v)).filter(v=>!isNaN(v));if(!vals.length)return false;
+  const allV=[...vals];if(nlo!=null&&nlo>0)allV.push(nlo);if(nhi!=null&&nhi<900)allV.push(nhi);
+  const rawMin=Math.min(...allV),rawMax=Math.max(...allV),rng=rawMax-rawMin||rawMax||1;
+  let mn=Math.max(0,rawMin-rng*0.4),mx=rawMax+rng*0.3;if(mx<=mn)mx=mn+1;
+  const toY=v=>PT+gH-(((v-mn)/(mx-mn))*gH);const toX=i=>PL+(i/(data.length-1))*gW;
+  const ns='http://www.w3.org/2000/svg';
+  function el(tag,a){const e=document.createElementNS(ns,tag);Object.entries(a).forEach(([k,v])=>e.setAttribute(k,v));return e;}
+  if(nlo!=null&&nhi!=null&&nhi<900){
+    const yT=toY(nhi),yB=toY(nlo>0?nlo:mn);
+    svg.appendChild(el('rect',{x:PL,y:yT,width:gW,height:Math.max(0,yB-yT),fill:'#f0faf0',rx:3}));
+    if(nlo>0){const t=el('text',{x:PL-2,y:yB+4,'text-anchor':'end','font-size':9,fill:'#bbb'});t.textContent=nlo;svg.appendChild(t);}
+    const t2=el('text',{x:PL-2,y:yT+9,'text-anchor':'end','font-size':9,fill:'#bbb'});t2.textContent=nhi;svg.appendChild(t2);
+  }
+  const pts=data.map((d,i)=>{const v=parseFloat(d.v);return isNaN(v)?null:toX(i)+','+toY(v);}).filter(Boolean).join(' ');
+  if(pts)svg.appendChild(el('polyline',{points:pts,class:'tl',stroke:color}));
+  data.forEach((d,i)=>{
+    const v=parseFloat(d.v);if(isNaN(v))return;
+    const x=toX(i),y=toY(v),isL=i===data.length-1;
+    svg.appendChild(el('circle',{cx:x,cy:y,r:isL?6:4,fill:isL?color:'#ccc',stroke:'#fff','stroke-width':2}));
+    {const t=el('text',{x,y:y-10,'text-anchor':'middle','font-size':isL?11:10,'font-weight':'500',fill:isL?color:'#555'});t.textContent=d.v;svg.appendChild(t);}
+    const dt=el('text',{x,y:110-6,'text-anchor':'middle','font-size':10,fill:'#aaa'});dt.textContent=d.d;svg.appendChild(dt);
+  });
+  return true;
+}
+function op(cid,nm){
+  const cat=D.find(c=>c.id===cid);const it=cat.items.find(i=>i.n===nm);const s=it.st;
+  const col=s==='ok'?'#2e7d32':s==='warn'?'#b5813a':'#c0392b';
+  document.getElementById('pnm').textContent=it.n;
+  document.getElementById('pv').textContent=it.v;document.getElementById('pv').style.color=col;
+  document.getElementById('pu').textContent=it.u;
+  const tag=document.getElementById('ptg');
+  tag.textContent=s==='ok'?'정상 범위':s==='warn'?'주의 — 경계 수치':'관리 필요 — 높은 수치';
+  tag.className='ptg '+(s==='ok'?'tok':s==='warn'?'twn':'tdk');
+  resetLegend();
+  const barOk=it.nv!==null&&it.nv!==undefined&&(it.glucose?buildGlucoseBar(it):buildBar(it));
+  document.getElementById('rbo').style.display=barOk?'block':'none';
+  const tw=document.getElementById('ptw');
+  if(it.tr&&it.tr.length>=2){
+    tw.style.display='block';
+    setTimeout(()=>drawG('tsvg',it.tr,it.nlo,it.nhi,col),50);
+    const nloStr=it.nlo&&it.nlo>0?it.nlo:'—';const nhiStr=it.nhi&&it.nhi<900?it.nhi:'—';
+    document.getElementById('gnt').textContent='정상 범위: '+nloStr+' ~ '+nhiStr+' '+it.u;
+  }else tw.style.display='none';
+  document.getElementById('pm').textContent=it.m||'';
+  const ab=document.getElementById('pa');ab.textContent=it.a||'';
+  ab.className='ab '+(s==='ok'?'aok':s==='warn'?'awn':'adk');
+  document.getElementById('pbg').classList.add('op');
+}
+function cp(e){if(!e||e.target===document.getElementById('pbg'))document.getElementById('pbg').classList.remove('op');}
+build();
+</script>
+</body>
+</html>

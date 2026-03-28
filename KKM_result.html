@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>검사결과 확인</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans KR',sans-serif;background:#f8f7f5;color:#1a1a1a;}
+#lock{position:fixed;inset:0;background:#f8f7f5;z-index:999;display:flex;align-items:center;justify-content:center;padding:1.5rem;}
+.lb{background:#fff;border-radius:16px;border:1px solid #e0ddd8;padding:2rem 1.5rem;width:100%;max-width:360px;text-align:center;}
+.li{font-size:44px;margin-bottom:1rem;}.lt{font-size:18px;font-weight:500;margin-bottom:6px;}
+.ls{font-size:14px;color:#888;margin-bottom:1.5rem;line-height:1.7;}
+.ll{font-size:13px;color:#555;text-align:left;margin-bottom:6px;font-weight:500;}
+.lin{width:100%;padding:14px;border:1.5px solid #e0ddd8;border-radius:10px;font-size:20px;text-align:center;letter-spacing:6px;color:#1a1a1a;outline:none;transition:border .2s;}
+.lin:focus{border-color:#6b8cce;}.lin.err{border-color:#c0392b;animation:sh .3s;}
+.lbtn{width:100%;margin-top:14px;padding:14px;background:#3d5a9e;color:#fff;border:none;border-radius:10px;font-size:16px;font-weight:500;cursor:pointer;}
+.lbtn:disabled{background:#ccc;}
+.le{color:#c0392b;font-size:13px;margin-top:10px;min-height:18px;}
+.la{color:#aaa;font-size:12px;margin-top:6px;min-height:16px;}
+@keyframes sh{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+#rs{display:none;}
+.wrap{max-width:480px;margin:0 auto;padding:1rem;}
+.ph{background:#fff;border-radius:12px;padding:1rem 1.25rem;margin-bottom:.75rem;border:1px solid #e0ddd8;}
+.ph-n{font-size:19px;font-weight:500;}.ph-s{font-size:13px;color:#888;margin-top:3px;}
+.notice{background:#f0f4ff;border-left:3px solid #6b8cce;border-radius:0 8px 8px 0;padding:10px 14px;margin-bottom:.75rem;font-size:14px;color:#3d5a9e;line-height:1.6;}
+.summary{background:#fff;border:1px solid #e0ddd8;border-left:4px solid #3d5a9e;border-radius:0 12px 12px 0;padding:1rem 1.25rem;margin-bottom:.75rem;}
+.summary-title{font-size:12px;font-weight:600;color:#3d5a9e;margin-bottom:6px;}
+.summary-text{font-size:15px;color:#333;line-height:1.8;}
+.cb{background:#fff;border:1px solid #e0ddd8;border-radius:12px;margin-bottom:8px;overflow:hidden;}
+.cb.hd{border-left:4px solid #c0392b;}.cb.hw{border-left:4px solid #b5813a;}
+.ch{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;cursor:pointer;user-select:none;}
+.ch:hover{background:#faf9f7;}
+.cl{display:flex;align-items:center;gap:10px;}
+.ci{width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;background:#f3f2ef;flex-shrink:0;}
+.ct{font-size:16px;font-weight:500;}
+.cbg{font-size:13px;padding:3px 10px;border-radius:99px;margin-left:6px;font-weight:500;}
+.bok{background:#e8f5e9;color:#2e7d32;}.bwn{background:#fff3e0;color:#b5813a;}.bdk{background:#fdecea;color:#c0392b;font-weight:700;}
+.cv{font-size:11px;color:#aaa;transition:transform .2s;}.cv.op{transform:rotate(180deg);}
+.cbody{border-top:1px solid #f0ede8;display:none;}.cbody.op{display:block;}
+.ir{display:flex;align-items:center;justify-content:space-between;padding:13px 16px;border-bottom:1px solid #f5f3f0;cursor:pointer;}
+.ir:last-child{border-bottom:none;}.ir.dr{background:#fdf5f5;}.ir:hover{background:#faf9f7;}
+.in{font-size:16px;font-weight:500;}.is{font-size:13px;color:#999;margin-top:2px;}
+.irr{display:flex;align-items:center;gap:6px;}
+.iv{font-size:18px;font-weight:500;}.vok{color:#2e7d32;}.vwn{color:#b5813a;}.vdk{color:#c0392b;}
+.iu{font-size:13px;color:#aaa;}.ia{font-size:14px;color:#ccc;}
+.pbg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200;align-items:flex-end;justify-content:center;}
+.pbg.op{display:flex;}
+.pop{background:#fff;border-radius:20px 20px 0 0;padding:1.5rem 1.25rem 2.5rem;width:100%;max-width:480px;max-height:82vh;overflow-y:auto;}
+.ph2{width:40px;height:4px;background:#ddd;border-radius:2px;margin:0 auto 1.25rem;}
+.pnm{font-size:18px;font-weight:500;margin-bottom:6px;}
+.pvr{display:flex;align-items:baseline;gap:8px;margin-bottom:6px;}
+.pv{font-size:32px;font-weight:500;}.pu{font-size:14px;color:#888;}
+.ptg{display:inline-block;font-size:13px;padding:4px 12px;border-radius:99px;font-weight:500;margin-bottom:14px;}
+.tok{background:#e8f5e9;color:#2e7d32;}.twn{background:#fff3e0;color:#b5813a;}.tdk{background:#fdecea;color:#c0392b;}
+.rbo{position:relative;margin-bottom:6px;}
+.rtr{display:flex;height:12px;border-radius:99px;overflow:hidden;}
+.rmk{position:absolute;top:-4px;width:4px;height:20px;background:#1a1a1a;border-radius:2px;transform:translateX(-50%);}
+.rll{display:flex;justify-content:space-between;font-size:11px;color:#aaa;margin-top:5px;}
+.rlg{display:flex;gap:12px;margin-top:8px;flex-wrap:wrap;margin-bottom:16px;}
+.lgi{display:flex;align-items:center;gap:5px;font-size:12px;color:#888;}
+.lgd{width:10px;height:10px;border-radius:50%;}
+.divl{height:1px;background:#f0ede8;margin:4px 0 14px;}
+.st{font-size:12px;font-weight:500;color:#aaa;margin-bottom:8px;letter-spacing:.06em;}
+.mb{background:#f8f7f5;border-radius:8px;padding:12px 14px;margin-bottom:10px;font-size:16px;color:#333;line-height:1.7;}
+.ab{border-radius:8px;padding:12px 14px;margin-bottom:18px;font-size:16px;line-height:1.7;}
+.aok{background:#e8f5e9;color:#1b5e20;}.awn{background:#fff3e0;color:#8a5c00;}.adk{background:#fdecea;color:#922b21;}
+.gw{width:100%;margin-bottom:6px;}.gs{width:100%;overflow:visible;display:block;}
+.gnt{font-size:11px;color:#bbb;margin-bottom:14px;}
+.tl{fill:none;stroke-width:2.5;stroke-linejoin:round;stroke-linecap:round;}
+.cb2{width:100%;padding:14px;border-radius:10px;border:1px solid #ddd;background:#f8f7f5;color:#333;font-size:16px;cursor:pointer;font-weight:500;}
+.cb2:hover{background:#f0ede8;}
+.footer{text-align:center;font-size:12px;color:#bbb;padding:1.5rem 0 2rem;line-height:1.8;}
+</style>
+</head>
+<body>
+<div id="lock">
+  <div class="lb">
+    <div style="font-size:15px;font-weight:600;color:#3d5a9e;margin-bottom:2px;letter-spacing:.03em;">더봄연합내과의원</div>
+    <div style="font-size:11px;color:#aaa;margin-bottom:1.2rem;">THE VOM UNION INTERNAL MEDICINE</div>
+    <div class="li">🔒</div>
+    <div class="lt">검사결과 확인</div>
+    <div class="ls">본인 확인을 위해<br>생년월일 8자리를 입력해 주세요</div>
+    <div class="ll">생년월일 8자리</div>
+    <input class="lin" id="di" type="tel" maxlength="8" placeholder="" oninput="this.value=this.value.replace(/\D/g,'')">
+    <button class="lbtn" id="lbtn" onclick="chk()">확인</button>
+    <div class="le" id="le"></div>
+    <div class="la" id="la"></div>
+  </div>
+</div>
+<div id="rs">
+  <div class="wrap">
+    <div class="ph">
+      <div class="ph-n">김경미 님의 검사결과</div>
+      <div class="ph-s">최근 검사일: 2026.03.27 &nbsp;|&nbsp; 이전 검사: 2025.07.22</div>
+    </div>
+    <div class="notice">항목을 클릭하면 쉬운 설명과 관리 방법을 볼 수 있어요. 궁금한 점은 진료 시 꼭 말씀해 주세요!</div>
+    <div class="summary">
+      <div class="summary-title">📋 이번 검사 종합 소견</div>
+      <div class="summary-text">고지혈증 약 복용 중이에요. 콜레스테롤·중성지방·좋은 콜레스테롤(HDL) 모두 이전보다 크게 좋아졌어요. 약 효과가 잘 나타나고 있어요. 간 기능도 모두 정상이에요. 이 좋은 상태를 유지해 주세요!</div>
+    </div>
+    <div id="cats"></div>
+    <div class="footer">본 결과지는 참고용이며 정확한 진단은 의사와 상담하세요.<br>© 더봄연합내과의원</div>
+  </div>
+</div>
+<div class="pbg" id="pbg" onclick="cp(event)">
+  <div class="pop">
+    <div class="ph2"></div>
+    <div class="pnm" id="pnm"></div>
+    <div class="pvr"><span class="pv" id="pv"></span><span class="pu" id="pu"></span></div>
+    <div class="ptg" id="ptg"></div>
+    <div class="rbo" id="rbo"><div class="rtr" id="rtr"></div><div class="rmk" id="rmk"></div></div>
+    <div class="rll" id="rll"></div>
+    <div class="rlg" id="rlg">
+      <div class="lgi"><div class="lgd" style="background:#aac4e0"></div>낮음</div>
+      <div class="lgi"><div class="lgd" style="background:#7db87d"></div>정상</div>
+      <div class="lgi"><div class="lgd" style="background:#d9736a"></div>높음</div>
+      <div class="lgi"><span style="display:inline-block;width:4px;height:14px;background:#1a1a1a;border-radius:2px;vertical-align:middle;margin-right:5px;"></span>내 수치</div>
+    </div>
+    <div class="divl"></div>
+    <div id="ptw" style="display:none">
+      <div class="st">최근 추이</div>
+      <div class="gw"><svg class="gs" id="tsvg" height="110"></svg></div>
+      <div class="gnt" id="gnt"></div>
+      <div class="divl"></div>
+    </div>
+    <div class="st">이게 무슨 검사인가요?</div>
+    <div class="mb" id="pm"></div>
+    <div class="st">어떻게 하면 좋을까요?</div>
+    <div class="ab" id="pa"></div>
+    <button class="cb2" onclick="cp()">닫기</button>
+  </div>
+</div>
+<script>
+const DOB='19651225';
+let att=0;
+function chk(){
+  const v=document.getElementById('di').value.trim();
+  const le=document.getElementById('le'),la=document.getElementById('la'),inp=document.getElementById('di');
+  if(v.length!==8){le.textContent='8자리를 모두 입력해 주세요.';return;}
+  if(v===DOB){document.getElementById('lock').style.display='none';document.getElementById('rs').style.display='block';}
+  else{
+    att++;inp.value='';inp.classList.add('err');setTimeout(()=>inp.classList.remove('err'),400);
+    const left=5-att;
+    if(left<=0){le.textContent='5회 오류로 잠겼습니다. 진료실에 문의해 주세요.';document.getElementById('lbtn').disabled=true;la.textContent='';}
+    else{le.textContent='생년월일이 맞지 않아요.';la.textContent='남은 시도: '+left+'회';}
+  }
+}
+document.addEventListener('DOMContentLoaded',()=>{document.getElementById('di').addEventListener('keydown',e=>{if(e.key==='Enter')chk();});});
+const D=[
+  {id:'liver',icon:'🟤',title:'간 기능검사',items:[
+    {n:'AST',s2:'간세포 손상 지표',v:'22',u:'U/L',nlo:0,nhi:40,nv:22,st:'ok',
+     tr:[{d:'25.07',v:'23'},{d:'26.03',v:'22'}],
+     m:'간세포가 손상되면 혈액으로 흘러나오는 효소예요.',a:'정상이에요.'},
+    {n:'ALT',s2:'간 특이 효소',v:'22',u:'U/L',nlo:0,nhi:40,nv:22,st:'ok',
+     tr:[{d:'25.07',v:'21'},{d:'26.03',v:'22'}],
+     m:'간에 더 특이적인 효소로 간염·지방간 때 올라가요.',a:'정상이에요.'},
+    {n:'γ-GTP',s2:'음주·담도 지표',v:'13',u:'U/L',nlo:9,nhi:39,nv:13,st:'ok',
+     tr:[{d:'25.07',v:'16'},{d:'26.03',v:'13'}],
+     m:'음주, 약물, 담도 질환 때 올라가요.',a:'정상이에요.'},
+    {n:'ALP',s2:'담도·뼈 지표',v:'76.9',u:'U/L',nlo:0,nhi:240,nv:76.9,st:'ok',tr:[],
+     m:'담도나 뼈에 문제가 있을 때 올라가는 효소예요.',a:'정상이에요.'},
+    {n:'황달수치 (T-Bil)',s2:'황달 지표',v:'0.7',u:'mg/dL',nlo:0.3,nhi:1.2,nv:0.7,st:'ok',tr:[],
+     m:'적혈구가 분해될 때 나오는 물질이에요.',a:'정상이에요.'},
+    {n:'총단백',s2:'영양·간 기능',v:'7.4',u:'g/dL',nlo:6.4,nhi:8.3,nv:7.4,st:'ok',tr:[],
+     m:'혈액 속 단백질 총량으로 영양 상태와 간 기능을 반영해요.',a:'정상이에요.'},
+    {n:'알부민',s2:'영양 상태',v:'4.8',u:'g/dL',nlo:3.5,nhi:5.2,nv:4.8,st:'ok',tr:[],
+     m:'간에서 만드는 주요 단백질로 영양 상태의 좋은 지표예요.',a:'정상이에요.'},
+  ]},
+  {id:'lipid',icon:'🧈',title:'지질(콜레스테롤) 검사',items:[
+    {n:'총 콜레스테롤',s2:'혈관 건강 지표',v:'161',u:'mg/dL',nlo:0,nhi:199,nv:161,st:'ok',
+     tr:[{d:'25.07',v:'185'},{d:'26.03',v:'161'}],
+     m:'혈액 속 전체 콜레스테롤 양이에요.',
+     a:'정상이에요. 이전(185)보다 좋아졌어요!'},
+    {n:'좋은 콜레스테롤 (HDL)',s2:'혈관 청소부',v:'79',u:'mg/dL',nlo:60,nhi:150,nv:79,st:'ok',
+     tr:[{d:'25.07',v:'64'},{d:'26.03',v:'79'}],
+     m:'혈관의 나쁜 콜레스테롤을 청소해주는 좋은 콜레스테롤이에요. 높을수록 좋아요!',
+     a:'정상이에요. 이전(64)보다 크게 올랐어요!'},
+    {n:'중성지방 (TG)',s2:'혈중 지방',v:'75',u:'mg/dL',nlo:0,nhi:149,nv:75,st:'ok',
+     tr:[{d:'25.07',v:'132'},{d:'26.03',v:'75'}],
+     m:'혈액 속 지방이에요.',
+     a:'정상이에요. 이전(132)보다 크게 좋아졌어요!'},
+    {n:'나쁜 콜레스테롤 (LDL)',s2:'혈관 위험 인자',v:'67.0',u:'mg/dL',nlo:0,nhi:129,nv:67.0,st:'ok',
+     tr:[{d:'25.07',v:'94.6'},{d:'26.03',v:'67.0'}],
+     m:'혈관 벽에 쌓여 동맥경화를 일으키는 나쁜 콜레스테롤이에요.',
+     a:'정상이에요. 이전(94.6)보다 좋아졌어요!'},
+  ]},
+];
+function ov(it){if(it.some(i=>i.st==='danger'))return'danger';if(it.some(i=>i.st==='warn'))return'warn';return'ok';}
+function bl(s){return s==='ok'?'정상':s==='warn'?'주의':'관리 필요';}
+function build(){
+  const c=document.getElementById('cats');
+  D.forEach(cat=>{
+    const os=ov(cat.items);const b=document.createElement('div');
+    b.className='cb'+(os==='danger'?' hd':os==='warn'?' hw':'');
+    const rows=cat.items.map(it=>{
+      const esc=it.n.replace(/'/g,"\\'");const vc='vok';
+      return '<div class="ir" onclick="op(\''+cat.id+'\',\''+esc+'\')"><div style="display:flex;align-items:center;gap:8px;"><div><div class="in">'+it.n+'</div><div class="is">'+it.s2+'</div></div></div><div class="irr"><span class="iv '+vc+'">'+it.v+'</span><span class="iu">'+it.u+'</span><span class="ia">›</span></div></div>';
+    }).join('');
+    b.innerHTML='<div class="ch" onclick="tg(\''+cat.id+'\')"><div class="cl"><div class="ci">'+cat.icon+'</div><span class="ct">'+cat.title+'</span><span class="cbg bok">정상</span></div><span class="cv" id="cv-'+cat.id+'">▼</span></div><div class="cbody" id="bd-'+cat.id+'">'+rows+'</div>';
+    c.appendChild(b);
+  });
+}
+function tg(id){document.getElementById('bd-'+id).classList.toggle('op');document.getElementById('cv-'+id).classList.toggle('op');}
+function resetLegend(){
+  document.getElementById('rlg').innerHTML='<div class="lgi"><div class="lgd" style="background:#aac4e0"></div>낮음</div><div class="lgi"><div class="lgd" style="background:#7db87d"></div>정상</div><div class="lgi"><div class="lgd" style="background:#d9736a"></div>높음</div><div class="lgi"><span style="display:inline-block;width:4px;height:14px;background:#1a1a1a;border-radius:2px;vertical-align:middle;margin-right:5px;"></span>내 수치</div>';
+}
+function buildBar(it){
+  if(it.nhi===null||it.nhi===undefined||it.nhi>=900)return false;
+  const isSingle=(it.nlo===null||it.nlo===undefined||it.nlo===0);
+  const range=isSingle?it.nhi:(it.nhi-it.nlo);if(range<=0)return false;
+  if(isSingle){
+    document.getElementById('rtr').innerHTML='<div style="flex:1;background:#7db87d;"></div><div style="flex:1;background:#d9736a;"></div>';
+    let pct=it.nv<=it.nhi?Math.round((it.nv/it.nhi)*50):Math.round(50+((it.nv-it.nhi)/it.nhi)*50);
+    pct=Math.min(97,Math.max(3,pct));
+    document.getElementById('rmk').style.left=pct+'%';document.getElementById('rmk').style.display='block';
+    document.getElementById('rll').innerHTML='<span>정상</span><span>'+it.nhi+(it.u||'')+'</span><span>높음</span><span></span>';
+    document.getElementById('rlg').innerHTML='<div class="lgi"><div class="lgd" style="background:#7db87d"></div>정상</div><div class="lgi"><div class="lgd" style="background:#d9736a"></div>높음</div><div class="lgi"><span style="display:inline-block;width:4px;height:14px;background:#1a1a1a;border-radius:2px;vertical-align:middle;margin-right:5px;"></span>내 수치</div>';
+  }else{
+    document.getElementById('rtr').innerHTML='<div style="flex:1;background:#aac4e0;"></div><div style="flex:1;background:#7db87d;"></div><div style="flex:1;background:#d9736a;"></div>';
+    let pct;
+    if(it.nv<=it.nlo)pct=Math.round(((it.nv-(it.nlo-range))/range)*33);
+    else if(it.nv<=it.nhi)pct=Math.round(33+((it.nv-it.nlo)/range)*34);
+    else pct=Math.round(67+((it.nv-it.nhi)/range)*33);
+    pct=Math.min(97,Math.max(3,pct));
+    document.getElementById('rmk').style.left=pct+'%';document.getElementById('rmk').style.display='block';
+    const u=it.u||'';
+    document.getElementById('rll').innerHTML='<span>낮음</span><span>'+it.nlo+u+'</span><span>'+it.nhi+u+'</span><span>높음</span>';
+    document.getElementById('rlg').innerHTML='<div class="lgi"><div class="lgd" style="background:#aac4e0"></div>낮음</div><div class="lgi"><div class="lgd" style="background:#7db87d"></div>정상</div><div class="lgi"><div class="lgd" style="background:#d9736a"></div>높음</div><div class="lgi"><span style="display:inline-block;width:4px;height:14px;background:#1a1a1a;border-radius:2px;vertical-align:middle;margin-right:5px;"></span>내 수치</div>';
+  }
+  return true;
+}
+function drawG(svgId,data,nlo,nhi,color){
+  const svg=document.getElementById(svgId);svg.innerHTML='';
+  if(!data||data.length<2)return false;
+  const W=svg.parentElement.offsetWidth||340;svg.setAttribute('viewBox','0 0 '+W+' 110');
+  const PL=34,PR=20,PT=22,PB=28,gW=W-PL-PR,gH=110-PT-PB;
+  const vals=data.map(d=>parseFloat(d.v)).filter(v=>!isNaN(v));if(!vals.length)return false;
+  const allV=[...vals];if(nlo!=null&&nlo>0)allV.push(nlo);if(nhi!=null&&nhi<900)allV.push(nhi);
+  const rawMin=Math.min(...allV),rawMax=Math.max(...allV),rng=rawMax-rawMin||rawMax||1;
+  let mn=Math.max(0,rawMin-rng*0.4),mx=rawMax+rng*0.3;if(mx<=mn)mx=mn+1;
+  const toY=v=>PT+gH-(((v-mn)/(mx-mn))*gH);const toX=i=>PL+(i/(data.length-1))*gW;
+  const ns='http://www.w3.org/2000/svg';
+  function el(tag,a){const e=document.createElementNS(ns,tag);Object.entries(a).forEach(([k,v])=>e.setAttribute(k,v));return e;}
+  if(nlo!=null&&nhi!=null&&nhi<900){
+    const yT=toY(nhi),yB=toY(nlo>0?nlo:mn);
+    svg.appendChild(el('rect',{x:PL,y:yT,width:gW,height:Math.max(0,yB-yT),fill:'#f0faf0',rx:3}));
+    if(nlo>0){const t=el('text',{x:PL-2,y:yB+4,'text-anchor':'end','font-size':9,fill:'#bbb'});t.textContent=nlo;svg.appendChild(t);}
+    const t2=el('text',{x:PL-2,y:yT+9,'text-anchor':'end','font-size':9,fill:'#bbb'});t2.textContent=nhi;svg.appendChild(t2);
+  }
+  const pts=data.map((d,i)=>{const v=parseFloat(d.v);return isNaN(v)?null:toX(i)+','+toY(v);}).filter(Boolean).join(' ');
+  if(pts)svg.appendChild(el('polyline',{points:pts,class:'tl',stroke:color}));
+  data.forEach((d,i)=>{
+    const v=parseFloat(d.v);if(isNaN(v))return;
+    const x=toX(i),y=toY(v),isL=i===data.length-1;
+    svg.appendChild(el('circle',{cx:x,cy:y,r:isL?6:4,fill:isL?color:'#ccc',stroke:'#fff','stroke-width':2}));
+    {const t=el('text',{x,y:y-10,'text-anchor':'middle','font-size':isL?11:10,'font-weight':'500',fill:isL?color:'#555'});t.textContent=d.v;svg.appendChild(t);}
+    const dt=el('text',{x,y:110-6,'text-anchor':'middle','font-size':10,fill:'#aaa'});dt.textContent=d.d;svg.appendChild(dt);
+  });
+  return true;
+}
+function op(cid,nm){
+  const cat=D.find(c=>c.id===cid);const it=cat.items.find(i=>i.n===nm);
+  const col='#2e7d32';
+  document.getElementById('pnm').textContent=it.n;
+  document.getElementById('pv').textContent=it.v;document.getElementById('pv').style.color=col;
+  document.getElementById('pu').textContent=it.u;
+  const tag=document.getElementById('ptg');
+  tag.textContent='정상 범위';tag.className='ptg tok';
+  resetLegend();
+  const barOk=buildBar(it);
+  document.getElementById('rbo').style.display=barOk?'block':'none';
+  const tw=document.getElementById('ptw');
+  if(it.tr&&it.tr.length>=2){
+    tw.style.display='block';
+    setTimeout(()=>drawG('tsvg',it.tr,it.nlo,it.nhi,col),50);
+    const nloStr=it.nlo&&it.nlo>0?it.nlo:'—';const nhiStr=it.nhi&&it.nhi<900?it.nhi:'—';
+    document.getElementById('gnt').textContent='정상 범위: '+nloStr+' ~ '+nhiStr+' '+it.u;
+  }else tw.style.display='none';
+  document.getElementById('pm').textContent=it.m||'';
+  const ab=document.getElementById('pa');ab.textContent=it.a||'';
+  ab.className='ab aok';
+  document.getElementById('pbg').classList.add('op');
+}
+function cp(e){if(!e||e.target===document.getElementById('pbg'))document.getElementById('pbg').classList.remove('op');}
+build();
+</script>
+</body>
+</html>

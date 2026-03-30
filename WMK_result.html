@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>검사결과 확인</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans KR',sans-serif;background:#f8f7f5;color:#1a1a1a;}
+#lock{position:fixed;inset:0;background:#f8f7f5;z-index:999;display:flex;align-items:center;justify-content:center;padding:1.5rem;}
+.lb{background:#fff;border-radius:16px;border:1px solid #e0ddd8;padding:2rem 1.5rem;width:100%;max-width:360px;text-align:center;}
+.li{font-size:44px;margin-bottom:1rem;}
+.lt{font-size:18px;font-weight:500;margin-bottom:6px;}
+.ls{font-size:14px;color:#888;margin-bottom:1.5rem;line-height:1.7;}
+.ll{font-size:13px;color:#555;text-align:left;margin-bottom:6px;font-weight:500;}
+.lin{width:100%;padding:14px;border:1.5px solid #e0ddd8;border-radius:10px;font-size:20px;text-align:center;letter-spacing:6px;color:#1a1a1a;outline:none;transition:border .2s;}
+.lin:focus{border-color:#6b8cce;}.lin.err{border-color:#c0392b;animation:sh .3s;}
+.lbtn{width:100%;margin-top:14px;padding:14px;background:#3d5a9e;color:#fff;border:none;border-radius:10px;font-size:16px;font-weight:500;cursor:pointer;}
+.lbtn:disabled{background:#ccc;}
+.le{color:#c0392b;font-size:13px;margin-top:10px;min-height:18px;}
+.la{color:#aaa;font-size:12px;margin-top:6px;min-height:16px;}
+@keyframes sh{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+#rs{display:none;}
+.wrap{max-width:480px;margin:0 auto;padding:1rem;}
+.ph{background:#fff;border-radius:12px;padding:1rem 1.25rem;margin-bottom:.75rem;border:1px solid #e0ddd8;}
+.ph-n{font-size:19px;font-weight:500;}.ph-s{font-size:13px;color:#888;margin-top:3px;}
+.notice{background:#f0f4ff;border-left:3px solid #6b8cce;border-radius:0 8px 8px 0;padding:10px 14px;margin-bottom:.75rem;font-size:14px;color:#3d5a9e;line-height:1.6;}
+.summary{background:#fff;border:1px solid #e0ddd8;border-left:4px solid #3d5a9e;border-radius:0 12px 12px 0;padding:1rem 1.25rem;margin-bottom:.75rem;}
+.summary-title{font-size:12px;font-weight:600;color:#3d5a9e;margin-bottom:6px;}
+.summary-text{font-size:15px;color:#333;line-height:1.8;}
+.cb{background:#fff;border:1px solid #e0ddd8;border-radius:12px;margin-bottom:8px;overflow:hidden;}
+.cb.hw{border-left:4px solid #b5813a;}.cb.hg{border-left:4px solid #2e7d32;}
+.ch{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;cursor:pointer;user-select:none;}
+.ch:hover{background:#faf9f7;}
+.cl{display:flex;align-items:center;gap:10px;}
+.ct{font-size:16px;font-weight:500;}
+.cbg{font-size:13px;padding:3px 10px;border-radius:99px;margin-left:6px;font-weight:500;}
+.bok{background:#e8f5e9;color:#2e7d32;}.bwn{background:#fff3e0;color:#b5813a;}
+.cv{font-size:11px;color:#aaa;transition:transform .2s;}.cv.op{transform:rotate(180deg);}
+.cbody{border-top:1px solid #f0ede8;display:none;}.cbody.op{display:block;}
+.ir{display:flex;align-items:center;justify-content:space-between;padding:13px 16px;border-bottom:1px solid #f5f3f0;cursor:pointer;}
+.ir:last-child{border-bottom:none;}.ir:hover{background:#faf9f7;}
+.in{font-size:16px;font-weight:500;}.is{font-size:13px;color:#999;margin-top:2px;}
+.irr{display:flex;align-items:center;gap:6px;}
+.iv{font-size:18px;font-weight:500;}.vok{color:#2e7d32;}.vwn{color:#b5813a;}
+.iu{font-size:13px;color:#aaa;}.ia{font-size:14px;color:#ccc;}
+.tg-card{margin:8px 12px 12px;border-radius:10px;overflow:hidden;}
+.tg-hd{display:flex;align-items:center;justify-content:space-between;padding:11px 14px;cursor:pointer;user-select:none;}
+.tg-hd:hover{filter:brightness(0.97);}
+.tg-ti{font-size:14px;font-weight:600;}
+.tg-bd{display:none;padding:12px 14px;font-size:14px;line-height:1.75;}
+.tg-bd.op{display:block;}
+.tg-ok{background:#e8f5e9;}.tg-ok .tg-ti{color:#1b5e20;}
+.tg-wn{background:#fff3e0;}.tg-wn .tg-ti{color:#8a5c00;}
+.tg-info{background:#e3f2fd;}.tg-info .tg-ti{color:#1565c0;}
+.find-list{list-style:none;padding:0;margin:6px 0 0;}
+.find-list li{padding:5px 0 5px 14px;position:relative;color:#444;}
+.find-list li::before{content:'·';position:absolute;left:0;color:#999;}
+.pbg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200;align-items:flex-end;justify-content:center;}
+.pbg.op{display:flex;}
+.pop{background:#fff;border-radius:20px 20px 0 0;padding:1.5rem 1.25rem 2.5rem;width:100%;max-width:480px;max-height:82vh;overflow-y:auto;}
+.ph2{width:40px;height:4px;background:#ddd;border-radius:2px;margin:0 auto 1.25rem;}
+.pnm{font-size:18px;font-weight:500;margin-bottom:6px;}
+.pvr{display:flex;align-items:baseline;gap:8px;margin-bottom:6px;}
+.pv{font-size:32px;font-weight:500;}.pu{font-size:14px;color:#888;}
+.ptg{display:inline-block;font-size:13px;padding:4px 12px;border-radius:99px;font-weight:500;margin-bottom:14px;}
+.tok{background:#e8f5e9;color:#2e7d32;}.twn{background:#fff3e0;color:#b5813a;}
+.rbo{position:relative;margin-bottom:6px;}
+.rtr{display:flex;height:12px;border-radius:99px;overflow:hidden;}
+.rmk{position:absolute;top:-4px;width:4px;height:20px;background:#1a1a1a;border-radius:2px;transform:translateX(-50%);}
+.rll{display:flex;justify-content:space-between;font-size:11px;color:#aaa;margin-top:5px;}
+.rlg{display:flex;gap:12px;margin-top:8px;flex-wrap:wrap;margin-bottom:16px;}
+.lgi{display:flex;align-items:center;gap:5px;font-size:12px;color:#888;}
+.lgd{width:10px;height:10px;border-radius:50%;}
+.divl{height:1px;background:#f0ede8;margin:4px 0 14px;}
+.st{font-size:12px;font-weight:500;color:#aaa;margin-bottom:8px;letter-spacing:.06em;}
+.mb{background:#f8f7f5;border-radius:8px;padding:12px 14px;margin-bottom:10px;font-size:16px;color:#333;line-height:1.7;}
+.ab{border-radius:8px;padding:12px 14px;margin-bottom:18px;font-size:16px;line-height:1.7;}
+.aok{background:#e8f5e9;color:#1b5e20;}.awn{background:#fff3e0;color:#8a5c00;}
+.cb2{width:100%;padding:14px;border-radius:10px;border:1px solid #ddd;background:#f8f7f5;color:#333;font-size:16px;cursor:pointer;font-weight:500;}
+.cb2:hover{background:#f0ede8;}
+.footer{text-align:center;font-size:12px;color:#bbb;padding:1.5rem 0 2rem;line-height:1.8;}
+</style>
+</head>
+<body>
+<div id="lock">
+  <div class="lb">
+    <div style="font-size:15px;font-weight:600;color:#3d5a9e;margin-bottom:2px;letter-spacing:.03em;">더봄연합내과의원</div>
+    <div style="font-size:11px;color:#aaa;margin-bottom:1.2rem;">THE VOM UNION INTERNAL MEDICINE</div>
+    <div class="li">🔒</div>
+    <div class="lt">검사결과 확인</div>
+    <div class="ls">본인 확인을 위해<br>생년월일 8자리를 입력해 주세요</div>
+    <div class="ll">생년월일 8자리</div>
+    <input class="lin" id="di" type="tel" maxlength="8" placeholder="" oninput="this.value=this.value.replace(/\D/g,'')">
+    <button class="lbtn" id="lbtn" onclick="chk()">확인</button>
+    <div class="le" id="le"></div>
+    <div class="la" id="la"></div>
+  </div>
+</div>
+<div id="rs">
+  <div class="wrap">
+    <div class="ph">
+      <div class="ph-n">우미경 님의 검사결과</div>
+      <div class="ph-s">검사일: 2026.03.23</div>
+    </div>
+    <div class="notice">항목을 클릭하면 쉬운 설명과 관리 방법을 볼 수 있어요. 궁금한 점은 진료 시 꼭 말씀해 주세요!</div>
+    <div class="summary">
+      <div class="summary-title">📋 이번 검사 종합 소견</div>
+      <div class="summary-text">혈액검사에서 총콜레스테롤과 중성지방이 다소 높아요. 식단 조절이 필요해요. 헬리코박터 검사는 음성이에요. 위 조직검사에서 만성 미란성 위염이 확인됐어요. 위축이나 장상피화생은 없어요.</div>
+    </div>
+    <div id="cats"></div>
+    <div class="footer">본 결과지는 참고용이며 정확한 진단은 의사와 상담하세요.<br>© 더봄연합내과의원</div>
+  </div>
+</div>
+<div class="pbg" id="pbg" onclick="cp(event)">
+  <div class="pop">
+    <div class="ph2"></div>
+    <div class="pnm" id="pnm"></div>
+    <div class="pvr"><span class="pv" id="pv"></span><span class="pu" id="pu"></span></div>
+    <div class="ptg" id="ptg"></div>
+    <div class="rbo" id="rbo"><div class="rtr" id="rtr"></div><div class="rmk" id="rmk"></div></div>
+    <div class="rll" id="rll"></div>
+    <div class="rlg" id="rlg"></div>
+    <div class="divl"></div>
+    <div class="st">이게 무슨 검사인가요?</div>
+    <div class="mb" id="pm"></div>
+    <div class="st">어떻게 하면 좋을까요?</div>
+    <div class="ab" id="pa"></div>
+    <button class="cb2" onclick="cp()">닫기</button>
+  </div>
+</div>
+<script>
+const DOB='19760204';
+let att=0;
+function chk(){
+  const v=document.getElementById('di').value.trim();
+  const le=document.getElementById('le'),la=document.getElementById('la'),inp=document.getElementById('di');
+  if(v.length!==8){le.textContent='8자리를 모두 입력해 주세요.';return;}
+  if(v===DOB){document.getElementById('lock').style.display='none';document.getElementById('rs').style.display='block';}
+  else{
+    att++;inp.value='';inp.classList.add('err');setTimeout(()=>inp.classList.remove('err'),400);
+    const left=5-att;
+    if(left<=0){le.textContent='5회 오류로 잠겼습니다. 진료실에 문의해 주세요.';document.getElementById('lbtn').disabled=true;la.textContent='';}
+    else{le.textContent='생년월일이 맞지 않아요.';la.textContent='남은 시도: '+left+'회';}
+  }
+}
+document.addEventListener('DOMContentLoaded',()=>{document.getElementById('di').addEventListener('keydown',e=>{if(e.key==='Enter')chk();});});
+
+const D=[
+  {id:'lip',title:'콜레스테롤 검사',items:[
+    {n:'총콜레스테롤',s2:'혈중 지방 총량',v:'214',u:'mg/dL',nlo:0,nhi:199,nv:214,st:'warn',
+     m:'혈액 속 지방의 총량이에요. 200mg/dL 이상은 경계 수치예요.',
+     a:'기준(199)을 초과했어요. 포화지방·트랜스지방 섭취를 줄이고 채소·등푸른 생선을 늘려주세요.'},
+    {n:'HDL 콜레스테롤',s2:'좋은 콜레스테롤',v:'102',u:'mg/dL',nlo:60,nhi:999,nv:102,st:'ok',
+     m:'혈관을 청소하는 좋은 콜레스테롤이에요. 60mg/dL 이상이 권장돼요.',
+     a:'매우 좋은 수치예요! 잘 유지되고 있어요.'},
+    {n:'중성지방 (TG)',s2:'혈중 중성지방',v:'157',u:'mg/dL',nlo:0,nhi:149,nv:157,st:'warn',
+     m:'혈액 속 지방의 한 종류예요. 150mg/dL 이상은 경계 수치예요.',
+     a:'기준(149)을 약간 초과했어요. 단 음식·술·흰쌀 섭취를 줄여주세요.'},
+    {n:'LDL 콜레스테롤',s2:'나쁜 콜레스테롤',v:'80.6',u:'mg/dL',nlo:0,nhi:129,nv:80.6,st:'ok',
+     m:'혈관에 쌓이는 나쁜 콜레스테롤이에요. 129mg/dL 이하가 정상이에요.',
+     a:'정상 범위예요.'},
+  ]},
+  {id:'liver',title:'간 기능 검사',items:[
+    {n:'AST',s2:'간세포 효소',v:'20',u:'U/L',nlo:0,nhi:40,nv:20,st:'ok',
+     m:'간세포가 손상될 때 혈액으로 나오는 효소예요. 40 이하가 정상이에요.',
+     a:'정상 범위예요.'},
+    {n:'ALT',s2:'간 특이적 효소',v:'17',u:'U/L',nlo:0,nhi:40,nv:17,st:'ok',
+     m:'간에 더 특이적인 효소예요. 40 이하가 정상이에요.',
+     a:'정상 범위예요.'},
+    {n:'γ-GTP',s2:'간·담도 효소',v:'32',u:'U/L',nlo:9,nhi:39,nv:32,st:'ok',
+     m:'간과 담도 기능을 보는 효소예요.',
+     a:'정상 범위예요.'},
+  ]},
+  {id:'kidney',title:'신장 기능 검사',items:[
+    {n:'크레아티닌 (Cr)',s2:'신장 여과 기능',v:'0.66',u:'mg/dL',nlo:0.4,nhi:1.3,nv:0.66,st:'ok',
+     m:'근육 대사 산물로 신장이 얼마나 잘 걸러내는지 보는 지표예요.',
+     a:'정상 범위예요.'},
+    {n:'사구체여과율 (eGFR)',s2:'신장 여과 능력',v:'107.6',u:'',nlo:60,nhi:999,nv:107.6,st:'ok',
+     m:'1분 동안 신장이 걸러내는 혈액의 양이에요. 60 이상이 정상이에요.',
+     a:'정상 범위예요.'},
+  ]},
+  {id:'etc',title:'기타 혈액 검사',items:[
+    {n:'혈색소 (Hb)',s2:'빈혈 수치',v:'14.2',u:'g/dL',nlo:12,nhi:16,nv:14.2,st:'ok',
+     m:'적혈구 안의 산소 운반 단백질이에요. 낮으면 빈혈이에요.',
+     a:'정상 범위예요.'},
+    {n:'혈당 (Glucose)',s2:'혈액 속 포도당',v:'92',u:'mg/dL',nlo:70,nhi:99,nv:92,st:'ok',
+     m:'혈액 속 당분의 양이에요. 99mg/dL 이하가 정상이에요.',
+     a:'정상 범위예요.'},
+    {n:'요단백',s2:'소변 내 단백질',v:'음성',u:'',nlo:0,nhi:0,nv:0,st:'ok',nobar:true,
+     m:'소변에 단백질이 새는지 보는 검사예요. 정상은 음성(-)이에요.',
+     a:'정상이에요. 신장 기능에 이상이 없어요.'},
+  ]},
+];
+
+function ov(it){if(it.some(i=>i.st==='warn'))return'warn';return'ok';}
+function build(){
+  const c=document.getElementById('cats');
+  D.forEach(cat=>{
+    const os=ov(cat.items);
+    const b=document.createElement('div');
+    b.className='cb '+(os==='warn'?'hw':'hg');
+    const rows=cat.items.map(it=>{
+      const esc=it.n.replace(/'/g,"\\'");
+      return `<div class="ir" onclick="op('${cat.id}','${esc}')"><div><div class="in">${it.n}</div><div class="is">${it.s2}</div></div><div class="irr"><span class="iv ${it.st==='warn'?'vwn':'vok'}">${it.v}</span><span class="iu">${it.u}</span><span class="ia">›</span></div></div>`;
+    }).join('');
+
+    const badge=os==='warn'?'<span class="cbg bwn">주의</span>':'<span class="cbg bok">정상</span>';
+    b.innerHTML=`<div class="ch" onclick="tg('${cat.id}')"><div class="cl"><span class="ct">${cat.title}</span>${badge}</div><span class="cv" id="cv-${cat.id}">▼</span></div><div class="cbody" id="bd-${cat.id}">${rows}</div>`;
+    c.appendChild(b);
+  });
+
+  // 내시경 검사 카테고리 별도 추가
+  const endo = document.createElement('div');
+  endo.className = 'cb hw';
+  endo.innerHTML = `
+    <div class="ch" onclick="tg('endo')"><div class="cl"><span class="ct">내시경 검사</span><span class="cbg bwn">주의</span></div><span class="cv" id="cv-endo">▼</span></div>
+    <div class="cbody" id="bd-endo">
+      <div class="tg-card">
+        <div class="tg-hd tg-ok" onclick="tgR(this)">
+          <span class="tg-ti">헬리코박터 검사 (CLO Test)</span><span style="font-size:11px;color:#2e7d32;">▼</span>
+        </div>
+        <div class="tg-bd">
+          <strong style="color:#2e7d32;">음성 (−) — 헬리코박터균이 없어요</strong>
+          <ul class="find-list" style="margin-top:10px;">
+            <li>위에 헬리코박터 파일로리균이 검출되지 않았어요</li>
+            <li>제균 치료가 필요하지 않아요</li>
+          </ul>
+        </div>
+      </div>
+      <div class="tg-card">
+        <div class="tg-hd tg-wn" onclick="tgR(this)">
+          <span class="tg-ti">위 조직검사 — 만성 미란성 위염</span><span style="font-size:11px;color:#8a5c00;">▼</span>
+        </div>
+        <div class="tg-bd">
+          <strong style="color:#8a5c00;">위 몸통 (proximal body) 조직검사 결과예요</strong>
+          <ul class="find-list" style="margin-top:10px;">
+            <li>헬리코박터균 없음 (−)</li>
+            <li>염증 반응 중등도 (++)</li>
+            <li>위 위축 없음 (−)</li>
+            <li>장상피화생 없음 (−)</li>
+            <li>진단: 만성 미란성 위염</li>
+          </ul>
+          <div style="margin-top:12px;padding:10px 12px;background:#fffde7;border-radius:8px;font-size:13px;color:#7a6000;line-height:1.7;">
+            위축이나 장상피화생이 없어서 비교적 초기 단계예요. 정기적인 내시경 검사와 위 건강 관리를 유지해 주세요.
+          </div>
+        </div>
+      </div>
+    </div>`;
+  c.appendChild(endo);
+}
+function tg(id){document.getElementById('bd-'+id).classList.toggle('op');document.getElementById('cv-'+id).classList.toggle('op');}
+function tgR(el){el.nextElementSibling.classList.toggle('op');}
+function buildBar(it){
+  const rbo=document.getElementById('rbo');
+  if(it.nobar){rbo.style.display='none';return;}
+  rbo.style.display='block';
+  if(!it.nhi||it.nhi>=900){rbo.style.display='none';return;}
+  document.getElementById('rtr').innerHTML='<div style="flex:1;background:#7db87d;"></div><div style="flex:1;background:#d9736a;"></div>';
+  const pct=it.nv<=it.nhi?Math.min(47,Math.max(3,Math.round(it.nv/it.nhi*50))):Math.min(97,Math.max(53,Math.round(50+(it.nv-it.nhi)/it.nhi*50)));
+  document.getElementById('rmk').style.left=pct+'%';
+  document.getElementById('rll').innerHTML='<span>정상</span><span>'+it.nhi+(it.u||'')+'</span><span>높음</span>';
+  document.getElementById('rlg').innerHTML='<div class="lgi"><div class="lgd" style="background:#7db87d"></div>정상</div><div class="lgi"><div class="lgd" style="background:#d9736a"></div>높음</div><div class="lgi"><span style="display:inline-block;width:4px;height:14px;background:#1a1a1a;border-radius:2px;vertical-align:middle;margin-right:5px;"></span>내 수치</div>';
+}
+function op(cid,nm){
+  const cat=D.find(c=>c.id===cid);const it=cat.items.find(i=>i.n===nm);
+  const col=it.st==='warn'?'#b5813a':'#2e7d32';
+  document.getElementById('pnm').textContent=it.n;
+  document.getElementById('pv').textContent=it.v;document.getElementById('pv').style.color=col;
+  document.getElementById('pu').textContent=it.u;
+  const tag=document.getElementById('ptg');
+  tag.textContent=it.st==='warn'?'주의 — 확인 필요':'정상 범위';
+  tag.className='ptg '+(it.st==='warn'?'twn':'tok');
+  buildBar(it);
+  document.getElementById('pm').textContent=it.m||'';
+  const ab=document.getElementById('pa');ab.textContent=it.a||'';
+  ab.className='ab '+(it.st==='warn'?'awn':'aok');
+  document.getElementById('pbg').classList.add('op');
+}
+function cp(e){if(!e||e.target===document.getElementById('pbg'))document.getElementById('pbg').classList.remove('op');}
+build();
+</script>
+</body>
+</html>

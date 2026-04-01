@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>검사결과 확인</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans KR',sans-serif;background:#f8f7f5;color:#1a1a1a;}
+#lock{position:fixed;inset:0;background:#f8f7f5;z-index:999;display:flex;align-items:center;justify-content:center;padding:1.5rem;}
+.lb{background:#fff;border-radius:16px;border:1px solid #e0ddd8;padding:2rem 1.5rem;width:100%;max-width:360px;text-align:center;}
+.li{font-size:44px;margin-bottom:1rem;}
+.lt{font-size:18px;font-weight:500;margin-bottom:6px;}
+.ls{font-size:14px;color:#888;margin-bottom:1.5rem;line-height:1.7;}
+.ll{font-size:13px;color:#555;text-align:left;margin-bottom:6px;font-weight:500;}
+.lin{width:100%;padding:14px;border:1.5px solid #e0ddd8;border-radius:10px;font-size:20px;text-align:center;letter-spacing:6px;color:#1a1a1a;outline:none;transition:border .2s;}
+.lin:focus{border-color:#6b8cce;}.lin.err{border-color:#c0392b;animation:sh .3s;}
+.lbtn{width:100%;margin-top:14px;padding:14px;background:#3d5a9e;color:#fff;border:none;border-radius:10px;font-size:16px;font-weight:500;cursor:pointer;}
+.lbtn:disabled{background:#ccc;}
+.le{color:#c0392b;font-size:13px;margin-top:10px;min-height:18px;}
+.la{color:#aaa;font-size:12px;margin-top:6px;min-height:16px;}
+@keyframes sh{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+#rs{display:none;}
+.wrap{max-width:480px;margin:0 auto;padding:1rem;}
+.ph{background:#fff;border-radius:12px;padding:1rem 1.25rem;margin-bottom:.75rem;border:1px solid #e0ddd8;}
+.ph-n{font-size:19px;font-weight:500;}.ph-s{font-size:13px;color:#888;margin-top:3px;}
+.notice{background:#f0f4ff;border-left:3px solid #6b8cce;border-radius:0 8px 8px 0;padding:10px 14px;margin-bottom:.75rem;font-size:14px;color:#3d5a9e;line-height:1.6;}
+.summary{background:#fff;border:1px solid #e0ddd8;border-left:4px solid #3d5a9e;border-radius:0 12px 12px 0;padding:1rem 1.25rem;margin-bottom:.75rem;}
+.summary-title{font-size:12px;font-weight:600;color:#3d5a9e;margin-bottom:6px;}
+.summary-text{font-size:15px;color:#333;line-height:1.8;}
+.cb{background:#fff;border:1px solid #e0ddd8;border-radius:12px;margin-bottom:8px;overflow:hidden;}
+.cb.hw{border-left:4px solid #b5813a;}.cb.hg{border-left:4px solid #2e7d32;}.cb.hd{border-left:4px solid #c0392b;}
+.ch{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;cursor:pointer;user-select:none;}
+.ch:hover{background:#faf9f7;}
+.cl{display:flex;align-items:center;gap:10px;}
+.ct{font-size:16px;font-weight:500;}
+.cbg{font-size:13px;padding:3px 10px;border-radius:99px;margin-left:6px;font-weight:500;}
+.bok{background:#e8f5e9;color:#2e7d32;}.bwn{background:#fff3e0;color:#b5813a;}.bng{background:#fdecea;color:#c0392b;}
+.cv{font-size:11px;color:#aaa;transition:transform .2s;}.cv.op{transform:rotate(180deg);}
+.cbody{border-top:1px solid #f0ede8;display:none;}.cbody.op{display:block;}
+.ir{display:flex;align-items:center;justify-content:space-between;padding:13px 16px;border-bottom:1px solid #f5f3f0;cursor:pointer;}
+.ir:last-child{border-bottom:none;}.ir:hover{background:#faf9f7;}
+.in{font-size:16px;font-weight:500;}.is{font-size:13px;color:#999;margin-top:2px;}
+.irr{display:flex;align-items:center;gap:6px;}
+.iv{font-size:18px;font-weight:500;}.vok{color:#2e7d32;}.vwn{color:#b5813a;}.vng{color:#c0392b;}
+.iu{font-size:13px;color:#aaa;}.ia{font-size:14px;color:#ccc;}
+.pbg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200;align-items:flex-end;justify-content:center;}
+.pbg.op{display:flex;}
+.pop{background:#fff;border-radius:20px 20px 0 0;padding:1.5rem 1.25rem 2.5rem;width:100%;max-width:480px;max-height:82vh;overflow-y:auto;}
+.ph2{width:40px;height:4px;background:#ddd;border-radius:2px;margin:0 auto 1.25rem;}
+.pnm{font-size:18px;font-weight:500;margin-bottom:6px;}
+.pvr{display:flex;align-items:baseline;gap:8px;margin-bottom:6px;}
+.pv{font-size:32px;font-weight:500;}.pu{font-size:14px;color:#888;}
+.ptg{display:inline-block;font-size:13px;padding:4px 12px;border-radius:99px;font-weight:500;margin-bottom:14px;}
+.tok{background:#e8f5e9;color:#2e7d32;}.twn{background:#fff3e0;color:#b5813a;}.tng{background:#fdecea;color:#c0392b;}
+.rbo{position:relative;margin-bottom:6px;}
+.rtr{display:flex;height:12px;border-radius:99px;overflow:hidden;}
+.rmk{position:absolute;top:-4px;width:4px;height:20px;background:#1a1a1a;border-radius:2px;transform:translateX(-50%);}
+.rll{display:flex;justify-content:space-between;font-size:11px;color:#aaa;margin-top:5px;}
+.rlg{display:flex;gap:12px;margin-top:8px;flex-wrap:wrap;margin-bottom:16px;}
+.lgi{display:flex;align-items:center;gap:5px;font-size:12px;color:#888;}
+.lgd{width:10px;height:10px;border-radius:50%;}
+.divl{height:1px;background:#f0ede8;margin:4px 0 14px;}
+.st{font-size:12px;font-weight:500;color:#aaa;margin-bottom:8px;letter-spacing:.06em;}
+.mb{background:#f8f7f5;border-radius:8px;padding:12px 14px;margin-bottom:10px;font-size:16px;color:#333;line-height:1.7;}
+.ab{border-radius:8px;padding:12px 14px;margin-bottom:18px;font-size:16px;line-height:1.7;}
+.aok{background:#e8f5e9;color:#1b5e20;}.awn{background:#fff3e0;color:#8a5c00;}.ang{background:#fdecea;color:#922b21;}
+.cb2{width:100%;padding:14px;border-radius:10px;border:1px solid #ddd;background:#f8f7f5;color:#333;font-size:16px;cursor:pointer;font-weight:500;}
+.cb2:hover{background:#f0ede8;}
+.footer{text-align:center;font-size:12px;color:#bbb;padding:1.5rem 0 2rem;line-height:1.8;}
+</style>
+</head>
+<body>
+<div id="lock">
+  <div class="lb">
+    <div style="font-size:15px;font-weight:600;color:#3d5a9e;margin-bottom:2px;letter-spacing:.03em;">더봄연합내과의원</div>
+    <div style="font-size:11px;color:#aaa;margin-bottom:1.2rem;">THE VOM UNION INTERNAL MEDICINE</div>
+    <div class="li">🔒</div>
+    <div class="lt">검사결과 확인</div>
+    <div class="ls">본인 확인을 위해<br>생년월일 8자리를 입력해 주세요</div>
+    <div class="ll">생년월일 8자리</div>
+    <input class="lin" id="di" type="tel" maxlength="8" placeholder="" oninput="this.value=this.value.replace(/\D/g,'')">
+    <button class="lbtn" id="lbtn" onclick="chk()">확인</button>
+    <div class="le" id="le"></div>
+    <div class="la" id="la"></div>
+  </div>
+</div>
+<div id="rs">
+  <div class="wrap">
+    <div class="ph">
+      <div class="ph-n">최미옥 님의 검사결과</div>
+      <div class="ph-s">검사일: 2026.03.03</div>
+    </div>
+    <div class="notice">항목을 클릭하면 쉬운 설명과 관리 방법을 볼 수 있어요. 궁금한 점은 진료 시 꼭 말씀해 주세요!</div>
+    <div class="summary">
+      <div class="summary-title">📋 이번 검사 종합 소견</div>
+      <div class="summary-text">당화혈색소 6.5%로 치료 목표 범위 안에서 잘 조절되고 있어요. 콜레스테롤도 약 덕분에 정상 범위로 유지되고 있어요. HDL 콜레스테롤이 다소 낮아요. 요산 수치가 기준을 약간 초과했어요.</div>
+    </div>
+    <div id="cats"></div>
+    <div class="footer">본 결과지는 참고용이며 정확한 진단은 의사와 상담하세요.<br>© 더봄연합내과의원</div>
+  </div>
+</div>
+<div class="pbg" id="pbg" onclick="cp(event)">
+  <div class="pop">
+    <div class="ph2"></div>
+    <div class="pnm" id="pnm"></div>
+    <div class="pvr"><span class="pv" id="pv"></span><span class="pu" id="pu"></span></div>
+    <div class="ptg" id="ptg"></div>
+    <div class="rbo" id="rbo"><div class="rtr" id="rtr"></div><div class="rmk" id="rmk"></div></div>
+    <div class="rll" id="rll"></div>
+    <div class="rlg" id="rlg"></div>
+    <div class="divl"></div>
+    <div id="ptw" style="display:none">
+      <div class="st">최근 추이</div>
+      <div class="gw"><svg class="gs" id="tsvg" height="110"></svg></div>
+      <div class="gnt" id="gnt"></div>
+      <div class="divl"></div>
+    </div>
+    <div class="st">이게 무슨 검사인가요?</div>
+    <div class="mb" id="pm"></div>
+    <div class="st">어떻게 하면 좋을까요?</div>
+    <div class="ab" id="pa"></div>
+    <button class="cb2" onclick="cp()">닫기</button>
+  </div>
+</div>
+<script>
+const DOB='19610212';
+let att=0;
+function chk(){
+  const v=document.getElementById('di').value.trim();
+  const le=document.getElementById('le'),la=document.getElementById('la'),inp=document.getElementById('di');
+  if(v.length!==8){le.textContent='8자리를 모두 입력해 주세요.';return;}
+  if(v===DOB){document.getElementById('lock').style.display='none';document.getElementById('rs').style.display='block';}
+  else{
+    att++;inp.value='';inp.classList.add('err');setTimeout(()=>inp.classList.remove('err'),400);
+    const left=5-att;
+    if(left<=0){le.textContent='5회 오류로 잠겼습니다. 진료실에 문의해 주세요.';document.getElementById('lbtn').disabled=true;la.textContent='';}
+    else{le.textContent='생년월일이 맞지 않아요.';la.textContent='남은 시도: '+left+'회';}
+  }
+}
+document.addEventListener('DOMContentLoaded',()=>{document.getElementById('di').addEventListener('keydown',e=>{if(e.key==='Enter')chk();});});
+
+const D=[
+  {id:'dm',title:'당뇨 검사',items:[
+    {n:'당화혈색소 (HbA1c)',s2:'3개월 평균 혈당',v:'6.5',u:'%',nlo:4.5,nhi:5.6,nv:6.5,st:'ok',a1c:true,
+     m:'최근 3개월간 평균 혈당이에요. 당뇨 치료 중에는 7% 이하 유지가 목표예요. 6.5%는 목표 범위 안에서 잘 조절되고 있는 수치예요.',
+     a:'투약 중인 당뇨 환자 목표(7% 이하) 범위 안에서 잘 조절되고 있어요! 지금처럼 약을 꾸준히 복용해 주세요.'},
+    {n:'혈당 (Glucose)',s2:'혈액 속 포도당',v:'128',u:'mg/dL',nlo:70,nhi:99,nv:128,st:'warn',glucose:true,
+     m:'혈액 속 당분의 양이에요. 공복 기준 126mg/dL 이상은 당뇨 범위예요.',
+     a:'당뇨 범위예요. 규칙적인 식사와 운동으로 혈당 관리를 해주세요.'},
+  ]},
+  {id:'lip',title:'콜레스테롤 검사',items:[
+    {n:'총콜레스테롤',s2:'혈중 지방 총량',v:'154',u:'mg/dL',nlo:0,nhi:199,nv:154,st:'ok',
+     m:'혈액 속 지방의 총량이에요. 199mg/dL 이하가 정상이에요.',
+     a:'정상 범위예요. 고지혈증약 효과가 잘 나타나고 있어요.'},
+    {n:'HDL 콜레스테롤',s2:'좋은 콜레스테롤',v:'56',u:'mg/dL',nlo:60,nhi:999,nv:56,st:'warn',hdl:true,
+     m:'혈관을 청소하는 좋은 콜레스테롤이에요. 60mg/dL 이상이 권장돼요.',
+     a:'기준(60)보다 낮아요. 유산소 운동이 HDL을 높이는 데 효과적이에요.'},
+    {n:'중성지방 (TG)',s2:'혈중 중성지방',v:'123',u:'mg/dL',nlo:0,nhi:149,nv:123,st:'ok',
+     m:'혈액 속 지방의 한 종류예요. 149mg/dL 이하가 정상이에요.',
+     a:'정상 범위예요.'},
+    {n:'LDL 콜레스테롤',s2:'나쁜 콜레스테롤',v:'73.4',u:'mg/dL',nlo:0,nhi:129,nv:73.4,st:'ok',
+     m:'혈관에 쌓이는 나쁜 콜레스테롤이에요. 당뇨 환자는 더 낮은 수치를 권장해요.',
+     a:'정상 범위예요. 잘 조절되고 있어요.'},
+  ]},
+  {id:'liver',title:'간 기능 검사',items:[
+    {n:'AST',s2:'간세포 효소',v:'15',u:'U/L',nlo:0,nhi:40,nv:15,st:'ok',
+     m:'간세포가 손상될 때 혈액으로 나오는 효소예요.',
+     a:'정상 범위예요.'},
+    {n:'ALT',s2:'간 특이적 효소',v:'16',u:'U/L',nlo:0,nhi:40,nv:16,st:'ok',
+     m:'간에 더 특이적인 효소예요.',
+     a:'정상 범위예요.'},
+    {n:'γ-GTP',s2:'간·담도 효소',v:'19',u:'U/L',nlo:9,nhi:39,nv:19,st:'ok',
+     m:'간과 담도 기능을 보는 효소예요.',
+     a:'정상 범위예요.'},
+    {n:'ALP',s2:'간·뼈 효소',v:'71.3',u:'U/L',nlo:0,nhi:240,nv:71.3,st:'ok',
+     m:'간과 뼈에서 나오는 효소예요.',
+     a:'정상 범위예요.'},
+    {n:'총빌리루빈 (T-bil)',s2:'황달 수치',v:'0.6',u:'mg/dL',nlo:0.3,nhi:1.2,nv:0.6,st:'ok',
+     m:'적혈구가 분해될 때 생기는 물질이에요.',
+     a:'정상 범위예요.'},
+    {n:'총단백',s2:'혈중 단백질',v:'7.9',u:'g/dL',nlo:6.4,nhi:8.3,nv:7.9,st:'ok',
+     m:'혈액 속 단백질 총량이에요.',
+     a:'정상 범위예요.'},
+    {n:'알부민',s2:'혈중 알부민',v:'4.8',u:'g/dL',nlo:3.5,nhi:5.2,nv:4.8,st:'ok',
+     m:'간에서 만드는 단백질이에요.',
+     a:'정상 범위예요.'},
+  ]},
+  {id:'kidney',title:'신장 기능 검사',items:[
+    {n:'BUN (요소질소)',s2:'신장 기능 지표',v:'20.0',u:'mg/dL',nlo:6,nhi:20,nv:20.0,st:'ok',
+     m:'단백질이 분해되어 나오는 물질이에요.',
+     a:'정상 범위 상한이에요.'},
+    {n:'크레아티닌 (Cr)',s2:'신장 여과 기능',v:'0.68',u:'mg/dL',nlo:0.4,nhi:1.3,nv:0.68,st:'ok',
+     m:'신장이 얼마나 잘 걸러내는지 보는 지표예요.',
+     a:'정상 범위예요.'},
+    {n:'사구체여과율 (eGFR)',s2:'신장 여과 능력',v:'97.0',u:'',nlo:60,nhi:999,nv:97.0,st:'ok',
+     m:'1분 동안 신장이 걸러내는 혈액의 양이에요. 60 이상이 정상이에요.',
+     a:'정상 범위예요.'},
+  ]},
+  {id:'thyroid',title:'갑상선 검사',items:[
+    {n:'TSH',s2:'갑상선 자극 호르몬',v:'1.93',u:'uIU/mL',nlo:0.27,nhi:4.20,nv:1.93,st:'ok',
+     m:'뇌하수체에서 갑상선을 자극하는 호르몬이에요.',
+     a:'정상 범위예요.'},
+    {n:'Free T4',s2:'갑상선 호르몬',v:'1.12',u:'ng/dL',nlo:0.92,nhi:1.68,nv:1.12,st:'ok',
+     m:'갑상선에서 분비하는 주요 호르몬이에요.',
+     a:'정상 범위예요.'},
+    {n:'T3',s2:'갑상선 호르몬 활성형',v:'82',u:'ng/dL',nlo:80,nhi:200,nv:82,st:'ok',
+     m:'갑상선 호르몬의 활성형이에요.',
+     a:'정상 범위예요.'},
+  ]},
+  {id:'etc',title:'기타 검사',items:[
+    {n:'요산 (Uric Acid)',s2:'통풍 수치',v:'6.0',u:'mg/dL',nlo:2.4,nhi:5.7,nv:6.0,st:'warn',
+     m:'통풍의 원인이 되는 물질이에요. 여성 기준 5.7mg/dL 이하가 정상이에요.',
+     a:'기준(5.7)을 약간 초과했어요. 물을 충분히 마시고 퓨린이 많은 음식(내장류·등푸른 생선)을 줄여주세요.'},
+    {n:'CRP (염증 수치)',s2:'체내 염증 지표',v:'0.00',u:'',nlo:0,nhi:5,nv:0.0,st:'ok',
+     m:'몸 안에 염증이 있을 때 올라가는 수치예요.',
+     a:'정상 범위예요. 현재 염증 소견 없어요.'},
+    {n:'혈색소 (Hb)',s2:'빈혈 수치',v:'13.3',u:'g/dL',nlo:12,nhi:16,nv:13.3,st:'ok',
+     m:'적혈구 안의 산소 운반 단백질이에요. 낮으면 빈혈이에요.',
+     a:'정상 범위예요.'},
+  ]},
+];
+
+function ov(it){
+  if(it.some(i=>i.st==='danger'))return'danger';
+  if(it.some(i=>i.st==='warn'))return'warn';
+  return'ok';
+}
+function build(){
+  const c=document.getElementById('cats');
+  D.forEach(cat=>{
+    const os=ov(cat.items);
+    const b=document.createElement('div');
+    b.className='cb '+(os==='danger'?'hd':os==='warn'?'hw':'hg');
+    const rows=cat.items.map(it=>{
+      const esc=it.n.replace(/'/g,"\\'");
+      const col=it.st==='danger'?'vng':it.st==='warn'?'vwn':'vok';
+      return `<div class="ir" onclick="op('${cat.id}','${esc}')"><div><div class="in">${it.n}</div><div class="is">${it.s2}</div></div><div class="irr"><span class="iv ${col}">${it.v}</span><span class="iu">${it.u}</span><span class="ia">›</span></div></div>`;
+    }).join('');
+    const badge=os==='danger'?'<span class="cbg bng">관리 필요</span>':os==='warn'?'<span class="cbg bwn">주의</span>':'<span class="cbg bok">정상</span>';
+    b.innerHTML=`<div class="ch" onclick="tg('${cat.id}')"><div class="cl"><span class="ct">${cat.title}</span>${badge}</div><span class="cv" id="cv-${cat.id}">▼</span></div><div class="cbody" id="bd-${cat.id}">${rows}</div>`;
+    c.appendChild(b);
+  });
+}
+function tg(id){document.getElementById('bd-'+id).classList.toggle('op');document.getElementById('cv-'+id).classList.toggle('op');}
+
+function buildBar(it){
+  const rbo=document.getElementById('rbo');rbo.style.display='block';
+  if(it.a1c){
+    document.getElementById('rtr').innerHTML='<div style="flex:1;background:#7db87d;"></div><div style="flex:1;background:#e8a838;"></div><div style="flex:1;background:#d9736a;"></div>';
+    const pct=Math.min(97,Math.max(3,Math.round((it.nv-4.5)/(7.5-4.5)*100)));
+    document.getElementById('rmk').style.left=pct+'%';
+    document.getElementById('rll').innerHTML='<span>정상(~5.6%)</span><span>전단계(~6.4%)</span><span>당뇨(6.5%+)</span>';
+    document.getElementById('rlg').innerHTML='<div class="lgi"><div class="lgd" style="background:#7db87d"></div>정상</div><div class="lgi"><div class="lgd" style="background:#e8a838"></div>전단계</div><div class="lgi"><div class="lgd" style="background:#d9736a"></div>당뇨</div><div class="lgi"><span style="display:inline-block;width:4px;height:14px;background:#1a1a1a;border-radius:2px;vertical-align:middle;margin-right:5px;"></span>내 수치</div>';
+    return;
+  }
+  if(it.glucose){
+    document.getElementById('rtr').innerHTML='<div style="flex:1;background:#7db87d;"></div><div style="flex:1;background:#e8a838;"></div><div style="flex:1;background:#d9736a;"></div>';
+    const pct=Math.min(97,Math.max(3,Math.round((it.nv-60)/(200-60)*100)));
+    document.getElementById('rmk').style.left=pct+'%';
+    document.getElementById('rll').innerHTML='<span>정상(~99)</span><span>전단계(~125)</span><span>당뇨(126+)</span>';
+    document.getElementById('rlg').innerHTML='<div class="lgi"><div class="lgd" style="background:#7db87d"></div>정상</div><div class="lgi"><div class="lgd" style="background:#e8a838"></div>전단계</div><div class="lgi"><div class="lgd" style="background:#d9736a"></div>당뇨</div><div class="lgi"><span style="display:inline-block;width:4px;height:14px;background:#1a1a1a;border-radius:2px;vertical-align:middle;margin-right:5px;"></span>내 수치</div>';
+    return;
+  }
+  if(it.hdl){
+    document.getElementById('rtr').innerHTML='<div style="flex:1;background:#aac4e0;"></div><div style="flex:1;background:#7db87d;"></div>';
+    const pct=Math.min(97,Math.max(3,Math.round((it.nv-30)/(90-30)*100)));
+    document.getElementById('rmk').style.left=pct+'%';
+    document.getElementById('rll').innerHTML='<span>낮음</span><span>60mg/dL</span><span>정상</span>';
+    document.getElementById('rlg').innerHTML='<div class="lgi"><div class="lgd" style="background:#aac4e0"></div>낮음</div><div class="lgi"><div class="lgd" style="background:#7db87d"></div>정상</div><div class="lgi"><span style="display:inline-block;width:4px;height:14px;background:#1a1a1a;border-radius:2px;vertical-align:middle;margin-right:5px;"></span>내 수치</div>';
+    return;
+  }
+  if(!it.nhi||it.nhi>=900){rbo.style.display='none';return;}
+  document.getElementById('rtr').innerHTML='<div style="flex:1;background:#7db87d;"></div><div style="flex:1;background:#d9736a;"></div>';
+  const pct=it.nv<=it.nhi?Math.min(47,Math.max(3,Math.round(it.nv/it.nhi*50))):Math.min(97,Math.max(53,Math.round(50+(it.nv-it.nhi)/it.nhi*50)));
+  document.getElementById('rmk').style.left=pct+'%';
+  document.getElementById('rll').innerHTML='<span>정상</span><span>'+it.nhi+(it.u||'')+'</span><span>높음</span>';
+  document.getElementById('rlg').innerHTML='<div class="lgi"><div class="lgd" style="background:#7db87d"></div>정상</div><div class="lgi"><div class="lgd" style="background:#d9736a"></div>높음</div><div class="lgi"><span style="display:inline-block;width:4px;height:14px;background:#1a1a1a;border-radius:2px;vertical-align:middle;margin-right:5px;"></span>내 수치</div>';
+}
+
+function op(cid,nm){
+  const cat=D.find(c=>c.id===cid);const it=cat.items.find(i=>i.n===nm);
+  const col=it.st==='danger'?'#c0392b':it.st==='warn'?'#b5813a':'#2e7d32';
+  document.getElementById('pnm').textContent=it.n;
+  document.getElementById('pv').textContent=it.v;document.getElementById('pv').style.color=col;
+  document.getElementById('pu').textContent=it.u;
+  const tag=document.getElementById('ptg');
+  if(it.st==='danger'){tag.textContent='관리 필요';tag.className='ptg tng';}
+  else if(it.st==='warn'){tag.textContent='주의 — 확인 필요';tag.className='ptg twn';}
+  else{tag.textContent='정상 범위';tag.className='ptg tok';}
+  buildBar(it);
+  document.getElementById('ptw').style.display='none';
+  document.getElementById('pm').textContent=it.m||'';
+  const ab=document.getElementById('pa');ab.textContent=it.a||'';
+  ab.className='ab '+(it.st==='danger'?'ang':it.st==='warn'?'awn':'aok');
+  document.getElementById('pbg').classList.add('op');
+}
+function cp(e){if(!e||e.target===document.getElementById('pbg'))document.getElementById('pbg').classList.remove('op');}
+build();
+</script>
+</body>
+</html>

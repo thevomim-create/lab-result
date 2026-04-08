@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>검사결과 확인</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans KR',sans-serif;background:#f8f7f5;color:#1a1a1a;}
+#lock{position:fixed;inset:0;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);display:flex;align-items:center;justify-content:center;z-index:9999;}
+.lock-box{text-align:center;color:#fff;padding:2rem;}
+.lock-box h1{font-size:1.5rem;margin-bottom:0.5rem;font-weight:600;}
+.lock-box p{font-size:0.95rem;opacity:0.95;margin-bottom:2rem;}
+.lock-box input{width:280px;padding:0.9rem;border:2px solid rgba(255,255,255,0.3);border-radius:12px;font-size:1.1rem;text-align:center;background:rgba(255,255,255,0.15);color:#fff;backdrop-filter:blur(10px);letter-spacing:0.3em;}
+.lock-box input::placeholder{color:rgba(255,255,255,0.7);letter-spacing:normal;}
+.lock-box input:focus{outline:none;border-color:rgba(255,255,255,0.8);background:rgba(255,255,255,0.25);}
+#err{color:#ffc7c7;margin-top:1rem;font-size:0.9rem;min-height:1.2rem;}
+#rs{display:none;max-width:900px;margin:0 auto;padding:1.5rem;}
+.hd{background:#fff;padding:1.8rem;border-radius:16px;box-shadow:0 2px 8px rgba(0,0,0,0.06);margin-bottom:1.5rem;}
+.hd h1{font-size:1.6rem;color:#1a1a1a;margin-bottom:0.8rem;}
+.hd-info{display:flex;gap:1.5rem;flex-wrap:wrap;font-size:0.95rem;color:#666;}
+.hd-info span{display:flex;align-items:center;gap:0.4rem;}
+.hd-info strong{color:#1a1a1a;font-weight:600;}
+.summary{background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:#fff;padding:1.8rem;border-radius:16px;margin-bottom:1.5rem;box-shadow:0 4px 12px rgba(102,126,234,0.3);}
+.summary h2{font-size:1.25rem;margin-bottom:1rem;font-weight:600;}
+.summary-text{line-height:1.7;font-size:0.98rem;opacity:0.96;white-space:pre-line;}
+.cat{background:#fff;border-radius:16px;padding:1.5rem;margin-bottom:1.5rem;box-shadow:0 2px 8px rgba(0,0,0,0.06);}
+.cat-tit{font-size:1.2rem;font-weight:700;color:#1a1a1a;margin-bottom:1.2rem;padding-bottom:0.8rem;border-bottom:2px solid #f0f0f0;}
+.itm{padding:1rem 0;border-bottom:1px solid #f5f5f5;}
+.itm:last-child{border-bottom:none;}
+.itm-hd{display:flex;justify-content:space-between;align-items:center;margin-bottom:0.6rem;cursor:pointer;}
+.itm-nm{font-weight:600;color:#1a1a1a;font-size:1rem;}
+.itm-val{font-size:1.15rem;font-weight:700;}
+.itm-val.ok{color:#10b981;}
+.itm-val.warn{color:#f59e0b;}
+.itm-val.danger{color:#ef4444;}
+.itm-ref{font-size:0.88rem;color:#999;margin-top:0.3rem;}
+.itm-dt{display:none;margin-top:1rem;padding-top:1rem;border-top:1px solid #f0f0f0;}
+.itm-dt.show{display:block;}
+.trend{font-size:0.9rem;color:#666;margin-bottom:0.8rem;}
+.chart{width:100%;height:180px;background:#fafafa;border-radius:8px;position:relative;overflow:hidden;}
+.pop{position:fixed;inset:0;background:rgba(0,0,0,0.6);display:none;align-items:center;justify-content:center;z-index:10000;padding:1rem;}
+.pop.show{display:flex;}
+.pop-cont{background:#fff;border-radius:16px;padding:2rem;max-width:500px;width:100%;max-height:85vh;overflow-y:auto;position:relative;}
+.pop-close{position:absolute;top:1rem;right:1rem;background:none;border:none;font-size:1.8rem;cursor:pointer;color:#999;width:2rem;height:2rem;display:flex;align-items:center;justify-content:center;border-radius:50%;}
+.pop-close:hover{background:#f5f5f5;color:#666;}
+.pop h3{font-size:1.3rem;margin-bottom:1rem;color:#1a1a1a;padding-right:2rem;}
+.pop-text{line-height:1.8;color:#444;font-size:0.95rem;white-space:pre-line;}
+@media(max-width:768px){
+#rs{padding:1rem;}
+.hd{padding:1.3rem;}
+.hd h1{font-size:1.3rem;}
+.summary{padding:1.3rem;}
+.cat{padding:1.2rem;}
+}
+</style>
+</head>
+<body>
+<div id="lock">
+<div class="lock-box">
+<h1>더봄연합내과의원</h1>
+<p>검사 결과 조회를 위해 생년월일 8자리를 입력하세요</p>
+<input type="number" id="dobInput" placeholder="예: 19900101" maxlength="8" inputmode="numeric">
+<div id="err"></div>
+</div>
+</div>
+
+<div id="rs">
+<div class="hd">
+<h1>검사 결과</h1>
+<div class="hd-info">
+<span><strong>이름:</strong> 신영미</span>
+<span><strong>최근 검사:</strong> 2026-04-08</span>
+<span><strong>투약:</strong> 당뇨약, 고지혈증약</span>
+</div>
+</div>
+
+<div class="summary">
+<h2>종합 소견</h2>
+<div class="summary-text">당화혈색소 7.3%로 목표 수치보다 조금 높아요. 혈당 관리를 위해 식단과 운동에 더 신경 쓰시면 좋겠어요.</div>
+</div>
+
+<div id="main"></div>
+</div>
+
+<div class="pop" id="pop">
+<div class="pop-cont">
+<button class="pop-close" onclick="cp()">&times;</button>
+<h3 id="pop-tit"></h3>
+<div class="pop-text" id="pop-txt"></div>
+</div>
+</div>
+
+<script>
+const DOB='19621113';
+const D=[
+{cat:'당뇨',nm:'혈당검사',nlo:70,nhi:99,unit:'mg/dl',vs:[{dt:'2026-04-08',v:138}],st:'warn',desc:'공복 혈당이 높아요. 식사 전 혈당 관리가 필요해요.'},
+{cat:'당뇨',nm:'당화혈색소(HbA1c)',nlo:4.5,nhi:6.5,unit:'%',vs:[{dt:'2026-04-08',v:7.3}],st:'warn',desc:'최근 2-3개월 평균 혈당을 나타내요. 당뇨약 복용 중이므로 7% 이하로 관리하는 것이 목표예요.'},
+{cat:'콜레스테롤',nm:'총콜레스테롤',nlo:0,nhi:199,unit:'mg/dl',vs:[{dt:'2026-04-08',v:141}],st:'ok',desc:'정상 범위예요.'},
+{cat:'콜레스테롤',nm:'HDL콜레스테롤',nlo:60,nhi:999,unit:'mg/dl',vs:[{dt:'2026-04-08',v:89}],st:'ok',desc:'좋은 콜레스테롤이 충분해요.'},
+{cat:'콜레스테롤',nm:'중성지방',nlo:0,nhi:149,unit:'mg/dl',vs:[{dt:'2026-04-08',v:45}],st:'ok',desc:'정상 범위예요.'},
+{cat:'콜레스테롤',nm:'LDL콜레스테롤',nlo:0,nhi:129,unit:'mg/dl',vs:[{dt:'2026-04-08',v:43}],st:'ok',desc:'나쁜 콜레스테롤이 낮아서 좋아요.'},
+{cat:'간기능',nm:'AST',nlo:0,nhi:40,unit:'U/L',vs:[{dt:'2026-04-08',v:14}],st:'ok',desc:'정상 범위예요.'},
+{cat:'간기능',nm:'ALT',nlo:0,nhi:40,unit:'U/L',vs:[{dt:'2026-04-08',v:19}],st:'ok',desc:'정상 범위예요.'},
+{cat:'간기능',nm:'γ-GTP',nlo:9,nhi:39,unit:'U/L',vs:[{dt:'2026-04-08',v:22}],st:'ok',desc:'정상 범위예요.'},
+{cat:'간기능',nm:'ALP',nlo:0,nhi:240,unit:'U/L',vs:[{dt:'2026-04-08',v:96.7}],st:'ok',desc:'정상 범위예요.'},
+{cat:'간기능',nm:'총빌리루빈',nlo:0.3,nhi:1.2,unit:'mg/dl',vs:[{dt:'2026-04-08',v:0.6}],st:'ok',desc:'정상 범위예요.'},
+{cat:'신장기능',nm:'BUN',nlo:6,nhi:20,unit:'mg/dl',vs:[{dt:'2026-04-08',v:32}],st:'warn',desc:'혈액 요소 질소가 높아요. 수분 섭취와 신장 기능 확인이 필요해요.'},
+{cat:'신장기능',nm:'크레아티닌',nlo:0.4,nhi:1.3,unit:'mg/dl',vs:[{dt:'2026-04-08',v:0.93}],st:'ok',desc:'정상 범위예요.'},
+{cat:'신장기능',nm:'사구체여과율',nlo:60,nhi:999,unit:'',vs:[{dt:'2026-04-08',v:69}],st:'ok',desc:'경계 수준이에요. 정기적인 추적 관찰이 필요해요.'},
+{cat:'갑상선',nm:'TSH',nlo:0.27,nhi:4.20,unit:'uIU/mL',vs:[{dt:'2026-04-08',v:2.72}],st:'ok',desc:'정상 범위예요.'},
+{cat:'갑상선',nm:'Free T4',nlo:0.92,nhi:1.68,unit:'ng/dL',vs:[{dt:'2026-04-08',v:1.23}],st:'ok',desc:'정상 범위예요.'},
+{cat:'갑상선',nm:'T3',nlo:80,nhi:200,unit:'ng/dL',vs:[{dt:'2026-04-08',v:100}],st:'ok',desc:'정상 범위예요.'},
+{cat:'전해질',nm:'나트륨',nlo:136,nhi:145,unit:'mmol/L',vs:[{dt:'2026-04-08',v:136}],st:'ok',desc:'정상 하한선이에요.'},
+{cat:'전해질',nm:'칼륨',nlo:3.5,nhi:5.1,unit:'mmol/L',vs:[{dt:'2026-04-08',v:5.6}],st:'warn',desc:'칼륨이 높아요. 신장 기능과 관련이 있을 수 있으니 담당 의사와 상의하세요.'},
+{cat:'전해질',nm:'염소',nlo:98,nhi:107,unit:'mmol/L',vs:[{dt:'2026-04-08',v:97}],st:'warn',desc:'약간 낮아요. 큰 문제는 아니지만 확인이 필요해요.'},
+{cat:'혈액검사',nm:'헤모글로빈',nlo:12,nhi:16,unit:'g/dl',vs:[{dt:'2026-04-08',v:14.2}],st:'ok',desc:'정상 범위예요.'},
+{cat:'혈액검사',nm:'헤마토크리트',nlo:35,nhi:60,unit:'%',vs:[{dt:'2026-04-08',v:39}],st:'ok',desc:'정상 범위예요.'},
+{cat:'혈액검사',nm:'적혈구수',nlo:4,nhi:6,unit:'ul',vs:[{dt:'2026-04-08',v:4.38}],st:'ok',desc:'정상 범위예요.'},
+{cat:'혈액검사',nm:'백혈구수',nlo:4.2,nhi:10.5,unit:'ul',vs:[{dt:'2026-04-08',v:9.64}],st:'ok',desc:'정상 범위예요.'},
+{cat:'혈액검사',nm:'혈소판수',nlo:150,nhi:450,unit:'ul',vs:[{dt:'2026-04-08',v:276.1}],st:'ok',desc:'정상 범위예요.'},
+{cat:'혈액검사',nm:'호중구',nlo:40,nhi:75,unit:'%',vs:[{dt:'2026-04-08',v:76.63}],st:'warn',desc:'약간 높아요. 염증이나 스트레스 반응일 수 있어요.'},
+{cat:'혈액검사',nm:'림프구',nlo:20,nhi:45,unit:'%',vs:[{dt:'2026-04-08',v:19.28}],st:'warn',desc:'약간 낮아요. 호중구 증가와 상대적인 변화예요.'},
+{cat:'기타',nm:'요산',nlo:2.4,nhi:5.7,unit:'mg/dL',vs:[{dt:'2026-04-08',v:5.2}],st:'ok',desc:'정상 범위예요.'},
+{cat:'기타',nm:'CRP',nlo:0,nhi:5,unit:'',vs:[{dt:'2026-04-08',v:0.02}],st:'ok',desc:'염증 수치가 정상이에요.'},
+{cat:'기타',nm:'총단백',nlo:6.4,nhi:8.3,unit:'g/dl',vs:[{dt:'2026-04-08',v:8.1}],st:'ok',desc:'정상 범위예요.'},
+{cat:'기타',nm:'알부민',nlo:3.5,nhi:5.2,unit:'g/dl',vs:[{dt:'2026-04-08',v:5.0}],st:'ok',desc:'정상 범위예요.'}
+];
+
+const dobInput=document.getElementById('dobInput');
+const err=document.getElementById('err');
+const lock=document.getElementById('lock');
+const rs=document.getElementById('rs');
+
+dobInput.addEventListener('keyup',function(e){
+if(e.key==='Enter') chk();
+});
+
+function chk(){
+const v=dobInput.value.trim();
+if(v===DOB){
+lock.style.display='none';
+rs.style.display='block';
+build();
+}else{
+err.textContent='생년월일이 일치하지 않습니다.';
+dobInput.value='';
+setTimeout(()=>err.textContent='',2000);
+}
+}
+
+function build(){
+const cats={};
+D.forEach(d=>{
+if(!cats[d.cat])cats[d.cat]=[];
+cats[d.cat].push(d);
+});
+const main=document.getElementById('main');
+for(let catNm in cats){
+const div=document.createElement('div');
+div.className='cat';
+div.innerHTML=`<div class="cat-tit">${catNm}</div>`;
+cats[catNm].forEach((it,idx)=>{
+const lastV=it.vs[it.vs.length-1];
+const clsSt=it.st==='ok'?'ok':(it.st==='warn'?'warn':'danger');
+const hasDetail=it.vs.length>1||it.desc;
+const csr=hasDetail?'pointer':'default';
+div.innerHTML+=`
+<div class="itm">
+<div class="itm-hd" style="cursor:${csr}" onclick="${hasDetail?`tog(${D.indexOf(it)})`:''}" >
+<div>
+<div class="itm-nm">${it.nm}</div>
+<div class="itm-ref">참고: ${it.nlo} ~ ${it.nhi} ${it.unit}</div>
+</div>
+<div class="itm-val ${clsSt}">${lastV.v} ${it.unit}</div>
+</div>
+<div class="itm-dt" id="dt-${D.indexOf(it)}">
+${it.vs.length>1?`<div class="trend">추이: ${it.vs.map(x=>x.dt+' '+x.v+it.unit).join(' → ')}</div>`:''}
+<div class="chart" id="ch-${D.indexOf(it)}"></div>
+</div>
+</div>`;
+});
+main.appendChild(div);
+}
+D.forEach((it,i)=>{
+if(it.vs.length>0){
+drawG('ch-'+i,it);
+}
+});
+}
+
+function tog(i){
+const el=document.getElementById('dt-'+i);
+if(!el)return;
+const isVis=el.classList.contains('show');
+document.querySelectorAll('.itm-dt').forEach(x=>x.classList.remove('show'));
+if(!isVis)el.classList.add('show');
+}
+
+function drawG(id,it){
+const el=document.getElementById(id);
+if(!el)return;
+const w=el.offsetWidth;
+const h=el.offsetHeight;
+const padding=30;
+const gw=w-padding*2;
+const gh=h-padding*2;
+let minV=Math.min(...it.vs.map(x=>x.v));
+let maxV=Math.max(...it.vs.map(x=>x.v));
+if(it.nlo<900&&it.nhi<900){
+minV=Math.min(minV,it.nlo);
+maxV=Math.max(maxV,it.nhi);
+}
+const range=maxV-minV||1;
+const svg=`<svg width="${w}" height="${h}" style="position:absolute;top:0;left:0">
+${it.nhi<900?`<rect x="${padding}" y="${padding+(gh-(it.nhi-minV)/range*gh)}" width="${gw}" height="${((it.nhi-it.nlo)/range*gh)}" fill="rgba(16,185,129,0.1)"/>`:(it.nlo>0?`<rect x="${padding}" y="${padding}" width="${gw}" height="${padding+(gh-(it.nlo-minV)/range*gh)}" fill="rgba(16,185,129,0.1)"/>`:'')}
+<polyline points="${it.vs.map((v,i)=>`${padding+i*gw/(it.vs.length-1||1)},${padding+gh-(v.v-minV)/range*gh}`).join(' ')}" fill="none" stroke="#667eea" stroke-width="2.5"/>
+${it.vs.map((v,i)=>`<circle cx="${padding+i*gw/(it.vs.length-1||1)}" cy="${padding+gh-(v.v-minV)/range*gh}" r="4" fill="#667eea"/>`).join('')}
+<line x1="${padding}" y1="${h-padding}" x2="${w-padding}" y2="${h-padding}" stroke="#ddd" stroke-width="1"/>
+<line x1="${padding}" y1="${padding}" x2="${padding}" y2="${h-padding}" stroke="#ddd" stroke-width="1"/>
+</svg>`;
+el.innerHTML=svg;
+}
+
+function op(i){
+const it=D[i];
+document.getElementById('pop-tit').textContent=it.nm;
+document.getElementById('pop-txt').textContent=it.desc||'상세 정보가 없습니다.';
+document.getElementById('pop').classList.add('show');
+}
+
+function cp(){
+document.getElementById('pop').classList.remove('show');
+}
+</script>
+</body>
+</html>

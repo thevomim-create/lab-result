@@ -1,0 +1,368 @@
+```html
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>검사결과 확인</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans KR',sans-serif;background:#f8f7f5;color:#1a1a1a;}
+.lock{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:20px;}
+.lock-box{background:#fff;border-radius:16px;padding:40px 30px;box-shadow:0 4px 20px rgba(0,0,0,0.08);max-width:360px;width:100%;text-align:center;}
+.lock-title{font-size:22px;font-weight:700;margin-bottom:8px;color:#1a1a1a;}
+.lock-subtitle{font-size:14px;color:#666;margin-bottom:30px;}
+.lock-label{font-size:13px;color:#444;margin-bottom:8px;text-align:left;}
+.lock-input{width:100%;padding:14px;border:2px solid #e0e0e0;border-radius:10px;font-size:16px;transition:border 0.3s;}
+.lock-input:focus{outline:none;border-color:#4A90E2;}
+.lock-btn{width:100%;padding:14px;background:#4A90E2;color:#fff;border:none;border-radius:10px;font-size:16px;font-weight:600;cursor:pointer;margin-top:20px;transition:background 0.3s;}
+.lock-btn:hover{background:#357ABD;}
+.lock-error{color:#E74C3C;font-size:13px;margin-top:12px;display:none;}
+.rs{display:none;max-width:900px;margin:0 auto;padding:20px;}
+.rs-header{background:#fff;border-radius:12px;padding:24px;margin-bottom:20px;box-shadow:0 2px 8px rgba(0,0,0,0.06);}
+.rs-header h1{font-size:24px;font-weight:700;margin-bottom:16px;color:#1a1a1a;}
+.rs-info{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;font-size:14px;}
+.rs-info-item{display:flex;align-items:center;}
+.rs-info-label{color:#666;margin-right:8px;font-weight:500;}
+.rs-info-value{color:#1a1a1a;font-weight:600;}
+.summary{background:#fff;border-radius:12px;padding:24px;margin-bottom:20px;box-shadow:0 2px 8px rgba(0,0,0,0.06);}
+.summary h2{font-size:18px;font-weight:700;margin-bottom:12px;color:#1a1a1a;}
+.summary-text{font-size:14px;line-height:1.7;color:#333;}
+.cb{background:#fff;border-radius:12px;padding:20px;margin-bottom:16px;box-shadow:0 2px 8px rgba(0,0,0,0.06);}
+.cb-title{font-size:17px;font-weight:700;margin-bottom:16px;color:#1a1a1a;padding-bottom:10px;border-bottom:2px solid #f0f0f0;}
+.ir{margin-bottom:12px;padding:14px;background:#fafafa;border-radius:8px;border-left:4px solid #ddd;cursor:pointer;transition:all 0.2s;}
+.ir:hover{background:#f5f5f5;}
+.ir[data-st="warn"]{border-left-color:#F39C12;background:#FFF9E6;}
+.ir[data-st="danger"]{border-left-color:#E74C3C;background:#FFEBEE;}
+.ir-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;}
+.ir-name{font-size:15px;font-weight:600;color:#1a1a1a;}
+.ir-value{font-size:16px;font-weight:700;}
+.ir[data-st="normal"] .ir-value{color:#27AE60;}
+.ir[data-st="warn"] .ir-value{color:#F39C12;}
+.ir[data-st="danger"] .ir-value{color:#E74C3C;}
+.ir-bottom{display:flex;justify-content:space-between;align-items:center;font-size:13px;color:#666;}
+.ir-ref{font-size:12px;}
+.ir-trend{font-size:12px;color:#888;}
+.pop{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.6);z-index:1000;padding:20px;overflow-y:auto;}
+.pop-content{background:#fff;border-radius:16px;max-width:600px;margin:40px auto;padding:0;box-shadow:0 8px 32px rgba(0,0,0,0.2);}
+.pop-header{padding:24px;border-bottom:1px solid #f0f0f0;}
+.pop-header h3{font-size:20px;font-weight:700;color:#1a1a1a;margin-bottom:8px;}
+.pop-subtext{font-size:13px;color:#666;}
+.pop-body{padding:24px;}
+.pop-label{font-size:13px;color:#666;margin-bottom:8px;font-weight:500;}
+.pop-value{font-size:18px;font-weight:700;margin-bottom:20px;color:#1a1a1a;}
+.pop-chart{margin-bottom:20px;}
+.pop-history{margin-top:20px;}
+.pop-history table{width:100%;border-collapse:collapse;font-size:13px;}
+.pop-history th,.pop-history td{padding:10px;text-align:left;border-bottom:1px solid #f0f0f0;}
+.pop-history th{background:#fafafa;font-weight:600;color:#666;}
+.pop-history td{color:#1a1a1a;}
+.pop-close{width:100%;padding:14px;background:#4A90E2;color:#fff;border:none;border-radius:8px;font-size:15px;font-weight:600;cursor:pointer;margin-top:20px;}
+.pop-close:hover{background:#357ABD;}
+canvas{max-width:100%;height:auto;}
+.pathology{background:#fff;border-radius:12px;padding:20px;margin-bottom:16px;box-shadow:0 2px 8px rgba(0,0,0,0.06);}
+.pathology-title{font-size:17px;font-weight:700;margin-bottom:12px;color:#1a1a1a;}
+.pathology-content{font-size:13px;line-height:1.6;color:#333;white-space:pre-wrap;font-family:'Courier New',monospace;background:#fafafa;padding:16px;border-radius:8px;max-height:400px;overflow-y:auto;}
+</style>
+</head>
+<body>
+
+<div class="lock" id="lockScreen">
+<div class="lock-box">
+<div class="lock-title">더봄연합내과의원</div>
+<div class="lock-subtitle">검사 결과 확인</div>
+<div class="lock-label">생년월일 8자리</div>
+<input type="number" class="lock-input" id="dobInput" placeholder="예: 19850315" maxlength="8">
+<button class="lock-btn" onclick="checkDOB()">확인</button>
+<div class="lock-error" id="lockError">생년월일이 일치하지 않습니다</div>
+</div>
+</div>
+
+<div class="rs" id="resultScreen">
+<div class="rs-header">
+<h1>검사 결과</h1>
+<div class="rs-info">
+<div class="rs-info-item">
+<span class="rs-info-label">이름:</span>
+<span class="rs-info-value">김선이</span>
+</div>
+<div class="rs-info-item">
+<span class="rs-info-label">투약 중인 약:</span>
+<span class="rs-info-value">고지혈증약</span>
+</div>
+<div class="rs-info-item">
+<span class="rs-info-label">최근 검사일:</span>
+<span class="rs-info-value">2026-04-07</span>
+</div>
+</div>
+</div>
+
+<div class="summary">
+<h2>종합 소견</h2>
+<div class="summary-text">
+최근 검사 결과 대부분의 수치가 정상 범위입니다. 백혈구수가 약간 낮게 나왔으나 이전에도 비슷한 수준이었으며 큰 문제는 없어 보입니다. 고지혈증약을 복용 중이시며 콜레스테롤 수치가 잘 조절되고 있습니다. 갑상선 호르몬 중 T3가 약간 낮으나 TSH와 Free T4는 정상이므로 경과 관찰이 필요합니다. 전반적으로 건강 상태는 양호하며, 현재 복용 중인 고지혈증약을 계속 드시면서 정기적인 검사를 받으시길 권장합니다.
+</div>
+</div>
+
+<div id="categories"></div>
+
+<div class="pathology">
+<div class="pathology-title">위암조직병리검사 (2025-09-11)</div>
+<div class="pathology-content"><GROSS FINDINGS>
+- Stomach
+- Received in formalin and entirely blocked
+- 1 piece(s)
+- 0.2 cm in maximum size
+
+- Block summary
+  A:(1p)  
+
+<MICROSCOPIC FINDINGS>
+   [The Updated Sydney System]
+                                                (A)    
+  - H. pylori --------------------------------  (+)    
+  - Inflammation (mononuclear infiltrate) ----  (++)   
+  - Activity (neutrophilic infiltrate) -------  (+)    
+  - Atrophy ----------------------------------  (-)    
+  - Intestinal metaplasia --------------------  (-)    
+
+ * (-): none, (+): mild, (++): moderate, (+++): marked
+
+<DIAGNOSIS>
+Stomach, distal antrum, LC, endoscopic biopsy:
+    Chronic erosive gastritis, H. pylori associated
+
+<COMMENTS>
+* 상기 검사는 신원의료재단에서 외부수탁기관인 명진병리과의원에 재위탁검사한 결과입니다.
+
+남상철 M.D 81151
+053-765-9021
+병리번호: S2025-134428</div>
+</div>
+
+<div class="pathology">
+<div class="pathology-title">대장조직병리검사 (2025-09-11)</div>
+<div class="pathology-content"><GROSS FINDINGS>
+- Colon 
+- 12 piece(s)
+- 1.3 cm in maximum diameter
+
+- Block summary: A:(1p) B:(1p) C:(1p) D:(1p) E:(7p) F:(1p)
+
+<MICROSCOPIC FINDINGS>
+Sections of the specimen A,C show hyperplastic polyp.
+Sections of the specimen B,D,E,F show tubular adenoma with low grade dysplasia. 
+
+<DIAGNOSIS>
+Colon, ascending, A, colonoscopic polypectomy (0.5 cm):
+    Hyperplastic polyp 
+
+Colon, hepatic flexure,B, colonoscopic polypectomy (0.5 cm):
+    Tubular adenoma with low grade dysplasia
+
+Colon, descending, C, colonoscopic polypectomy (0.5 cm):
+    Hyperplastic polyp 
+
+Colon, descending, D, colonoscopic polypectomy (0.5 cm):
+    Tubular adenoma with low grade dysplasia
+
+Colon, sigmoid, E, colonoscopic EMR (1.3 cm):
+    Tubular adenoma with low grade dysplasia
+
+Colon, sigmoid, F, colonoscopic polypectomy (1.2 cm):
+    Tubular adenoma with low grade dysplasia
+
+<COMMENTS>
+* 상기 검사는 신원의료재단에서 외부수탁기관인 명진병리과의원에 재위탁검사한 결과입니다.
+
+손윤경 M.D 23707
+053-765-9021
+병리번호: S2025-134425</div>
+</div>
+
+</div>
+
+<div class="pop" id="popup">
+<div class="pop-content">
+<div class="pop-header">
+<h3 id="popTitle"></h3>
+<div class="pop-subtext" id="popRef"></div>
+</div>
+<div class="pop-body">
+<div class="pop-label">최근 검사 결과</div>
+<div class="pop-value" id="popValue"></div>
+<div class="pop-chart">
+<canvas id="trendChart" width="500" height="250"></canvas>
+</div>
+<div class="pop-history">
+<table id="historyTable"></table>
+</div>
+<button class="pop-close" onclick="cp()">닫기</button>
+</div>
+</div>
+</div>
+
+<script>
+const DOB='19721202';
+
+const D=[
+{cat:'당뇨',nm:'혈당검사',nlo:70,nhi:99,u:'mg/dl',tr:[{d:'2026-04-07',v:90,st:'normal'},{d:'2025-09-11',v:75,st:'normal'}]},
+{cat:'당뇨',nm:'당화혈색소',nlo:4.5,nhi:5.6,u:'%',tr:[{d:'2026-04-07',v:5.3,st:'normal'},{d:'2025-09-11',v:5.7,st:'normal'}]},
+{cat:'콜레스테롤',nm:'총콜레스테롤',nlo:0,nhi:199,u:'mg/dl',tr:[{d:'2026-04-07',v:169,st:'normal'},{d:'2025-10-24',v:166,st:'normal'},{d:'2025-09-11',v:233,st:'normal'}]},
+{cat:'콜레스테롤',nm:'HDL 콜레스테롤',nlo:60,nhi:999,u:'mg/dl',tr:[{d:'2026-04-07',v:77,st:'normal'},{d:'2025-10-24',v:70,st:'normal'},{d:'2025-09-11',v:82,st:'normal'}]},
+{cat:'콜레스테롤',nm:'중성지방',nlo:0,nhi:149,u:'mg/dl',tr:[{d:'2026-04-07',v:104,st:'normal'},{d:'2025-10-24',v:82,st:'normal'},{d:'2025-09-11',v:47,st:'normal'}]},
+{cat:'콜레스테롤',nm:'LDL 콜레스테롤',nlo:0,nhi:129,u:'mg/dl',tr:[{d:'2026-04-07',v:71.2,st:'normal'},{d:'2025-10-24',v:79.6,st:'normal'},{d:'2025-09-11',v:141.6,st:'normal'}]},
+{cat:'간기능',nm:'AST',nlo:0,nhi:40,u:'U/L',tr:[{d:'2026-04-07',v:22,st:'normal'},{d:'2025-10-24',v:25,st:'normal'},{d:'2025-09-11',v:22,st:'normal'}]},
+{cat:'간기능',nm:'ALT',nlo:0,nhi:40,u:'U/L',tr:[{d:'2026-04-07',v:23,st:'normal'},{d:'2025-10-24',v:21,st:'normal'},{d:'2025-09-11',v:20,st:'normal'}]},
+{cat:'간기능',nm:'γ-GTP',nlo:9,nhi:39,u:'U/L',tr:[{d:'2026-04-07',v:11,st:'normal'},{d:'2025-10-24',v:13,st:'normal'},{d:'2025-09-11',v:16,st:'normal'}]},
+{cat:'간기능',nm:'ALP',nlo:0,nhi:240,u:'U/L',tr:[{d:'2026-04-07',v:59.8,st:'normal'},{d:'2025-10-24',v:51.7,st:'normal'},{d:'2025-09-11',v:50.0,st:'normal'}]},
+{cat:'간기능',nm:'황달수치',nlo:0.3,nhi:1.2,u:'mg/dl',tr:[{d:'2026-04-07',v:1.1,st:'normal'},{d:'2025-10-24',v:0.7,st:'normal'},{d:'2025-09-11',v:0.7,st:'normal'}]},
+{cat:'간기능',nm:'총단백',nlo:6.4,nhi:8.3,u:'g/dl',tr:[{d:'2026-04-07',v:7.1,st:'normal'},{d:'2025-10-24',v:7.0,st:'normal'},{d:'2025-09-11',v:7.4,st:'normal'}]},
+{cat:'간기능',nm:'알부민',nlo:3.5,nhi:5.2,u:'g/dl',tr:[{d:'2026-04-07',v:4.7,st:'normal'},{d:'2025-10-24',v:4.1,st:'normal'},{d:'2025-09-11',v:4.5,st:'normal'}]},
+{cat:'신장기능',nm:'BUN',nlo:6,nhi:20,u:'mg/dl',tr:[{d:'2026-04-07',v:12.2,st:'normal'},{d:'2025-09-11',v:13.4,st:'normal'}]},
+{cat:'신장기능',nm:'크레아티닌',nlo:0.4,nhi:1.3,u:'mg/dl',tr:[{d:'2026-04-07',v:0.57,st:'normal'},{d:'2025-09-11',v:0.53,st:'normal'}]},
+{cat:'신장기능',nm:'사구체여과율',nlo:60,nhi:999,u:'',tr:[{d:'2026-04-07',v:110.8,st:'normal'},{d:'2025-09-11',v:114.2,st:'normal'}]},
+{cat:'갑상선',nm:'TSH',nlo:0.27,nhi:4.20,u:'uIU/mL',tr:[{d:'2026-04-07',v:3.16,st:'normal'},{d:'2025-09-11',v:3.50,st:'normal'}]},
+{cat:'갑상선',nm:'Free T4',nlo:0.92,nhi:1.68,u:'ng/dL',tr:[{d:'2026-04-07',v:1.30,st:'normal'},{d:'2025-09-11',v:1.37,st:'normal'}]},
+{cat:'갑상선',nm:'T3',nlo:80,nhi:200,u:'ng/dL',tr:[{d:'2026-04-07',v:76,st:'warn'},{d:'2025-09-11',v:77,st:'warn'}]},
+{cat:'혈액검사',nm:'빈혈수치(Hb)',nlo:12,nhi:16,u:'g/dl',tr:[{d:'2026-04-07',v:14.1,st:'normal'},{d:'2025-09-12',v:12.8,st:'normal'},{d:'2025-09-11',v:13.3,st:'normal'}]},
+{cat:'혈액검사',nm:'헤마토크리트',nlo:35,nhi:60,u:'%',tr:[{d:'2026-04-07',v:38.5,st:'normal'},{d:'2025-09-12',v:36.6,st:'normal'},{d:'2025-09-11',v:38.1,st:'normal'}]},
+{cat:'혈액검사',nm:'적혈구수',nlo:4,nhi:6,u:'ul',tr:[{d:'2026-04-07',v:4.18,st:'normal'},{d:'2025-09-12',v:4.02,st:'normal'},{d:'2025-09-11',v:4.17,st:'normal'}]},
+{cat:'혈액검사',nm:'백혈구수',nlo:4.2,nhi:10.5,u:'ul',tr:[{d:'2026-04-07',v:3.91,st:'warn'},{d:'2025-09-12',v:6.51,st:'normal'},{d:'2025-09-11',v:3.79,st:'warn'}]},
+{cat:'혈액검사',nm:'혈소판수',nlo:150,nhi:450,u:'ul',tr:[{d:'2026-04-07',v:208.5,st:'normal'},{d:'2025-09-12',v:216.5,st:'normal'},{d:'2025-09-11',v:221.5,st:'normal'}]},
+{cat:'혈액검사',nm:'MCV',nlo:80,nhi:99.9,u:'fl',tr:[{d:'2026-04-07',v:92.1,st:'normal'},{d:'2025-09-12',v:91.0,st:'normal'},{d:'2025-09-11',v:91.4,st:'normal'}]},
+{cat:'혈액검사',nm:'MCH',nlo:27,nhi:31,u:'pg',tr:[{d:'2026-04-07',v:33.6,st:'warn'},{d:'2025-09-12',v:31.7,st:'warn'},{d:'2025-09-11',v:32.0,st:'warn'}]},
+{cat:'혈액검사',nm:'MCHC',nlo:33,nhi:37,u:'g/dl',tr:[{d:'2026-04-07',v:36.5,st:'normal'},{d:'2025-09-12',v:34.8,st:'normal'},{d:'2025-09-11',v:35.0,st:'normal'}]},
+{cat:'혈액검사',nm:'Segment neutrophil',nlo:40,nhi:75,u:'',tr:[{d:'2026-04-07',v:41.04,st:'normal'},{d:'2025-09-12',v:66.34,st:'normal'},{d:'2025-09-11',v:46.25,st:'normal'}]},
+{cat:'혈액검사',nm:'Lymphocyte',nlo:20,nhi:45,u:'',tr:[{d:'2026-04-07',v:52.97,st:'warn'},{d:'2025-09-12',v:29.03,st:'normal'},{d:'2025-09-11',v:48.22,st:'warn'}]},
+{cat:'혈액검사',nm:'Monocyte',nlo:0,nhi:10,u:'',tr:[{d:'2026-04-07',v:5.99,st:'normal'},{d:'2025-09-12',v:4.63,st:'normal'},{d:'2025-09-11',v:5.53,st:'normal'}]},
+{cat:'기타',nm:'통풍수치(요산)',nlo:2.4,nhi:5.7,u:'mg/dL',tr:[{d:'2025-09-11',v:3.0,st:'normal'}]},
+{cat:'기타',nm:'염증수치(CRP)',nlo:0,nhi:5,u:'',tr:[{d:'2025-09-11',v:0.00,st:'normal'}]},
+{cat:'기타',nm:'나트륨',nlo:136,nhi:145,u:'mmol/L',tr:[{d:'2025-09-11',v:145,st:'normal'}]},
+{cat:'기타',nm:'칼륨',nlo:3.5,nhi:5.1,u:'mmol/L',tr:[{d:'2025-09-11',v:4.2,st:'normal'}]},
+{cat:'기타',nm:'염소',nlo:98,nhi:107,u:'mmol/L',tr:[{d:'2025-09-11',v:110,st:'warn'}]}
+];
+
+function checkDOB(){
+const inp=document.getElementById('dobInput').value;
+if(inp===DOB){
+document.getElementById('lockScreen').style.display='none';
+document.getElementById('resultScreen').style.display='block';
+build();
+}else{
+document.getElementById('lockError').style.display='block';
+}
+}
+
+function build(){
+const cats={};
+D.forEach(item=>{
+if(!cats[item.cat])cats[item.cat]=[];
+cats[item.cat].push(item);
+});
+const cont=document.getElementById('categories');
+Object.keys(cats).forEach(catName=>{
+const cb=document.createElement('div');
+cb.className='cb';
+const title=document.createElement('div');
+title.className='cb-title';
+title.textContent=catName;
+cb.appendChild(title);
+cats[catName].forEach(item=>{
+cb.appendChild(buildBar(item));
+});
+cont.appendChild(cb);
+});
+}
+
+function buildBar(item){
+const latest=item.tr[0];
+const ir=document.createElement('div');
+ir.className='ir';
+ir.setAttribute('data-st',latest.st);
+ir.onclick=()=>op(item);
+const top=document.createElement('div');
+top.className='ir-top';
+const name=document.createElement('div');
+name.className='ir-name';
+name.textContent=item.nm;
+const value=document.createElement('div');
+value.className='ir-value';
+value.textContent=latest.v+' '+item.u;
+top.appendChild(name);
+top.appendChild(value);
+const bot=document.createElement('div');
+bot.className='ir-bottom';
+const ref=document.createElement('div');
+ref.className='ir-ref';
+ref.textContent='정상: '+item.nlo+' ~ '+item.nhi+(item.u?' '+item.u:'');
+const trend=document.createElement('div');
+trend.className='ir-trend';
+if(item.tr.length>1){
+const prev=item.tr[1].v;
+const curr=latest.v;
+const diff=curr-prev;
+if(diff>0)trend.textContent='↑ '+diff.toFixed(1);
+else if(diff<0)trend.textContent='↓ '+Math.abs(diff).toFixed(1);
+else trend.textContent='→ 동일';
+}
+bot.appendChild(ref);
+bot.appendChild(trend);
+ir.appendChild(top);
+ir.appendChild(bot);
+return ir;
+}
+
+function op(item){
+document.getElementById('popTitle').textContent=item.nm;
+document.getElementById('popRef').textContent='정상 범위: '+item.nlo+' ~ '+item.nhi+(item.u?' '+item.u:'');
+const latest=item.tr[0];
+document.getElementById('popValue').textContent=latest.v+' '+item.u;
+drawG(item);
+let tbl='<tr><th>날짜</th><th>결과</th><th>상태</th></tr>';
+item.tr.forEach(t=>{
+let stTxt='정상';
+if(t.st==='warn')stTxt='주의';
+if(t.st==='danger')stTxt='위험';
+tbl+=`<tr><td>${t.d}</td><td>${t.v} ${item.u}</td><td>${stTxt}</td></tr>`;
+});
+document.getElementById('historyTable').innerHTML=tbl;
+document.getElementById('popup').style.display='block';
+}
+
+function cp(){
+document.getElementById('popup').style.display='none';
+}
+
+function drawG(item){
+const canvas=document.getElementById('trendChart');
+const ctx=canvas.getContext('2d');
+ctx.clearRect(0,0,canvas.width,canvas.height);
+const w=canvas.width;
+const h=canvas.height;
+const pad=40;
+const gw=w-pad*2;
+const gh=h-pad*2;
+const vals=item.tr.map(t=>t.v);
+const maxV=Math.max(...vals,item.nhi<900?item.nhi:Math.max(...vals));
+const minV=Math.min(...vals,item.nlo);
+const range=maxV-minV||1;
+ctx.fillStyle='#f0f0f0';
+ctx.fillRect(pad,pad,gw,gh);
+if(item.nhi<900){
+const y1=pad+gh-(item.nhi-minV)/range*gh;
+const y2=pad+gh-(item.nlo-minV)/range*gh;
+ctx.fillStyle='#E8F5E9';
+ctx.fillRect(pad,y1,gw,y2-y1);
+}else if(item.nlo>0){
+const y2=pad+gh-(item.nlo-minV)/range*gh;
+ctx.fillStyle='#E8F5E9';
+ctx.fillRect(pad,y2,gw,gh-y2+pad);
+}
+ctx.strokeStyle='#ccc';
+ctx.lineWidth=1;
+for(let i=0;i<=5;i++){
+const y=pad+gh/5*i;
+ctx.beginPath();
+ctx.moveTo(pad,y);
+ctx.

@@ -1,0 +1,435 @@
+```html
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>검사결과 확인</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans KR',sans-serif;background:#f8f7f5;color:#1a1a1a;}
+#lock{position:fixed;inset:0;background:#f8f7f5;z-index:999;display:flex;align-items:center;justify-content:center;padding:1.5rem;}
+.lb{background:#fff;border-radius:16px;border:1px solid #e0ddd8;padding:2rem 1.5rem;width:100%;max-width:360px;text-align:center;}
+.li{font-size:44px;margin-bottom:1rem;}
+.lt{font-size:18px;font-weight:500;margin-bottom:6px;}
+.ls{font-size:14px;color:#888;margin-bottom:1.5rem;line-height:1.7;}
+.ll{font-size:13px;color:#555;text-align:left;margin-bottom:6px;font-weight:500;}
+.lin{width:100%;padding:14px;border:1.5px solid #e0ddd8;border-radius:10px;font-size:20px;text-align:center;letter-spacing:6px;color:#1a1a1a;outline:none;transition:border .2s;}
+.lin:focus{border-color:#6b8cce;}.lin.err{border-color:#c0392b;animation:sh .3s;}
+.lbtn{width:100%;margin-top:14px;padding:14px;background:#3d5a9e;color:#fff;border:none;border-radius:10px;font-size:16px;font-weight:500;cursor:pointer;}
+.lbtn:disabled{background:#ccc;}
+.le{color:#c0392b;font-size:13px;margin-top:10px;min-height:18px;}
+.la{color:#aaa;font-size:12px;margin-top:6px;min-height:16px;}
+@keyframes sh{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+#rs{display:none;}
+.wrap{max-width:480px;margin:0 auto;padding:1rem;}
+.ph{background:#fff;border-radius:12px;padding:1rem 1.25rem;margin-bottom:.75rem;border:1px solid #e0ddd8;}
+.ph-n{font-size:19px;font-weight:500;}.ph-s{font-size:13px;color:#888;margin-top:3px;}
+.notice{background:#f0f4ff;border-left:3px solid #6b8cce;border-radius:0 8px 8px 0;padding:10px 14px;margin-bottom:.75rem;font-size:14px;color:#3d5a9e;line-height:1.6;}
+.summary{background:#fff;border:1px solid #e0ddd8;border-left:4px solid #3d5a9e;border-radius:0 12px 12px 0;padding:1rem 1.25rem;margin-bottom:.75rem;}
+.summary-title{font-size:12px;font-weight:600;color:#3d5a9e;margin-bottom:6px;}
+.summary-text{font-size:15px;color:#333;line-height:1.8;}
+.cb{background:#fff;border:1px solid #e0ddd8;border-radius:12px;margin-bottom:8px;overflow:hidden;}
+.cb.hw{border-left:4px solid #b5813a;}.cb.hg{border-left:4px solid #2e7d32;}
+.ch{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;cursor:pointer;user-select:none;}
+.ch:hover{background:#faf9f7;}
+.cl{display:flex;align-items:center;gap:10px;}
+.ct{font-size:16px;font-weight:500;}
+.cbg{font-size:13px;padding:3px 10px;border-radius:99px;margin-left:6px;font-weight:500;}
+.bok{background:#e8f5e9;color:#2e7d32;}.bwn{background:#fff3e0;color:#b5813a;}
+.cv{font-size:11px;color:#aaa;transition:transform .2s;}.cv.op{transform:rotate(180deg);}
+.cbody{border-top:1px solid #f0ede8;display:none;}.cbody.op{display:block;}
+.ir{display:flex;align-items:center;justify-content:space-between;padding:13px 16px;border-bottom:1px solid #f5f3f0;cursor:pointer;}
+.ir:last-child{border-bottom:none;}.ir:hover{background:#faf9f7;}
+.in{font-size:16px;font-weight:500;}.is{font-size:13px;color:#999;margin-top:2px;}
+.irr{display:flex;align-items:center;gap:6px;}
+.iv{font-size:18px;font-weight:500;}.vok{color:#2e7d32;}.vwn{color:#b5813a;}
+.iu{font-size:13px;color:#aaa;}.ia{font-size:14px;color:#ccc;}
+.pbg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200;align-items:flex-end;justify-content:center;}
+.pbg.op{display:flex;}
+.pop{background:#fff;border-radius:20px 20px 0 0;padding:1.5rem 1.25rem 2.5rem;width:100%;max-width:480px;max-height:82vh;overflow-y:auto;}
+.ph2{width:40px;height:4px;background:#ddd;border-radius:2px;margin:0 auto 1.25rem;}
+.pnm{font-size:18px;font-weight:500;margin-bottom:6px;}
+.pvr{display:flex;align-items:baseline;gap:8px;margin-bottom:6px;}
+.pv{font-size:32px;font-weight:500;}.pu{font-size:14px;color:#888;}
+.ptg{display:inline-block;font-size:13px;padding:4px 12px;border-radius:99px;font-weight:500;margin-bottom:14px;}
+.tok{background:#e8f5e9;color:#2e7d32;}.twn{background:#fff3e0;color:#b5813a;}
+.rbo{position:relative;margin-bottom:6px;}
+.rtr{display:flex;height:12px;border-radius:99px;overflow:hidden;}
+.rmk{position:absolute;top:-4px;width:4px;height:20px;background:#1a1a1a;border-radius:2px;transform:translateX(-50%);}
+.rll{display:flex;justify-content:space-between;font-size:11px;color:#aaa;margin-top:5px;}
+.rlg{display:flex;gap:12px;margin-top:8px;flex-wrap:wrap;margin-bottom:16px;}
+.lgi{display:flex;align-items:center;gap:5px;font-size:12px;color:#888;}
+.lgd{width:10px;height:10px;border-radius:50%;}
+.divl{height:1px;background:#f0ede8;margin:4px 0 14px;}
+.st{font-size:12px;font-weight:500;color:#aaa;margin-bottom:8px;letter-spacing:.06em;}
+.mb{background:#f8f7f5;border-radius:8px;padding:12px 14px;margin-bottom:10px;font-size:16px;color:#333;line-height:1.7;}
+.ab{border-radius:8px;padding:12px 14px;margin-bottom:18px;font-size:16px;line-height:1.7;}
+.aok{background:#e8f5e9;color:#1b5e20;}.awn{background:#fff3e0;color:#8a5c00;}
+.gw{width:100%;margin-bottom:6px;}.gs{width:100%;overflow:visible;display:block;}
+.gnt{font-size:11px;color:#bbb;margin-bottom:14px;}
+.tl{fill:none;stroke-width:2.5;stroke-linejoin:round;stroke-linecap:round;}
+.cb2{width:100%;padding:14px;border-radius:10px;border:1px solid #ddd;background:#f8f7f5;color:#333;font-size:16px;cursor:pointer;font-weight:500;}
+.cb2:hover{background:#f0ede8;}
+.footer{text-align:center;font-size:12px;color:#bbb;padding:1.5rem 0 2rem;line-height:1.8;}
+</style>
+</head>
+<body>
+<div id="lock">
+  <div class="lb">
+    <div style="font-size:15px;font-weight:600;color:#3d5a9e;margin-bottom:2px;letter-spacing:.03em;">더봄연합내과의원</div>
+    <div style="font-size:11px;color:#aaa;margin-bottom:1.2rem;">THE VOM UNION INTERNAL MEDICINE</div>
+    <div class="li">🔒</div>
+    <div class="lt">검사결과 확인</div>
+    <div class="ls">본인 확인을 위해<br>생년월일 8자리를 입력해 주세요</div>
+    <div class="ll">생년월일 8자리</div>
+    <input class="lin" id="di" type="tel" maxlength="8" placeholder="" oninput="this.value=this.value.replace(/\D/g,'')">
+    <button class="lbtn" id="lbtn" onclick="chk()">확인</button>
+    <div class="le" id="le"></div>
+    <div class="la" id="la"></div>
+  </div>
+</div>
+<div id="rs">
+  <div class="wrap">
+    <div class="ph">
+      <div class="ph-n">신영미 님의 검사결과</div>
+      <div class="ph-s">검사일: 2026-04-08</div>
+    </div>
+    <div class="notice">항목을 클릭하면 쉬운 설명과 관리 방법을 볼 수 있어요. 궁금한 점은 진료 시 꼭 말씀해 주세요!</div>
+    <div class="summary">
+      <div class="summary-title">📋 이번 검사 종합 소견</div>
+      <div class="summary-text">당뇨약을 복용하시고 계신데, 당화혈색소 7.3%로 목표 범위보다 약간 높아요. 혈당 관리를 더 신경 써주셔야 해요.콜레스테롤은 고지혈증약 복용으로 잘 관리되고 있고, 갑상선 기능은 정상이에요.</div>
+    </div>
+    <div id="cats"></div>
+    <div class="footer">본 결과지는 참고용이며 정확한 진단은 의사와 상담하세요.<br>© 더봄연합내과의원</div>
+  </div>
+</div>
+<div class="pbg" id="pbg" onclick="cp(event)">
+  <div class="pop">
+    <div class="ph2"></div>
+    <div class="pnm" id="pnm"></div>
+    <div class="pvr"><span class="pv" id="pv"></span><span class="pu" id="pu"></span></div>
+    <div class="ptg" id="ptg"></div>
+    <div class="rbo" id="rbo"><div class="rtr" id="rtr"></div><div class="rmk" id="rmk"></div></div>
+    <div class="rll" id="rll"></div>
+    <div class="rlg" id="rlg"></div>
+    <div class="divl"></div>
+    <div id="ptw" style="display:none">
+      <div class="st">최근 추이</div>
+      <div class="gw"><svg class="gs" id="tsvg" height="110"></svg></div>
+      <div class="gnt" id="gnt"></div>
+      <div class="divl"></div>
+    </div>
+    <div class="st">이게 무슨 검사인가요?</div>
+    <div class="mb" id="pm"></div>
+    <div class="st">어떻게 하면 좋을까요?</div>
+    <div class="ab" id="pa"></div>
+    <button class="cb2" onclick="cp()">닫기</button>
+  </div>
+</div>
+<script>
+const DOB='19621113';
+let att=0;
+function chk(){
+  const v=document.getElementById('di').value.trim();
+  const le=document.getElementById('le'),la=document.getElementById('la'),inp=document.getElementById('di');
+  if(v.length!==8){le.textContent='8자리를 모두 입력해 주세요.';return;}
+  if(v===DOB){document.getElementById('lock').style.display='none';document.getElementById('rs').style.display='block';}
+  else{
+    att++;inp.value='';inp.classList.add('err');setTimeout(()=>inp.classList.remove('err'),400);
+    const left=5-att;
+    if(left<=0){le.textContent='5회 오류로 잠겼습니다. 진료실에 문의해 주세요.';document.getElementById('lbtn').disabled=true;la.textContent='';}
+    else{le.textContent='생년월일이 맞지 않아요.';la.textContent='남은 시도: '+left+'회';}
+  }
+}
+document.addEventListener('DOMContentLoaded',()=>{document.getElementById('di').addEventListener('keydown',e=>{if(e.key==='Enter')chk();});});
+
+const D=[
+  {
+    id: 'diabetes',
+    title: '당뇨 검사',
+    items: [
+      {
+        n: '당화혈색소',
+        s2: '3개월 평균 혈당',
+        v: '7.3',
+        u: '%',
+        nlo: 4.5,
+        nhi: 6.4,
+        nv: 7.3,
+        st: 'warn',
+        a1c: true,
+        m: '최근 3개월간의 평균 혈당 수치를 반영하는 검사예요. 정상은 5.6% 이하, 5.7~6.4%는 당뇨 전단계, 6.5% 이상은 당뇨로 진단해요.',
+        a: '당뇨약을 드시고 계시는데 목표 범위(6.5~7.0%)보다 약간 높아요. 식사량 조절과 규칙적인 운동을 병행하시고, 약물 조정이 필요할 수 있으니 의사와 상담해 주세요.'
+      },
+      {
+        n: '혈당',
+        s2: '공복 혈당',
+        v: '138',
+        u: 'mg/dL',
+        nlo: 70,
+        nhi: 99,
+        nv: 138,
+        st: 'warn',
+        glucose: true,
+        m: '공복 상태(8시간 이상 금식)의 혈당 수치예요. 정상은 99mg/dL 이하, 100~125는 당뇨 전단계, 126 이상은 당뇨로 진단해요.',
+        a: '공복 혈당이 높아요. 저녁 식사량을 줄이고, 특히 탄수화물과 단 음식을 제한해 주세요. 약 복용 시간을 정확히 지켜주시는 것도 중요해요.'
+      }
+    ]
+  },
+  {
+    id: 'cholesterol',
+    title: '콜레스테롤 검사',
+    items: [
+      {
+        n: '총콜레스테롤',
+        s2: '혈중 지방 총량',
+        v: '141',
+        u: 'mg/dL',
+        nlo: 0,
+        nhi: 199,
+        nv: 141,
+        st: 'ok',
+        m: '혈액 속 모든 콜레스테롤의 합계예요. 199mg/dL 이하가 정상 범위예요.',
+        a: '정상 범위예요. 고지혈증약을 잘 복용하고 계셔서 좋은 상태를 유지하고 있어요.'
+      },
+      {
+        n: 'HDL 콜레스테롤',
+        s2: '좋은 콜레스테롤',
+        v: '89',
+        u: 'mg/dL',
+        nlo: 60,
+        nhi: 999,
+        nv: 89,
+        st: 'ok',
+        hdl: true,
+        m: '혈관을 깨끗하게 해주는 좋은 콜레스테롤이에요. 60mg/dL 이상이 권장돼요.',
+        a: '좋은 수치예요. 이 상태를 계속 유지해 주세요.'
+      },
+      {
+        n: '중성지방',
+        s2: '혈중 지방',
+        v: '45',
+        u: 'mg/dL',
+        nlo: 0,
+        nhi: 149,
+        nv: 45,
+        st: 'ok',
+        m: '혈액 속 지방의 한 형태예요. 149mg/dL 이하가 정상이에요.',
+        a: '정상 범위예요. 현재 식습관을 유지해 주세요.'
+      },
+      {
+        n: 'LDL 콜레스테롤',
+        s2: '나쁜 콜레스테롤',
+        v: '43.0',
+        u: 'mg/dL',
+        nlo: 0,
+        nhi: 129,
+        nv: 43,
+        st: 'ok',
+        m: '혈관벽에 쌓여 동맥경화를 유발하는 나쁜 콜레스테롤이에요. 129mg/dL 이하가 정상이에요.',
+        a: '매우 좋은 수치예요. 고지혈증약이 잘 작용하고 있어요.'
+      }
+    ]
+  },
+  {
+    id: 'liver',
+    title: '간 기능 검사',
+    items: [
+      {
+        n: 'AST',
+        s2: '간세포 효소',
+        v: '14',
+        u: 'U/L',
+        nlo: 0,
+        nhi: 40,
+        nv: 14,
+        st: 'ok',
+        m: '간세포가 손상되면 혈액으로 나오는 효소예요. 40U/L 이하가 정상이에요.',
+        a: '정상 범위예요. 간 건강이 양호해요.'
+      },
+      {
+        n: 'ALT',
+        s2: '간세포 효소',
+        v: '19',
+        u: 'U/L',
+        nlo: 0,
+        nhi: 40,
+        nv: 19,
+        st: 'ok',
+        m: '간 손상을 민감하게 반영하는 효소예요. 40U/L 이하가 정상이에요.',
+        a: '정상 범위예요. 간 기능이 좋아요.'
+      },
+      {
+        n: 'γ-GTP',
+        s2: '담도·음주 지표',
+        v: '22',
+        u: 'U/L',
+        nlo: 9,
+        nhi: 39,
+        nv: 22,
+        st: 'ok',
+        m: '간과 담도 기능을 보는 효소예요. 음주나 지방간이 있으면 주로 올라가요. 9~39U/L가 정상이에요.',
+        a: '정상 범위예요. 현재 상태를 유지해 주세요.'
+      },
+      {
+        n: 'ALP',
+        s2: '뼈·간·담도 효소',
+        v: '96.7',
+        u: 'U/L',
+        nlo: 0,
+        nhi: 240,
+        nv: 96.7,
+        st: 'ok',
+        m: '간, 담도, 뼈에서 나오는 효소예요. 240U/L 이하가 정상이에요.',
+        a: '정상 범위예요.'
+      },
+      {
+        n: '총빌리루빈',
+        s2: '황달 수치',
+        v: '0.6',
+        u: 'mg/dL',
+        nlo: 0.3,
+        nhi: 1.2,
+        nv: 0.6,
+        st: 'ok',
+        m: '적혈구가 분해되면서 나오는 물질이에요. 높으면 황달이 생길 수 있어요. 0.3~1.2mg/dL가 정상이에요.',
+        a: '정상 범위예요.'
+      },
+      {
+        n: '총단백',
+        s2: '혈중 단백질',
+        v: '8.1',
+        u: 'g/dL',
+        nlo: 6.4,
+        nhi: 8.3,
+        nv: 8.1,
+        st: 'ok',
+        m: '혈액 속 모든 단백질의 양이에요. 영양 상태와 간 기능을 반영해요. 6.4~8.3g/dL가 정상이에요.',
+        a: '정상 범위예요. 영양 상태가 좋아요.'
+      },
+      {
+        n: '알부민',
+        s2: '주요 단백질',
+        v: '5.0',
+        u: 'g/dL',
+        nlo: 3.5,
+        nhi: 5.2,
+        nv: 5.0,
+        st: 'ok',
+        m: '간에서 만드는 가장 중요한 단백질이에요. 영양 상태와 간 기능을 반영해요. 3.5~5.2g/dL가 정상이에요.',
+        a: '정상 범위예요.'
+      }
+    ]
+  },
+  {
+    id: 'kidney',
+    title: '신장 기능 검사',
+    items: [
+      {
+        n: 'BUN',
+        s2: '혈중 요소 질소',
+        v: '32.0',
+        u: 'mg/dL',
+        nlo: 6,
+        nhi: 20,
+        nv: 32,
+        st: 'warn',
+        m: '단백질 분해 과정에서 생기는 노폐물이에요. 신장이 제대로 걸러내지 못하면 높아져요. 6~20mg/dL가 정상이에요.',
+        a: '기준보다 높아요. 탈수, 단백질 과다 섭취, 신장 기능 저하 등이 원인일 수 있어요. 수분 섭취를 충분히 하시고, 신장 기능을 더 확인해 볼게요.'
+      },
+      {
+        n: '크레아티닌',
+        s2: '신장 기능 지표',
+        v: '0.93',
+        u: 'mg/dL',
+        nlo: 0.4,
+        nhi: 1.3,
+        nv: 0.93,
+        st: 'ok',
+        m: '근육 대사에서 나오는 노폐물이에요. 신장이 제대로 기능하는지 알 수 있어요. 0.4~1.3mg/dL가 정상이에요.',
+        a: '정상 범위예요.'
+      },
+      {
+        n: '사구체여과율',
+        s2: '신장 기능 정도',
+        v: '69.0',
+        u: 'mL/min',
+        nlo: 60,
+        nhi: 999,
+        nv: 69,
+        st: 'ok',
+        m: '신장이 1분에 얼마나 많은 혈액을 걸러내는지 보여주는 수치예요. 60 이상이면 정상이고, 낮을수록 신장 기능이 떨어진 거예요.',
+        a: '정상 범위지만 하한에 가까워요. 당뇨와 고혈압 관리를 잘 하셔야 신장을 보호할 수 있어요.'
+      }
+    ]
+  },
+  {
+    id: 'thyroid',
+    title: '갑상선 검사',
+    items: [
+      {
+        n: 'TSH',
+        s2: '갑상선 자극 호르몬',
+        v: '2.72',
+        u: 'uIU/mL',
+        nlo: 0.27,
+        nhi: 4.20,
+        nv: 2.72,
+        st: 'ok',
+        m: '뇌에서 갑상선을 자극하는 호르몬이에요. 갑상선 기능 이상을 가장 먼저 알 수 있는 검사예요. 0.27~4.20이 정상이에요.',
+        a: '정상 범위예요. 갑상선 기능이 정상이에요.'
+      },
+      {
+        n: 'Free T4',
+        s2: '갑상선 호르몬',
+        v: '1.23',
+        u: 'ng/dL',
+        nlo: 0.92,
+        nhi: 1.68,
+        nv: 1.23,
+        st: 'ok',
+        m: '갑상선에서 분비되는 주요 호르몬이에요. 신진대사를 조절해요. 0.92~1.68ng/dL가 정상이에요.',
+        a: '정상 범위예요.'
+      },
+      {
+        n: 'T3',
+        s2: '활성 갑상선 호르몬',
+        v: '100',
+        u: 'ng/dL',
+        nlo: 80,
+        nhi: 200,
+        nv: 100,
+        st: 'ok',
+        m: 'T4에서 전환된 활성형 호르몬이에요. 체온, 심박수 등을 조절해요. 80~200ng/dL가 정상이에요.',
+        a: '정상 범위예요.'
+      }
+    ]
+  },
+  {
+    id: 'electrolyte',
+    title: '전해질 검사',
+    items: [
+      {
+        n: '나트륨',
+        s2: '체액 균형',
+        v: '136',
+        u: 'mmol/L',
+        nlo: 136,
+        nhi: 145,
+        nv: 136,
+        st: 'ok',
+        m: '체액의 균형과 신경·근육 기능에 중요한 전해질이에요. 136~145mmol/L가 정상이에요.',
+        a: '정상 범위 하한이에요. 수분 섭취를 적절히 유지해 주세요.'
+      },
+      {
+        n: '칼륨',
+        s2: '심장·근육 기능',
+        v: '5.6',
+        u: 'mmol/L',
+        nlo: 3.5,
+        nhi: 5.1,
+        nv: 5.6,
+        st: 'warn',
+        m: '심장과 근육의 정상적인 기능에 필수적인 전해질이에요. 3.5~5.1mmol/L가 정상이에요.',
+        a: '기준보다 약간 높

@@ -1,0 +1,589 @@
+```html
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>검사결과 확인</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans KR',sans-serif;background:#f8f7f5;color:#1a1a1a;}
+.lock{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:20px;}
+.lock h1{font-size:24px;margin-bottom:40px;color:#2c3e50;}
+.dob-input{display:flex;gap:10px;margin-bottom:20px;}
+.dob-input input{width:80px;padding:12px;font-size:16px;border:2px solid #ddd;border-radius:8px;text-align:center;}
+.dob-input input:focus{outline:none;border-color:#3498db;}
+.unlock-btn{padding:12px 40px;font-size:16px;background:#3498db;color:white;border:none;border-radius:8px;cursor:pointer;}
+.unlock-btn:hover{background:#2980b9;}
+.err{color:#e74c3c;margin-top:10px;font-size:14px;}
+.rs{display:none;max-width:900px;margin:0 auto;padding:20px;}
+.hd{background:white;padding:25px;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,0.08);margin-bottom:20px;}
+.hd h1{font-size:22px;color:#2c3e50;margin-bottom:15px;}
+.hd .pi{display:flex;gap:20px;flex-wrap:wrap;font-size:14px;color:#555;}
+.hd .pi span{background:#f0f7ff;padding:6px 12px;border-radius:6px;}
+.summary{background:white;padding:20px;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,0.08);margin-bottom:20px;}
+.summary h2{font-size:18px;color:#2c3e50;margin-bottom:12px;}
+.summary-text{line-height:1.8;color:#444;font-size:15px;}
+.summary-text p{margin-bottom:10px;}
+.cb{background:white;border-radius:12px;padding:20px;margin-bottom:20px;box-shadow:0 2px 8px rgba(0,0,0,0.08);}
+.cb h2{font-size:18px;color:#2c3e50;margin-bottom:15px;padding-bottom:10px;border-bottom:2px solid #f0f0f0;}
+.ir{display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid #f5f5f5;cursor:pointer;transition:background 0.2s;}
+.ir:hover{background:#fafafa;}
+.ir-l{flex:1;}
+.ir-n{font-size:15px;color:#2c3e50;margin-bottom:4px;font-weight:500;}
+.ir-v{font-size:13px;color:#7f8c8d;}
+.ir-r{display:flex;align-items:center;gap:12px;}
+.ir-val{font-size:18px;font-weight:600;}
+.ir-val.normal{color:#27ae60;}
+.ir-val.warn{color:#f39c12;}
+.ir-val.danger{color:#e74c3c;}
+.ir-unit{font-size:13px;color:#95a5a6;}
+.ir-arrow{font-size:20px;color:#bdc3c7;}
+.pop{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:1000;overflow-y:auto;padding:20px;}
+.pop-content{background:white;max-width:600px;margin:20px auto;border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,0.15);}
+.pop-hd{padding:20px;border-bottom:1px solid #eee;display:flex;justify-content:space-between;align-items:center;}
+.pop-hd h3{font-size:18px;color:#2c3e50;}
+.pop-close{font-size:28px;color:#95a5a6;cursor:pointer;background:none;border:none;width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:50%;transition:background 0.2s;}
+.pop-close:hover{background:#f0f0f0;}
+.pop-body{padding:20px;}
+.pop-cur{background:#f8f9fa;padding:15px;border-radius:8px;margin-bottom:20px;}
+.pop-cur-val{font-size:32px;font-weight:700;margin-bottom:5px;}
+.pop-cur-val.normal{color:#27ae60;}
+.pop-cur-val.warn{color:#f39c12;}
+.pop-cur-val.danger{color:#e74c3c;}
+.pop-cur-ref{font-size:14px;color:#7f8c8d;}
+.pop-graph{margin:20px 0;height:200px;position:relative;}
+.pop-tr{margin-top:20px;}
+.pop-tr h4{font-size:14px;color:#2c3e50;margin-bottom:10px;}
+.pop-tr table{width:100%;border-collapse:collapse;font-size:13px;}
+.pop-tr th{background:#f8f9fa;padding:8px;text-align:left;color:#555;font-weight:600;}
+.pop-tr td{padding:8px;border-bottom:1px solid #f0f0f0;}
+.pathology{background:#fffbf0;border-left:4px solid #f39c12;padding:15px;margin:10px 0;border-radius:4px;}
+.pathology h4{font-size:14px;color:#2c3e50;margin-bottom:8px;}
+.pathology pre{font-size:12px;color:#555;white-space:pre-wrap;word-wrap:break-word;line-height:1.6;font-family:'Courier New',monospace;}
+canvas{max-width:100%;}
+</style>
+</head>
+<body>
+<div class="lock" id="lock">
+<h1>더봄연합내과의원 검사결과</h1>
+<div class="dob-input">
+<input type="text" id="y" maxlength="4" placeholder="YYYY">
+<input type="text" id="m" maxlength="2" placeholder="MM">
+<input type="text" id="d" maxlength="2" placeholder="DD">
+</div>
+<button class="unlock-btn" onclick="chk()">확인</button>
+<div class="err" id="err"></div>
+</div>
+
+<div class="rs" id="rs">
+<div class="hd">
+<h1>검사결과</h1>
+<div class="pi">
+<span>이름: 김선이</span>
+<span>투약중: 고지혈증약</span>
+</div>
+</div>
+
+<div class="summary">
+<h2>종합 소견</h2>
+<div class="summary-text">
+<p>현재 고지혈증약을 복용 중이시며, 2026년 4월 최근 검사에서 콜레스테롤 수치가 정상 범위로 잘 조절되고 있습니다.</p>
+<p>백혈구 수치가 약간 낮게 나왔으나 큰 문제는 없으며, 간 기능, 신장 기능, 혈당 모두 정상입니다.</p>
+<p>갑상선 호르몬 T3가 약간 낮지만 TSH와 Free T4가 정상이므로 갑상선 기능은 정상입니다.</p>
+<p>2025년 위내시경에서 헬리코박터균이 발견되어 치료가 필요합니다. 대장내시경에서 선종이 발견되어 제거하였으며, 정기적인 추적 검사가 필요합니다.</p>
+</div>
+</div>
+
+<div class="cb">
+<h2>혈액 검사</h2>
+<div class="ir" onclick="op(0)">
+<div class="ir-l">
+<div class="ir-n">빈혈수치 (Hb)</div>
+<div class="ir-v">참고: 12 ~ 16 g/dl</div>
+</div>
+<div class="ir-r">
+<span class="ir-val normal">14.1</span>
+<span class="ir-unit">g/dl</span>
+<span class="ir-arrow">›</span>
+</div>
+</div>
+<div class="ir" onclick="op(1)">
+<div class="ir-l">
+<div class="ir-n">헤마토크리트 (Hct)</div>
+<div class="ir-v">참고: 35 ~ 60 %</div>
+</div>
+<div class="ir-r">
+<span class="ir-val normal">38.5</span>
+<span class="ir-unit">%</span>
+<span class="ir-arrow">›</span>
+</div>
+</div>
+<div class="ir" onclick="op(2)">
+<div class="ir-l">
+<div class="ir-n">적혈구수 (RBC)</div>
+<div class="ir-v">참고: 4 ~ 6 ul</div>
+</div>
+<div class="ir-r">
+<span class="ir-val normal">4.18</span>
+<span class="ir-unit">ul</span>
+<span class="ir-arrow">›</span>
+</div>
+</div>
+<div class="ir" onclick="op(3)">
+<div class="ir-l">
+<div class="ir-n">백혈구수 (WBC)</div>
+<div class="ir-v">참고: 4.2 ~ 10.5 ul</div>
+</div>
+<div class="ir-r">
+<span class="ir-val warn">3.91 ▼</span>
+<span class="ir-unit">ul</span>
+<span class="ir-arrow">›</span>
+</div>
+</div>
+<div class="ir" onclick="op(4)">
+<div class="ir-l">
+<div class="ir-n">혈소판수 (PLT)</div>
+<div class="ir-v">참고: 150 ~ 450 ul</div>
+</div>
+<div class="ir-r">
+<span class="ir-val normal">208.5</span>
+<span class="ir-unit">ul</span>
+<span class="ir-arrow">›</span>
+</div>
+</div>
+<div class="ir" onclick="op(5)">
+<div class="ir-l">
+<div class="ir-n">MCV</div>
+<div class="ir-v">참고: 80 ~ 99.9 fl</div>
+</div>
+<div class="ir-r">
+<span class="ir-val normal">92.1</span>
+<span class="ir-unit">fl</span>
+<span class="ir-arrow">›</span>
+</div>
+</div>
+<div class="ir" onclick="op(6)">
+<div class="ir-l">
+<div class="ir-n">MCH</div>
+<div class="ir-v">참고: 27 ~ 31 pg</div>
+</div>
+<div class="ir-r">
+<span class="ir-val warn">33.6 ▲</span>
+<span class="ir-unit">pg</span>
+<span class="ir-arrow">›</span>
+</div>
+</div>
+<div class="ir" onclick="op(7)">
+<div class="ir-l">
+<div class="ir-n">MCHC</div>
+<div class="ir-v">참고: 33 ~ 37 g/dl</div>
+</div>
+<div class="ir-r">
+<span class="ir-val normal">36.5</span>
+<span class="ir-unit">g/dl</span>
+<span class="ir-arrow">›</span>
+</div>
+</div>
+<div class="ir" onclick="op(8)">
+<div class="ir-l">
+<div class="ir-n">호중구 (Segment neutrophil)</div>
+<div class="ir-v">참고: 40 ~ 75</div>
+</div>
+<div class="ir-r">
+<span class="ir-val normal">41.04</span>
+<span class="ir-unit"></span>
+<span class="ir-arrow">›</span>
+</div>
+</div>
+<div class="ir" onclick="op(9)">
+<div class="ir-l">
+<div class="ir-n">림프구 (Lymphocyte)</div>
+<div class="ir-v">참고: 20 ~ 45</div>
+</div>
+<div class="ir-r">
+<span class="ir-val warn">52.97 ▲</span>
+<span class="ir-unit"></span>
+<span class="ir-arrow">›</span>
+</div>
+</div>
+<div class="ir" onclick="op(10)">
+<div class="ir-l">
+<div class="ir-n">단핵구 (Monocyte)</div>
+<div class="ir-v">참고: 0 ~ 10</div>
+</div>
+<div class="ir-r">
+<span class="ir-val normal">5.99</span>
+<span class="ir-unit"></span>
+<span class="ir-arrow">›</span>
+</div>
+</div>
+<div class="ir" onclick="op(11)">
+<div class="ir-l">
+<div class="ir-n">염증수치 (CRP)</div>
+<div class="ir-v">참고: 0 ~ 5</div>
+</div>
+<div class="ir-r">
+<span class="ir-val normal">0.00</span>
+<span class="ir-unit"></span>
+<span class="ir-arrow">›</span>
+</div>
+</div>
+</div>
+
+<div class="cb">
+<h2>신장 기능</h2>
+<div class="ir" onclick="op(12)">
+<div class="ir-l">
+<div class="ir-n">신장기능 (BUN)</div>
+<div class="ir-v">참고: 6 ~ 20 mg/dl</div>
+</div>
+<div class="ir-r">
+<span class="ir-val normal">12.2</span>
+<span class="ir-unit">mg/dl</span>
+<span class="ir-arrow">›</span>
+</div>
+</div>
+<div class="ir" onclick="op(13)">
+<div class="ir-l">
+<div class="ir-n">신장기능 (Cr)</div>
+<div class="ir-v">참고: 0.4 ~ 1.3 mg/dl</div>
+</div>
+<div class="ir-r">
+<span class="ir-val normal">0.57</span>
+<span class="ir-unit">mg/dl</span>
+<span class="ir-arrow">›</span>
+</div>
+</div>
+<div class="ir" onclick="op(14)">
+<div class="ir-l">
+<div class="ir-n">사구체여과율</div>
+<div class="ir-v">참고: 60 ~ 999</div>
+</div>
+<div class="ir-r">
+<span class="ir-val normal">110.8</span>
+<span class="ir-unit"></span>
+<span class="ir-arrow">›</span>
+</div>
+</div>
+</div>
+
+<div class="cb">
+<h2>갑상선 기능</h2>
+<div class="ir" onclick="op(15)">
+<div class="ir-l">
+<div class="ir-n">갑상선자극호르몬 (TSH)</div>
+<div class="ir-v">참고: 0.27 ~ 4.20 uIU/mL</div>
+</div>
+<div class="ir-r">
+<span class="ir-val normal">3.16</span>
+<span class="ir-unit">uIU/mL</span>
+<span class="ir-arrow">›</span>
+</div>
+</div>
+<div class="ir" onclick="op(16)">
+<div class="ir-l">
+<div class="ir-n">갑상선호르몬 (Free T4)</div>
+<div class="ir-v">참고: 0.92 ~ 1.68 ng/dL</div>
+</div>
+<div class="ir-r">
+<span class="ir-val normal">1.30</span>
+<span class="ir-unit">ng/dL</span>
+<span class="ir-arrow">›</span>
+</div>
+</div>
+<div class="ir" onclick="op(17)">
+<div class="ir-l">
+<div class="ir-n">갑상선호르몬 (T3)</div>
+<div class="ir-v">참고: 80 ~ 200 ng/dL</div>
+</div>
+<div class="ir-r">
+<span class="ir-val warn">76 ▼</span>
+<span class="ir-unit">ng/dL</span>
+<span class="ir-arrow">›</span>
+</div>
+</div>
+</div>
+
+<div class="cb">
+<h2>당뇨 검사</h2>
+<div class="ir" onclick="op(18)">
+<div class="ir-l">
+<div class="ir-n">혈당검사</div>
+<div class="ir-v">참고: 70 ~ 99 mg/dl</div>
+</div>
+<div class="ir-r">
+<span class="ir-val normal">90</span>
+<span class="ir-unit">mg/dl</span>
+<span class="ir-arrow">›</span>
+</div>
+</div>
+<div class="ir" onclick="op(19)">
+<div class="ir-l">
+<div class="ir-n">당화혈색소 (HbA1c)</div>
+<div class="ir-v">참고: 4.5 ~ 5.6 %</div>
+</div>
+<div class="ir-r">
+<span class="ir-val normal">5.3</span>
+<span class="ir-unit">%</span>
+<span class="ir-arrow">›</span>
+</div>
+</div>
+</div>
+
+<div class="cb">
+<h2>간 기능</h2>
+<div class="ir" onclick="op(20)">
+<div class="ir-l">
+<div class="ir-n">간기능 (AST)</div>
+<div class="ir-v">참고: 0 ~ 40 U/L</div>
+</div>
+<div class="ir-r">
+<span class="ir-val normal">22</span>
+<span class="ir-unit">U/L</span>
+<span class="ir-arrow">›</span>
+</div>
+</div>
+<div class="ir" onclick="op(21)">
+<div class="ir-l">
+<div class="ir-n">간기능 (ALT)</div>
+<div class="ir-v">참고: 0 ~ 40 U/L</div>
+</div>
+<div class="ir-r">
+<span class="ir-val normal">23</span>
+<span class="ir-unit">U/L</span>
+<span class="ir-arrow">›</span>
+</div>
+</div>
+<div class="ir" onclick="op(22)">
+<div class="ir-l">
+<div class="ir-n">간기능 (γ-GTP)</div>
+<div class="ir-v">참고: 9 ~ 39 U/L</div>
+</div>
+<div class="ir-r">
+<span class="ir-val normal">11</span>
+<span class="ir-unit">U/L</span>
+<span class="ir-arrow">›</span>
+</div>
+</div>
+<div class="ir" onclick="op(23)">
+<div class="ir-l">
+<div class="ir-n">간기능 (ALP)</div>
+<div class="ir-v">참고: 0 ~ 240 U/L</div>
+</div>
+<div class="ir-r">
+<span class="ir-val normal">59.8</span>
+<span class="ir-unit">U/L</span>
+<span class="ir-arrow">›</span>
+</div>
+</div>
+<div class="ir" onclick="op(24)">
+<div class="ir-l">
+<div class="ir-n">황달수치 (T-bil)</div>
+<div class="ir-v">참고: 0.3 ~ 1.2 mg/dl</div>
+</div>
+<div class="ir-r">
+<span class="ir-val normal">1.1</span>
+<span class="ir-unit">mg/dl</span>
+<span class="ir-arrow">›</span>
+</div>
+</div>
+<div class="ir" onclick="op(25)">
+<div class="ir-l">
+<div class="ir-n">총단백</div>
+<div class="ir-v">참고: 6.4 ~ 8.3 g/dl</div>
+</div>
+<div class="ir-r">
+<span class="ir-val normal">7.1</span>
+<span class="ir-unit">g/dl</span>
+<span class="ir-arrow">›</span>
+</div>
+</div>
+<div class="ir" onclick="op(26)">
+<div class="ir-l">
+<div class="ir-n">알부민</div>
+<div class="ir-v">참고: 3.5 ~ 5.2 g/dl</div>
+</div>
+<div class="ir-r">
+<span class="ir-val normal">4.7</span>
+<span class="ir-unit">g/dl</span>
+<span class="ir-arrow">›</span>
+</div>
+</div>
+</div>
+
+<div class="cb">
+<h2>콜레스테롤</h2>
+<div class="ir" onclick="op(27)">
+<div class="ir-l">
+<div class="ir-n">총콜레스테롤</div>
+<div class="ir-v">참고: 0 ~ 199 mg/dl</div>
+</div>
+<div class="ir-r">
+<span class="ir-val normal">169</span>
+<span class="ir-unit">mg/dl</span>
+<span class="ir-arrow">›</span>
+</div>
+</div>
+<div class="ir" onclick="op(28)">
+<div class="ir-l">
+<div class="ir-n">고밀도콜레스테롤 (HDL)</div>
+<div class="ir-v">참고: 60 ~ 999 mg/dl</div>
+</div>
+<div class="ir-r">
+<span class="ir-val normal">77</span>
+<span class="ir-unit">mg/dl</span>
+<span class="ir-arrow">›</span>
+</div>
+</div>
+<div class="ir" onclick="op(29)">
+<div class="ir-l">
+<div class="ir-n">중성지방 (TG)</div>
+<div class="ir-v">참고: 0 ~ 149 mg/dl</div>
+</div>
+<div class="ir-r">
+<span class="ir-val normal">104</span>
+<span class="ir-unit">mg/dl</span>
+<span class="ir-arrow">›</span>
+</div>
+</div>
+<div class="ir" onclick="op(30)">
+<div class="ir-l">
+<div class="ir-n">저밀도콜레스테롤 (LDL)</div>
+<div class="ir-v">참고: 0 ~ 129</div>
+</div>
+<div class="ir-r">
+<span class="ir-val normal">71.2</span>
+<span class="ir-unit"></span>
+<span class="ir-arrow">›</span>
+</div>
+</div>
+</div>
+
+<div class="cb">
+<h2>전해질</h2>
+<div class="ir" onclick="op(31)">
+<div class="ir-l">
+<div class="ir-n">나트륨</div>
+<div class="ir-v">참고: 136 ~ 145 mmol/L</div>
+</div>
+<div class="ir-r">
+<span class="ir-val normal">145</span>
+<span class="ir-unit">mmol/L</span>
+<span class="ir-arrow">›</span>
+</div>
+</div>
+<div class="ir" onclick="op(32)">
+<div class="ir-l">
+<div class="ir-n">칼륨</div>
+<div class="ir-v">참고: 3.5 ~ 5.1 mmol/L</div>
+</div>
+<div class="ir-r">
+<span class="ir-val normal">4.2</span>
+<span class="ir-unit">mmol/L</span>
+<span class="ir-arrow">›</span>
+</div>
+</div>
+<div class="ir" onclick="op(33)">
+<div class="ir-l">
+<div class="ir-n">염소</div>
+<div class="ir-v">참고: 98 ~ 107 mmol/L</div>
+</div>
+<div class="ir-r">
+<span class="ir-val warn">110 ▲</span>
+<span class="ir-unit">mmol/L</span>
+<span class="ir-arrow">›</span>
+</div>
+</div>
+</div>
+
+<div class="cb">
+<h2>기타 검사</h2>
+<div class="ir" onclick="op(34)">
+<div class="ir-l">
+<div class="ir-n">통풍수치 (요산)</div>
+<div class="ir-v">참고: 2.4 ~ 5.7 mg/dL</div>
+</div>
+<div class="ir-r">
+<span class="ir-val normal">3.0</span>
+<span class="ir-unit">mg/dL</span>
+<span class="ir-arrow">›</span>
+</div>
+</div>
+</div>
+
+<div class="cb">
+<h2>헬리코박터균 검사</h2>
+<div class="pathology">
+<h4>요소호흡검사 (2025-09-17)</h4>
+<pre>결과: 음성</pre>
+</div>
+<div class="pathology">
+<h4>약제내성 검사 (2025-09-12)</h4>
+<pre>A2142G : Not Detected
+A2143G : Detected
+판정 : 클라리스로마이신 내성 돌연변이 검출됨</pre>
+</div>
+<div class="pathology">
+<h4>내시경 CLO Test (2025-09-11)</h4>
+<pre>결과: positive (양성)</pre>
+</div>
+</div>
+
+<div class="cb">
+<h2>조직병리 검사</h2>
+<div class="pathology">
+<h4>위암 조직병리검사 (2025-09-11)</h4>
+<pre>&lt;GROSS FINDINGS&gt;
+- Stomach
+- Received in formalin and entirely blocked
+- 1 piece(s)
+- 0.2 cm in maximum size
+
+- Block summary
+  A:(1p)  
+
+&lt;MICROSCOPIC FINDINGS&gt;
+   [The Updated Sydney System]
+                                                (A)    
+  - H. pylori --------------------------------  (+)    
+  - Inflammation (mononuclear infiltrate) ----  (++)   
+  - Activity (neutrophilic infiltrate) -------  (+)    
+  - Atrophy ----------------------------------  (-)    
+  - Intestinal metaplasia --------------------  (-)    
+
+ * (-): none, (+): mild, (++): moderate, (+++): marked
+
+&lt;DIAGNOSIS&gt;
+Stomach, distal antrum, LC, endoscopic biopsy:
+    Chronic erosive gastritis, H. pylori associated
+
+&lt;COMMENTS&gt;
+* 상기 검사는 신원의료재단에서 외부수탁기관인 명진병리과의원에 재위탁검사한 결과입니다.
+
+남상철 M.D 81151
+053-765-9021
+병리번호: S2025-134428
+</pre>
+</div>
+<div class="pathology">
+<h4>대장 조직병리검사 (2025-09-11)</h4>
+<pre>&lt;GROSS FINDINGS&gt;
+- Colon 
+- 12 piece(s)
+- 1.3 cm in maximum diameter
+
+- Block summary: A:(1p) B:(1p) C:(1p) D:(1p) E:(7p) F:(1p)
+
+&lt;MICROSCOPIC FINDINGS&gt;
+Sections of the specimen A,C show hyperplastic polyp.
+Sections of the specimen B,D,E,F show tubular adenoma with low grade dysplasia. 
+
+&lt;DIAGNOSIS&gt;
+Colon, ascending, A, colonoscopic polypectomy (0.5 cm):
+    Hyperplastic polyp 
+
+Colon, hepatic flexure,B, colonoscopic polypectomy (0.5 cm):
+    Tubular adenoma with low grade dysplasia
+
+Colon, descending, C, colonoscopic

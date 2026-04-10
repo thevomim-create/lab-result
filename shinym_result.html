@@ -1,4 +1,3 @@
-```html
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -93,12 +92,12 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans KR',sans
   <div class="wrap">
     <div class="ph">
       <div class="ph-n">신영미 님의 검사결과</div>
-      <div class="ph-s">검사일: 2026-04-08</div>
+      <div class="ph-s">검사일: 2026.04.08</div>
     </div>
     <div class="notice">항목을 클릭하면 쉬운 설명과 관리 방법을 볼 수 있어요. 궁금한 점은 진료 시 꼭 말씀해 주세요!</div>
     <div class="summary">
       <div class="summary-title">📋 이번 검사 종합 소견</div>
-      <div class="summary-text">당뇨약을 복용하시고 계신데, 당화혈색소 7.3%로 목표 범위보다 약간 높아요. 혈당 관리를 더 신경 써주셔야 해요.콜레스테롤은 고지혈증약 복용으로 잘 관리되고 있고, 갑상선 기능은 정상이에요.</div>
+      <div class="summary-text">당뇨약을 복용 중이지만 당화혈색소 7.3%로 목표 범위보다 높아요. 혈당 관리를 더 신경 써주세요. 콜레스테롤은 고지혈증약 덕분에 잘 조절되고 있어요. 갑상선 기능은 정상이에요.</div>
     </div>
     <div id="cats"></div>
     <div class="footer">본 결과지는 참고용이며 정확한 진단은 의사와 상담하세요.<br>© 더봄연합내과의원</div>
@@ -145,291 +144,131 @@ function chk(){
 document.addEventListener('DOMContentLoaded',()=>{document.getElementById('di').addEventListener('keydown',e=>{if(e.key==='Enter')chk();});});
 
 const D=[
-  {
-    id: 'diabetes',
-    title: '당뇨 검사',
-    items: [
-      {
-        n: '당화혈색소',
-        s2: '3개월 평균 혈당',
-        v: '7.3',
-        u: '%',
-        nlo: 4.5,
-        nhi: 6.4,
-        nv: 7.3,
-        st: 'warn',
-        a1c: true,
-        m: '최근 3개월간의 평균 혈당 수치를 반영하는 검사예요. 정상은 5.6% 이하, 5.7~6.4%는 당뇨 전단계, 6.5% 이상은 당뇨로 진단해요.',
-        a: '당뇨약을 드시고 계시는데 목표 범위(6.5~7.0%)보다 약간 높아요. 식사량 조절과 규칙적인 운동을 병행하시고, 약물 조정이 필요할 수 있으니 의사와 상담해 주세요.'
-      },
-      {
-        n: '혈당',
-        s2: '공복 혈당',
-        v: '138',
-        u: 'mg/dL',
-        nlo: 70,
-        nhi: 99,
-        nv: 138,
-        st: 'warn',
-        glucose: true,
-        m: '공복 상태(8시간 이상 금식)의 혈당 수치예요. 정상은 99mg/dL 이하, 100~125는 당뇨 전단계, 126 이상은 당뇨로 진단해요.',
-        a: '공복 혈당이 높아요. 저녁 식사량을 줄이고, 특히 탄수화물과 단 음식을 제한해 주세요. 약 복용 시간을 정확히 지켜주시는 것도 중요해요.'
-      }
-    ]
-  },
-  {
-    id: 'cholesterol',
-    title: '콜레스테롤 검사',
-    items: [
-      {
-        n: '총콜레스테롤',
-        s2: '혈중 지방 총량',
-        v: '141',
-        u: 'mg/dL',
-        nlo: 0,
-        nhi: 199,
-        nv: 141,
-        st: 'ok',
-        m: '혈액 속 모든 콜레스테롤의 합계예요. 199mg/dL 이하가 정상 범위예요.',
-        a: '정상 범위예요. 고지혈증약을 잘 복용하고 계셔서 좋은 상태를 유지하고 있어요.'
-      },
-      {
-        n: 'HDL 콜레스테롤',
-        s2: '좋은 콜레스테롤',
-        v: '89',
-        u: 'mg/dL',
-        nlo: 60,
-        nhi: 999,
-        nv: 89,
-        st: 'ok',
-        hdl: true,
-        m: '혈관을 깨끗하게 해주는 좋은 콜레스테롤이에요. 60mg/dL 이상이 권장돼요.',
-        a: '좋은 수치예요. 이 상태를 계속 유지해 주세요.'
-      },
-      {
-        n: '중성지방',
-        s2: '혈중 지방',
-        v: '45',
-        u: 'mg/dL',
-        nlo: 0,
-        nhi: 149,
-        nv: 45,
-        st: 'ok',
-        m: '혈액 속 지방의 한 형태예요. 149mg/dL 이하가 정상이에요.',
-        a: '정상 범위예요. 현재 식습관을 유지해 주세요.'
-      },
-      {
-        n: 'LDL 콜레스테롤',
-        s2: '나쁜 콜레스테롤',
-        v: '43.0',
-        u: 'mg/dL',
-        nlo: 0,
-        nhi: 129,
-        nv: 43,
-        st: 'ok',
-        m: '혈관벽에 쌓여 동맥경화를 유발하는 나쁜 콜레스테롤이에요. 129mg/dL 이하가 정상이에요.',
-        a: '매우 좋은 수치예요. 고지혈증약이 잘 작용하고 있어요.'
-      }
-    ]
-  },
-  {
-    id: 'liver',
-    title: '간 기능 검사',
-    items: [
-      {
-        n: 'AST',
-        s2: '간세포 효소',
-        v: '14',
-        u: 'U/L',
-        nlo: 0,
-        nhi: 40,
-        nv: 14,
-        st: 'ok',
-        m: '간세포가 손상되면 혈액으로 나오는 효소예요. 40U/L 이하가 정상이에요.',
-        a: '정상 범위예요. 간 건강이 양호해요.'
-      },
-      {
-        n: 'ALT',
-        s2: '간세포 효소',
-        v: '19',
-        u: 'U/L',
-        nlo: 0,
-        nhi: 40,
-        nv: 19,
-        st: 'ok',
-        m: '간 손상을 민감하게 반영하는 효소예요. 40U/L 이하가 정상이에요.',
-        a: '정상 범위예요. 간 기능이 좋아요.'
-      },
-      {
-        n: 'γ-GTP',
-        s2: '담도·음주 지표',
-        v: '22',
-        u: 'U/L',
-        nlo: 9,
-        nhi: 39,
-        nv: 22,
-        st: 'ok',
-        m: '간과 담도 기능을 보는 효소예요. 음주나 지방간이 있으면 주로 올라가요. 9~39U/L가 정상이에요.',
-        a: '정상 범위예요. 현재 상태를 유지해 주세요.'
-      },
-      {
-        n: 'ALP',
-        s2: '뼈·간·담도 효소',
-        v: '96.7',
-        u: 'U/L',
-        nlo: 0,
-        nhi: 240,
-        nv: 96.7,
-        st: 'ok',
-        m: '간, 담도, 뼈에서 나오는 효소예요. 240U/L 이하가 정상이에요.',
-        a: '정상 범위예요.'
-      },
-      {
-        n: '총빌리루빈',
-        s2: '황달 수치',
-        v: '0.6',
-        u: 'mg/dL',
-        nlo: 0.3,
-        nhi: 1.2,
-        nv: 0.6,
-        st: 'ok',
-        m: '적혈구가 분해되면서 나오는 물질이에요. 높으면 황달이 생길 수 있어요. 0.3~1.2mg/dL가 정상이에요.',
-        a: '정상 범위예요.'
-      },
-      {
-        n: '총단백',
-        s2: '혈중 단백질',
-        v: '8.1',
-        u: 'g/dL',
-        nlo: 6.4,
-        nhi: 8.3,
-        nv: 8.1,
-        st: 'ok',
-        m: '혈액 속 모든 단백질의 양이에요. 영양 상태와 간 기능을 반영해요. 6.4~8.3g/dL가 정상이에요.',
-        a: '정상 범위예요. 영양 상태가 좋아요.'
-      },
-      {
-        n: '알부민',
-        s2: '주요 단백질',
-        v: '5.0',
-        u: 'g/dL',
-        nlo: 3.5,
-        nhi: 5.2,
-        nv: 5.0,
-        st: 'ok',
-        m: '간에서 만드는 가장 중요한 단백질이에요. 영양 상태와 간 기능을 반영해요. 3.5~5.2g/dL가 정상이에요.',
-        a: '정상 범위예요.'
-      }
-    ]
-  },
-  {
-    id: 'kidney',
-    title: '신장 기능 검사',
-    items: [
-      {
-        n: 'BUN',
-        s2: '혈중 요소 질소',
-        v: '32.0',
-        u: 'mg/dL',
-        nlo: 6,
-        nhi: 20,
-        nv: 32,
-        st: 'warn',
-        m: '단백질 분해 과정에서 생기는 노폐물이에요. 신장이 제대로 걸러내지 못하면 높아져요. 6~20mg/dL가 정상이에요.',
-        a: '기준보다 높아요. 탈수, 단백질 과다 섭취, 신장 기능 저하 등이 원인일 수 있어요. 수분 섭취를 충분히 하시고, 신장 기능을 더 확인해 볼게요.'
-      },
-      {
-        n: '크레아티닌',
-        s2: '신장 기능 지표',
-        v: '0.93',
-        u: 'mg/dL',
-        nlo: 0.4,
-        nhi: 1.3,
-        nv: 0.93,
-        st: 'ok',
-        m: '근육 대사에서 나오는 노폐물이에요. 신장이 제대로 기능하는지 알 수 있어요. 0.4~1.3mg/dL가 정상이에요.',
-        a: '정상 범위예요.'
-      },
-      {
-        n: '사구체여과율',
-        s2: '신장 기능 정도',
-        v: '69.0',
-        u: 'mL/min',
-        nlo: 60,
-        nhi: 999,
-        nv: 69,
-        st: 'ok',
-        m: '신장이 1분에 얼마나 많은 혈액을 걸러내는지 보여주는 수치예요. 60 이상이면 정상이고, 낮을수록 신장 기능이 떨어진 거예요.',
-        a: '정상 범위지만 하한에 가까워요. 당뇨와 고혈압 관리를 잘 하셔야 신장을 보호할 수 있어요.'
-      }
-    ]
-  },
-  {
-    id: 'thyroid',
-    title: '갑상선 검사',
-    items: [
-      {
-        n: 'TSH',
-        s2: '갑상선 자극 호르몬',
-        v: '2.72',
-        u: 'uIU/mL',
-        nlo: 0.27,
-        nhi: 4.20,
-        nv: 2.72,
-        st: 'ok',
-        m: '뇌에서 갑상선을 자극하는 호르몬이에요. 갑상선 기능 이상을 가장 먼저 알 수 있는 검사예요. 0.27~4.20이 정상이에요.',
-        a: '정상 범위예요. 갑상선 기능이 정상이에요.'
-      },
-      {
-        n: 'Free T4',
-        s2: '갑상선 호르몬',
-        v: '1.23',
-        u: 'ng/dL',
-        nlo: 0.92,
-        nhi: 1.68,
-        nv: 1.23,
-        st: 'ok',
-        m: '갑상선에서 분비되는 주요 호르몬이에요. 신진대사를 조절해요. 0.92~1.68ng/dL가 정상이에요.',
-        a: '정상 범위예요.'
-      },
-      {
-        n: 'T3',
-        s2: '활성 갑상선 호르몬',
-        v: '100',
-        u: 'ng/dL',
-        nlo: 80,
-        nhi: 200,
-        nv: 100,
-        st: 'ok',
-        m: 'T4에서 전환된 활성형 호르몬이에요. 체온, 심박수 등을 조절해요. 80~200ng/dL가 정상이에요.',
-        a: '정상 범위예요.'
-      }
-    ]
-  },
-  {
-    id: 'electrolyte',
-    title: '전해질 검사',
-    items: [
-      {
-        n: '나트륨',
-        s2: '체액 균형',
-        v: '136',
-        u: 'mmol/L',
-        nlo: 136,
-        nhi: 145,
-        nv: 136,
-        st: 'ok',
-        m: '체액의 균형과 신경·근육 기능에 중요한 전해질이에요. 136~145mmol/L가 정상이에요.',
-        a: '정상 범위 하한이에요. 수분 섭취를 적절히 유지해 주세요.'
-      },
-      {
-        n: '칼륨',
-        s2: '심장·근육 기능',
-        v: '5.6',
-        u: 'mmol/L',
-        nlo: 3.5,
-        nhi: 5.1,
-        nv: 5.6,
-        st: 'warn',
-        m: '심장과 근육의 정상적인 기능에 필수적인 전해질이에요. 3.5~5.1mmol/L가 정상이에요.',
-        a: '기준보다 약간 높
+  {id:'dm',title:'당뇨 검사',items:[
+    {n:'당화혈색소 (HbA1c)',s2:'3개월 평균 혈당',v:'7.3',u:'%',nlo:4.5,nhi:5.6,nv:7.3,st:'warn',a1c:true,
+     m:'최근 3개월간 평균 혈당이에요. 당뇨 치료 중에는 7% 이하 유지가 목표예요.',
+     a:'당뇨약을 복용 중이지만 목표(7%)를 초과했어요. 식단 조절과 규칙적인 운동이 필요해요.'},
+    {n:'혈당 (Glucose)',s2:'공복 혈당',v:'138',u:'mg/dL',nlo:70,nhi:99,nv:138,st:'warn',glucose:true,
+     m:'혈액 속 당분의 양이에요. 공복 기준 126mg/dL 이상은 당뇨 범위예요.',
+     a:'당뇨 범위예요. 저녁 식사량과 탄수화물을 줄여주세요.'},
+  ]},
+  {id:'lip',title:'콜레스테롤 검사',items:[
+    {n:'총콜레스테롤',s2:'혈중 지방 총량',v:'141',u:'mg/dL',nlo:0,nhi:199,nv:141,st:'ok',
+     m:'혈액 속 지방의 총량이에요. 199mg/dL 이하가 정상이에요.',
+     a:'정상 범위예요. 고지혈증약 효과로 잘 조절되고 있어요.'},
+    {n:'HDL 콜레스테롤',s2:'좋은 콜레스테롤',v:'89',u:'mg/dL',nlo:60,nhi:999,nv:89,st:'ok',
+     m:'혈관을 청소하는 좋은 콜레스테롤이에요. 60mg/dL 이상이 권장돼요.',
+     a:'정상 범위예요. 좋은 수치예요!'},
+    {n:'중성지방 (TG)',s2:'혈중 중성지방',v:'45',u:'mg/dL',nlo:0,nhi:149,nv:45,st:'ok',
+     m:'혈액 속 지방의 한 종류예요. 149mg/dL 이하가 정상이에요.',
+     a:'정상 범위예요.'},
+    {n:'LDL 콜레스테롤',s2:'나쁜 콜레스테롤',v:'43.0',u:'mg/dL',nlo:0,nhi:129,nv:43,st:'ok',
+     m:'혈관에 쌓이는 나쁜 콜레스테롤이에요. 129mg/dL 이하가 정상이에요.',
+     a:'정상 범위예요. 고지혈증약 효과가 매우 잘 나타나고 있어요!'},
+  ]},
+  {id:'liver',title:'간 기능 검사',items:[
+    {n:'AST',s2:'간세포 효소',v:'14',u:'U/L',nlo:0,nhi:40,nv:14,st:'ok',
+     m:'간세포가 손상될 때 혈액으로 나오는 효소예요.',a:'정상 범위예요.'},
+    {n:'ALT',s2:'간 특이적 효소',v:'19',u:'U/L',nlo:0,nhi:40,nv:19,st:'ok',
+     m:'간에 더 특이적인 효소예요.',a:'정상 범위예요.'},
+    {n:'γ-GTP',s2:'간·담도 효소',v:'22',u:'U/L',nlo:9,nhi:39,nv:22,st:'ok',
+     m:'간과 담도 기능을 보는 효소예요.',a:'정상 범위예요.'},
+    {n:'ALP',s2:'간·뼈 효소',v:'96.7',u:'U/L',nlo:0,nhi:240,nv:96.7,st:'ok',
+     m:'간과 뼈에서 나오는 효소예요.',a:'정상 범위예요.'},
+    {n:'총빌리루빈 (T-bil)',s2:'황달 수치',v:'0.6',u:'mg/dL',nlo:0.3,nhi:1.2,nv:0.6,st:'ok',
+     m:'적혈구가 분해될 때 생기는 물질이에요.',a:'정상 범위예요.'},
+    {n:'총단백',s2:'혈중 단백질',v:'8.1',u:'g/dL',nlo:6.4,nhi:8.3,nv:8.1,st:'ok',
+     m:'혈액 속 단백질 총량이에요.',a:'정상 범위예요.'},
+    {n:'알부민',s2:'혈중 알부민',v:'5.0',u:'g/dL',nlo:3.5,nhi:5.2,nv:5.0,st:'ok',
+     m:'간에서 만드는 단백질이에요.',a:'정상 범위예요.'},
+  ]},
+  {id:'kidney',title:'신장 기능 검사',items:[
+    {n:'BUN (요소질소)',s2:'신장 기능 지표',v:'32.0',u:'mg/dL',nlo:6,nhi:20,nv:32,st:'warn',
+     m:'단백질이 분해되어 나오는 물질이에요. 신장이 잘 걸러내는지 봐요.',
+     a:'기준(20)을 초과했어요. 수분 섭취를 충분히 하시고 경과를 지켜볼게요.'},
+    {n:'크레아티닌 (Cr)',s2:'신장 여과 기능',v:'0.93',u:'mg/dL',nlo:0.4,nhi:1.3,nv:0.93,st:'ok',
+     m:'신장이 얼마나 잘 걸러내는지 보는 지표예요.',a:'정상 범위예요.'},
+    {n:'사구체여과율 (eGFR)',s2:'신장 여과 능력',v:'69.0',u:'',nlo:60,nhi:999,nv:69,st:'ok',
+     m:'1분 동안 신장이 걸러내는 혈액의 양이에요. 60 이상이 정상이에요.',
+     a:'정상 범위예요. 당뇨·고혈압 관리로 신장을 보호해 주세요.'},
+  ]},
+  {id:'thyroid',title:'갑상선 검사',items:[
+    {n:'TSH',s2:'갑상선 자극 호르몬',v:'2.72',u:'uIU/mL',nlo:0.27,nhi:4.20,nv:2.72,st:'ok',
+     m:'뇌하수체에서 갑상선을 자극하는 호르몬이에요.',a:'정상 범위예요.'},
+    {n:'Free T4',s2:'갑상선 호르몬',v:'1.23',u:'ng/dL',nlo:0.92,nhi:1.68,nv:1.23,st:'ok',
+     m:'갑상선에서 분비하는 주요 호르몬이에요.',a:'정상 범위예요.'},
+    {n:'T3',s2:'갑상선 호르몬 활성형',v:'100',u:'ng/dL',nlo:80,nhi:200,nv:100,st:'ok',
+     m:'갑상선 호르몬의 활성형이에요.',a:'정상 범위예요.'},
+  ]},
+  {id:'etc',title:'기타 검사',items:[
+    {n:'칼륨 (K)',s2:'전해질',v:'5.6',u:'mmol/L',nlo:3.5,nhi:5.1,nv:5.6,st:'warn',
+     m:'심장과 근육 기능에 필요한 전해질이에요. 5.1 이상은 높은 수치예요.',
+     a:'기준(5.1)을 초과했어요. 진료 시 꼭 말씀해 주세요.'},
+    {n:'나트륨 (Na)',s2:'전해질',v:'136',u:'mmol/L',nlo:136,nhi:145,nv:136,st:'ok',
+     m:'체액 균형과 신경 기능을 유지하는 전해질이에요.',a:'정상 범위예요.'},
+  ]},
+];
+
+function ov(it){if(it.some(i=>i.st==='warn'))return'warn';return'ok';}
+function build(){
+  const c=document.getElementById('cats');
+  D.forEach(cat=>{
+    const os=ov(cat.items);
+    const b=document.createElement('div');
+    b.className='cb '+(os==='warn'?'hw':'hg');
+    const rows=cat.items.map(it=>{
+      const esc=it.n.replace(/'/g,"\'");
+      return `<div class="ir" onclick="op('${cat.id}','${esc}')"><div><div class="in">${it.n}</div><div class="is">${it.s2}</div></div><div class="irr"><span class="iv ${it.st==='warn'?'vwn':'vok'}">${it.v}</span><span class="iu">${it.u}</span><span class="ia">›</span></div></div>`;
+    }).join('');
+    const badge=os==='warn'?'<span class="cbg bwn">주의</span>':'<span class="cbg bok">정상</span>';
+    b.innerHTML=`<div class="ch" onclick="tg('${cat.id}')"><div class="cl"><span class="ct">${cat.title}</span>${badge}</div><span class="cv" id="cv-${cat.id}">▼</span></div><div class="cbody" id="bd-${cat.id}">${rows}</div>`;
+    c.appendChild(b);
+  });
+}
+function tg(id){document.getElementById('bd-'+id).classList.toggle('op');document.getElementById('cv-'+id).classList.toggle('op');}
+function buildBar(it){
+  const rbo=document.getElementById('rbo');rbo.style.display='block';
+  if(it.a1c){
+    document.getElementById('rtr').innerHTML='<div style="flex:1;background:#7db87d;"></div><div style="flex:1;background:#e8a838;"></div><div style="flex:1;background:#d9736a;"></div>';
+    const pct=Math.min(97,Math.max(3,Math.round((it.nv-4.5)/(10-4.5)*100)));
+    document.getElementById('rmk').style.left=pct+'%';
+    document.getElementById('rll').innerHTML='<span>정상(~5.6%)</span><span>전단계(~6.4%)</span><span>당뇨(6.5%+)</span>';
+    document.getElementById('rlg').innerHTML='<div class="lgi"><div class="lgd" style="background:#7db87d"></div>정상</div><div class="lgi"><div class="lgd" style="background:#e8a838"></div>전단계</div><div class="lgi"><div class="lgd" style="background:#d9736a"></div>당뇨</div><div class="lgi"><span style="display:inline-block;width:4px;height:14px;background:#1a1a1a;border-radius:2px;vertical-align:middle;margin-right:5px;"></span>내 수치</div>';
+    return;
+  }
+  if(it.glucose){
+    document.getElementById('rtr').innerHTML='<div style="flex:1;background:#7db87d;"></div><div style="flex:1;background:#e8a838;"></div><div style="flex:1;background:#d9736a;"></div>';
+    const pct=Math.min(97,Math.max(3,Math.round((it.nv-60)/(250-60)*100)));
+    document.getElementById('rmk').style.left=pct+'%';
+    document.getElementById('rll').innerHTML='<span>정상(~99)</span><span>전단계(~125)</span><span>당뇨(126+)</span>';
+    document.getElementById('rlg').innerHTML='<div class="lgi"><div class="lgd" style="background:#7db87d"></div>정상</div><div class="lgi"><div class="lgd" style="background:#e8a838"></div>전단계</div><div class="lgi"><div class="lgd" style="background:#d9736a"></div>당뇨</div><div class="lgi"><span style="display:inline-block;width:4px;height:14px;background:#1a1a1a;border-radius:2px;vertical-align:middle;margin-right:5px;"></span>내 수치</div>';
+    return;
+  }
+  if(!it.nhi||it.nhi>=900){rbo.style.display='none';return;}
+  document.getElementById('rtr').innerHTML='<div style="flex:1;background:#7db87d;"></div><div style="flex:1;background:#d9736a;"></div>';
+  const pct=it.nv<=it.nhi?Math.min(47,Math.max(3,Math.round(it.nv/it.nhi*50))):Math.min(97,Math.max(53,Math.round(50+(it.nv-it.nhi)/it.nhi*50)));
+  document.getElementById('rmk').style.left=pct+'%';
+  document.getElementById('rll').innerHTML=`<span>정상</span><span>${it.nhi}${it.u||''}</span><span>높음</span>`;
+  document.getElementById('rlg').innerHTML='<div class="lgi"><div class="lgd" style="background:#7db87d"></div>정상</div><div class="lgi"><div class="lgd" style="background:#d9736a"></div>높음</div><div class="lgi"><span style="display:inline-block;width:4px;height:14px;background:#1a1a1a;border-radius:2px;vertical-align:middle;margin-right:5px;"></span>내 수치</div>';
+}
+function op(cid,nm){
+  const cat=D.find(c=>c.id===cid);const it=cat.items.find(i=>i.n===nm);
+  const col=it.st==='warn'?'#b5813a':'#2e7d32';
+  document.getElementById('pnm').textContent=it.n;
+  document.getElementById('pv').textContent=it.v;document.getElementById('pv').style.color=col;
+  document.getElementById('pu').textContent=it.u;
+  const tag=document.getElementById('ptg');
+  tag.textContent=it.st==='warn'?'주의 — 확인 필요':'정상 범위';
+  tag.className='ptg '+(it.st==='warn'?'twn':'tok');
+  buildBar(it);
+  document.getElementById('ptw').style.display='none';
+  document.getElementById('pm').textContent=it.m||'';
+  const ab=document.getElementById('pa');ab.textContent=it.a||'';
+  ab.className='ab '+(it.st==='warn'?'awn':'aok');
+  document.getElementById('pbg').classList.add('op');
+}
+function cp(e){if(!e||e.target===document.getElementById('pbg'))document.getElementById('pbg').classList.remove('op');}
+build();
+</script>
+</body>
+</html>

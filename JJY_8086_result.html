@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>검사결과 확인</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans KR",sans-serif;background:#f8f7f5;color:#1a1a1a;}
+#lock{position:fixed;inset:0;background:#f8f7f5;z-index:999;display:flex;align-items:center;justify-content:center;padding:1.5rem;}
+.lb{background:#fff;border-radius:16px;border:1px solid #e0ddd8;padding:2rem 1.5rem;width:100%;max-width:360px;text-align:center;}
+.li{font-size:44px;margin-bottom:1rem;}.lt{font-size:18px;font-weight:500;margin-bottom:6px;}
+.ls{font-size:14px;color:#888;margin-bottom:1.5rem;line-height:1.7;}
+.ll{font-size:13px;color:#555;text-align:left;margin-bottom:6px;font-weight:500;}
+.lin{width:100%;padding:14px;border:1.5px solid #e0ddd8;border-radius:10px;font-size:20px;text-align:center;letter-spacing:6px;color:#1a1a1a;outline:none;}
+.lin.err{border-color:#c0392b;animation:sh .3s;}
+.lbtn{width:100%;margin-top:14px;padding:14px;background:#3d5a9e;color:#fff;border:none;border-radius:10px;font-size:16px;font-weight:500;cursor:pointer;}
+.lbtn:disabled{background:#ccc;}.le{color:#c0392b;font-size:13px;margin-top:10px;min-height:18px;}
+.la{color:#aaa;font-size:12px;margin-top:6px;min-height:16px;}
+@keyframes sh{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+#rs{display:none;}.wrap{max-width:480px;margin:0 auto;padding:1rem;}
+.ph{background:#fff;border-radius:12px;padding:1rem 1.25rem;margin-bottom:.75rem;border:1px solid #e0ddd8;}
+.ph-n{font-size:19px;font-weight:500;}.ph-s{font-size:13px;color:#888;margin-top:3px;}
+.notice{background:#f0f4ff;border-left:3px solid #6b8cce;border-radius:0 8px 8px 0;padding:10px 14px;margin-bottom:.75rem;font-size:14px;color:#3d5a9e;line-height:1.6;}
+.summary{background:#fff;border:1px solid #e0ddd8;border-left:4px solid #3d5a9e;border-radius:0 12px 12px 0;padding:1rem 1.25rem;margin-bottom:.75rem;}
+.summary-title{font-size:12px;font-weight:600;color:#3d5a9e;margin-bottom:6px;}
+.summary-text{font-size:15px;color:#333;line-height:1.8;}
+.cb{background:#fff;border:1px solid #e0ddd8;border-radius:12px;margin-bottom:8px;overflow:hidden;}
+.cb.hw{border-left:4px solid #b5813a;}.cb.hg{border-left:4px solid #2e7d32;}
+.ch{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;cursor:pointer;user-select:none;}
+.ch:hover{background:#faf9f7;}.cl{display:flex;align-items:center;gap:10px;}
+.ct{font-size:16px;font-weight:500;}
+.cbg{font-size:13px;padding:3px 10px;border-radius:99px;margin-left:6px;font-weight:500;}
+.bok{background:#e8f5e9;color:#2e7d32;}.bwn{background:#fff3e0;color:#b5813a;}
+.cv{font-size:11px;color:#aaa;transition:transform .2s;}.cv.op{transform:rotate(180deg);}
+.cbody{border-top:1px solid #f0ede8;display:none;}.cbody.op{display:block;}
+.ir{display:flex;align-items:center;justify-content:space-between;padding:13px 16px;border-bottom:1px solid #f5f3f0;cursor:pointer;}
+.ir:last-child{border-bottom:none;}.ir:hover{background:#faf9f7;}
+.in{font-size:16px;font-weight:500;}.is{font-size:13px;color:#999;margin-top:2px;}
+.irr{display:flex;align-items:center;gap:6px;}
+.iv{font-size:18px;font-weight:500;}.vok{color:#2e7d32;}.vwn{color:#b5813a;}.vhi{color:#c0392b;}.vlo{color:#2471a3;}
+.arr{font-size:13px;margin-left:2px;font-weight:700;}
+.iu{font-size:13px;color:#aaa;}.ia{font-size:14px;color:#ccc;}
+.pbg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200;align-items:flex-end;justify-content:center;}
+.pbg.op{display:flex;}
+.pop{background:#fff;border-radius:20px 20px 0 0;padding:1.5rem 1.25rem 2.5rem;width:100%;max-width:480px;max-height:82vh;overflow-y:auto;}
+.ph2{width:40px;height:4px;background:#ddd;border-radius:2px;margin:0 auto 1.25rem;}
+.pnm{font-size:18px;font-weight:500;margin-bottom:6px;}
+.pvr{display:flex;align-items:baseline;gap:8px;margin-bottom:6px;}
+.pv{font-size:32px;font-weight:500;}.pu{font-size:14px;color:#888;}
+.ptg{display:inline-block;font-size:13px;padding:4px 12px;border-radius:99px;font-weight:500;margin-bottom:14px;}
+.tok{background:#e8f5e9;color:#2e7d32;}.twn{background:#fff3e0;color:#b5813a;}.tlo{background:#e3f2fd;color:#1565c0;}
+.rbo{position:relative;margin-bottom:6px;}
+.rtr{display:flex;height:12px;border-radius:99px;overflow:hidden;}
+.rmk{position:absolute;top:-4px;width:4px;height:20px;background:#1a1a1a;border-radius:2px;transform:translateX(-50%);z-index:2;}
+.rll{position:relative;height:18px;font-size:11px;color:#aaa;margin-top:5px;}
+.rlg{display:flex;gap:12px;margin-top:8px;flex-wrap:wrap;margin-bottom:16px;}
+.lgi{display:flex;align-items:center;gap:5px;font-size:12px;color:#888;}
+.lgd{width:10px;height:10px;border-radius:50%;}
+.divl{height:1px;background:#f0ede8;margin:4px 0 14px;}
+.st{font-size:12px;font-weight:500;color:#aaa;margin-bottom:8px;letter-spacing:.06em;}
+.mb{background:#f8f7f5;border-radius:8px;padding:12px 14px;margin-bottom:10px;font-size:16px;color:#333;line-height:1.7;}
+.ab{border-radius:8px;padding:12px 14px;margin-bottom:18px;font-size:16px;line-height:1.7;}
+.aok{background:#e8f5e9;color:#1b5e20;}.awn{background:#fff3e0;color:#8a5c00;}
+.gw{width:100%;margin-bottom:6px;}.gs{width:100%;overflow:visible;display:block;}
+.gnt{font-size:11px;color:#bbb;margin-bottom:14px;}
+.tl{fill:none;stroke-width:2.5;stroke-linejoin:round;stroke-linecap:round;}
+.cb2{width:100%;padding:14px;border-radius:10px;border:1px solid #ddd;background:#f8f7f5;color:#333;font-size:16px;cursor:pointer;font-weight:500;}
+.cb2:hover{background:#f0ede8;}
+.footer{text-align:center;font-size:12px;color:#bbb;padding:1.5rem 0 2rem;line-height:1.8;}
+</style>
+</head>
+<body>
+<div id="lock"><div class="lb">
+<div style="font-size:15px;font-weight:600;color:#3d5a9e;margin-bottom:2px;">더봄연합내과의원</div>
+<div style="font-size:11px;color:#aaa;margin-bottom:1.2rem;">THE VOM UNION INTERNAL MEDICINE</div>
+<div class="li">🔒</div><div class="lt">검사결과 확인</div>
+<div class="ls">본인 확인을 위해<br>생년월일 8자리를 입력해 주세요</div>
+<div class="ll">생년월일 8자리</div>
+<input class="lin" id="di" type="tel" maxlength="8" placeholder="" oninput="this.value=this.value.replace(/[^0-9]/g,'')">
+<button class="lbtn" id="lbtn" onclick="chk()">확인</button>
+<div class="le" id="le"></div><div class="la" id="la"></div>
+</div></div>
+<div id="rs"><div class="wrap">
+<div class="ph"><div class="ph-n">조정예 님의 검사결과</div>
+<div class="ph-s">검사일: 2026.04.29</div></div>
+<div class="notice">항목을 클릭하면 쉬운 설명과 관리 방법을 볼 수 있어요. 궁금한 점은 진료 시 꼭 말씀해 주세요!</div>
+<div class="summary"><div class="summary-title">📋 이번 검사 종합 소견</div>
+<div class="summary-text">당화혈색소가 5.9%로 약간 높고, 총콜레스테롤 242mg/dL, LDL콜레스테롤 140.4mg/dL로 고지혈증 관리가 필요한 상태예요. 갑상선 기능은 정상이고, 간기능과 신장기능도 모두 양호해요. 혈당과 염증수치도 정상 범위내에 있어 전반적으로 안정적이에요.</div></div>
+<div id="cats"></div>
+<div class="footer">본 결과지는 참고용이며 정확한 진단은 의사와 상담하세요.<br>© 더봄연합내과의원</div>
+</div></div>
+<div class="pbg" id="pbg" onclick="cp(event)"><div class="pop">
+<div class="ph2"></div><div class="pnm" id="pnm"></div>
+<div class="pvr"><span class="pv" id="pv"></span><span class="pu" id="pu"></span></div>
+<div class="ptg" id="ptg"></div>
+<div class="rbo" id="rbo"><div class="rtr" id="rtr"></div><div class="rmk" id="rmk"></div></div>
+<div class="rll" id="rll"></div><div class="rlg" id="rlg"></div>
+<div class="divl"></div>
+<div id="ptw" style="display:none"><div class="st">최근 추이</div>
+<div class="gw"><svg class="gs" id="tsvg" height="110"></svg></div>
+<div class="gnt" id="gnt"></div><div class="divl"></div></div>
+<div class="st">이게 무슨 검사인가요?</div><div class="mb" id="pm"></div>
+<div class="st">어떻게 하면 좋을까요?</div><div class="ab" id="pa"></div>
+<button class="cb2" onclick="cp()">닫기</button>
+</div></div>
+<script>
+var DOB="19711228";var att=0;
+function chk(){var v=document.getElementById("di").value.trim();var le=document.getElementById("le"),la=document.getElementById("la"),inp=document.getElementById("di");if(v.length!==8){le.textContent="8자리를 모두 입력해 주세요.";return;}if(v===DOB){document.getElementById("lock").style.display="none";document.getElementById("rs").style.display="block";}else{att++;inp.value="";inp.classList.add("err");setTimeout(function(){inp.classList.remove("err");},400);var left=5-att;if(left<=0){le.textContent="5회 오류로 잠겼습니다. 진료실에 문의해 주세요.";document.getElementById("lbtn").disabled=true;la.textContent="";}else{le.textContent="생년월일이 맞지 않아요.";la.textContent="남은 시도: "+left+"회";}}}
+document.addEventListener("DOMContentLoaded",function(){document.getElementById("di").addEventListener("keydown",function(e){if(e.key==="Enter")chk();});});
+var ON_DM_MED=false;
+var D=[{"id":"cbc","title":"일반혈액검사","items":[{"n":"백혈구수 (WBC)","s2":"감염·염증 지표","v":"4.80","u":"ul","nlo":4.2,"nhi":10.5,"nv":4.8,"st":"ok","m":"백혈구 수치가 정상 범위에 있어요. 감염이나 염증 소견이 없는 건강한 상태예요.","a":"현재 수치를 잘 유지하고 계세요."},{"n":"빈혈수치 (Hb)","s2":"산소운반능력","v":"12.7","u":"g/dl","nlo":12,"nhi":16,"nv":12.7,"st":"ok","m":"헤모글로빈 수치가 정상이에요. 빈혈 없이 산소 공급이 원활한 상태예요.","a":"균형잡힌 식단으로 현재 상태를 유지하세요."},{"n":"혈소판수 (PLT)","s2":"지혈·응고 기능","v":"273.1","u":"ul","nlo":150,"nhi":450,"nv":273.1,"st":"ok","m":"혈소판 수치가 정상 범위에 있어요. 지혈 기능이 정상이에요.","a":"현재 상태를 잘 유지하고 계세요."}]},{"id":"dm","title":"당뇨 검사","items":[{"n":"혈당검사","s2":"공복 혈당","v":"92","u":"mg/dl","nlo":70,"nhi":99,"nv":92,"st":"ok","glucose":true,"m":"공복 혈당이 정상 범위에 있어요. 당뇨병 위험이 낮은 상태예요.","a":"건강한 식습관과 규칙적인 운동을 유지하세요."},{"n":"당화혈색소 (HbA1c)","s2":"3개월 평균 혈당","v":"5.9","u":"%","nlo":4.5,"nhi":5.6,"nv":5.9,"st":"warn","dir":"high","a1c":true,"m":"당화혈색소가 5.9%로 정상 상한선을 약간 초과했어요. 당뇨 전단계에 해당하는 수치예요.","a":"탄수화물 섭취를 조절하고 유산소 운동을 꾸준히 하시면 개선될 수 있어요."}]},{"id":"lip","title":"콜레스테롤검사","items":[{"n":"총콜레스테롤","s2":"전체 콜레스테롤","v":"242","u":"mg/dl","nlo":0,"nhi":199,"nv":242,"st":"warn","dir":"high","m":"총콜레스테롤이 242mg/dL로 정상 범위를 초과했어요. 고지혈증약을 복용 중이시지만 여전히 관리가 필요한 수준이에요.","a":"약물 복용을 꾸준히 하고, 포화지방 섭취를 줄이며 채소와 통곡물 섭취를 늘리세요."},{"n":"고밀도콜레스테롤 (HDL)","s2":"좋은 콜레스테롤","v":"82","u":"mg/dl","nlo":60,"nhi":999,"nv":82,"st":"ok","hdl":true,"m":"HDL 콜레스테롤이 82mg/dL로 건강한 수준이에요. 혈관 건강에 도움이 되는 좋은 콜레스테롤이 충분해요.","a":"현재 수치를 유지하기 위해 규칙적인 운동을 계속하세요."},{"n":"중성지방 (TG)","s2":"혈액 내 지방","v":"98","u":"mg/dl","nlo":0,"nhi":149,"nv":98,"st":"ok","m":"중성지방이 98mg/dL로 정상 범위에 있어요. 혈액 내 지방 수치가 잘 관리되고 있어요.","a":"현재 수치를 유지하기 위해 당분과 알코올 섭취를 제한하세요."},{"n":"저밀도콜레스테롤 (LDL)","s2":"나쁜 콜레스테롤","v":"140.4","u":"","nlo":0,"nhi":129,"nv":140.4,"st":"warn","dir":"high","m":"LDL 콜레스테롤이 140.4mg/dL로 정상 범위를 초과했어요. 심혈관 질환 위험을 높일 수 있는 수치예요.","a":"고지혈증약 복용을 꾸준히 하고, 콜레스테롤이 높은 음식을 피하며 섬유질 섭취를 늘리세요."}]},{"id":"liver","title":"간기능","items":[{"n":"간기능 (AST)","s2":"간세포 손상 지표","v":"20","u":"U/L","nlo":0,"nhi":40,"nv":20,"st":"ok","m":"AST 수치가 정상이에요. 간세포 손상이 없고 건강한 상태예요.","a":"현재 간 건강 상태를 유지하세요."},{"n":"간기능 (ALT)","s2":"간기능 핵심 지표","v":"16","u":"U/L","nlo":0,"nhi":40,"nv":16,"st":"ok","m":"ALT 수치가 정상이에요. 간 기능이 매우 좋은 상태예요.","a":"현재 상태를 잘 유지하고 계세요."},{"n":"간기능 (γ-GTP)","s2":"담도·알코올성 간질환","v":"23","u":"U/L","nlo":9,"nhi":39,"nv":23,"st":"ok","m":"γ-GTP 수치가 정상이에요. 담도계와 간 기능에 이상이 없어요.","a":"과도한 음주를 피하고 간 건강을 유지하세요."},{"n":"간기능 (ALP)","s2":"뼈·간 대사 효소","v":"102.5","u":"U/L","nlo":0,"nhi":240,"nv":102.5,"st":"ok","m":"ALP 수치가 정상 범위에 있어요. 간과 뼈 대사가 원활해요.","a":"현재 상태를 잘 유지하고 계세요."},{"n":"황달수치 (T-bil)","s2":"황달·간기능 지표","v":"0.9","u":"mg/dl","nlo":0.3,"nhi":1.2,"nv":0.9,"st":"ok","m":"총빌리루빈 수치가 정상이에요. 황달 소견이 없고 간 기능이 정상이에요.","a":"현재 상태를 잘 유지하고 계세요."},{"n":"총단백","s2":"영양 상태 지표","v":"7.1","u":"g/dl","nlo":6.4,"nhi":8.3,"nv":7.1,"st":"ok","m":"총단백 수치가 정상이에요. 영양 상태와 간 기능이 양호해요.","a":"균형잡힌 식단으로 단백질 섭취를 유지하세요."},{"n":"알부민","s2":"간 합성 능력","v":"4.6","u":"g/dl","nlo":3.5,"nhi":5.2,"nv":4.6,"st":"ok","m":"알부민 수치가 정상이에요. 간의 단백질 합성 기능이 좋아요.","a":"현재 간 건강 상태를 잘 유지하세요."}]},{"id":"renal","title":"신장기능","items":[{"n":"신장기능 (Cr)","s2":"신장 여과 능력","v":"0.44","u":"mg/dl","nlo":0.4,"nhi":1.3,"nv":0.44,"st":"ok","m":"크레아티닌 수치가 정상이에요. 신장 기능이 양호해요.","a":"충분한 수분 섭취로 신장 건강을 유지하세요."},{"n":"신장기능 (BUN)","s2":"신장 배설 기능","v":"9.6","u":"mg/dl","nlo":6,"nhi":20,"nv":9.6,"st":"ok","m":"BUN 수치가 정상 범위에 있어요. 신장의 노폐물 배설 기능이 정상이에요.","a":"현재 신장 기능을 잘 유지하고 계세요."},{"n":"사구체여과율","s2":"신장 여과 효율","v":"119.9","u":"","nlo":60,"nhi":999,"nv":119.9,"st":"ok","m":"사구체여과율이 119.9로 정상이에요. 신장의 여과 기능이 매우 좋아요.","a":"현재 신장 건강 상태를 잘 유지하세요."},{"n":"통풍수치-요산 (uric acid)","s2":"통풍 위험 지표","v":"4.0","u":"mg/dL","nlo":2.4,"nhi":5.7,"nv":4,"st":"ok","m":"요산 수치가 정상 범위에 있어요. 통풍 위험이 낮은 상태예요.","a":"퓨린이 많은 음식을 과도하게 섭취하지 않도록 주의하세요."}]},{"id":"thy","title":"갑상선","items":[{"n":"갑상선자극호르몬 (TSH)","s2":"갑상선 기능 조절","v":"1.29","u":"uIU/mL","nlo":0.27,"nhi":4.2,"nv":1.29,"st":"ok","m":"TSH 수치가 정상이에요. 갑상선 기능이 잘 조절되고 있어요.","a":"갑상선약을 꾸준히 복용하며 현재 상태를 유지하세요."},{"n":"갑상선호르몬 (Free T4)","s2":"갑상선 호르몬 수치","v":"1.25","u":"ng/dL","nlo":0.92,"nhi":1.68,"nv":1.25,"st":"ok","m":"Free T4 수치가 정상 범위에 있어요. 갑상선 호르몬 분비가 정상이에요.","a":"현재 약물 복용을 꾸준히 하며 정기 검진을 받으세요."},{"n":"갑상선호르몬 (T3)","s2":"활성 갑상선 호르몬","v":"97","u":"ng/dL","nlo":80,"nhi":200,"nv":97,"st":"ok","m":"T3 수치가 정상이에요. 갑상선 기능이 안정적으로 유지되고 있어요.","a":"갑상선약 복용을 계속하고 정기적으로 검사를 받으세요."}]},{"id":"elec","title":"전해질","items":[{"n":"나트륨","s2":"체액 균형 조절","v":"143","u":"mmol/L","nlo":136,"nhi":145,"nv":143,"st":"ok","m":"나트륨 수치가 정상이에요. 체액 균형이 잘 유지되고 있어요.","a":"과도한 염분 섭취를 피하고 현재 상태를 유지하세요."},{"n":"칼륨","s2":"심장·근육 기능","v":"4.7","u":"mmol/L","nlo":3.5,"nhi":5.1,"nv":4.7,"st":"ok","m":"칼륨 수치가 정상 범위에 있어요. 심장과 근육 기능이 정상이에요.","a":"균형잡힌 식단으로 전해질 균형을 유지하세요."},{"n":"염소","s2":"산염기 균형","v":"105","u":"mmol/L","nlo":98,"nhi":107,"nv":105,"st":"ok","m":"염소 수치가 정상이에요. 산염기 균형이 잘 유지되고 있어요.","a":"현재 상태를 잘 유지하고 계세요."}]},{"id":"etc","title":"기타","items":[{"n":"염증수치 (CRP)","s2":"염증 반응 지표","v":"0.02","u":"","nlo":0,"nhi":5,"nv":0.02,"st":"ok","m":"CRP 수치가 매우 낮아요. 체내 염증 반응이 없는 건강한 상태예요.","a":"현재 건강 상태를 잘 유지하고 계세요."}]}];
+function ov(it){return it.some(function(i){return i.st==="warn"||i.st==="danger";})?"warn":"ok";}
+function icls(it){if(it.st==="ok")return "vok";if(it.dir==="low")return "vlo";return "vhi";}
+function iarr(it){if(it.st==="ok")return "";if(it.dir==="low")return '<span class="arr" style="color:#2471a3">↓</span>';return '<span class="arr" style="color:#c0392b">↑</span>';}
+function build(){var c=document.getElementById("cats");D.forEach(function(cat){var os=ov(cat.items);var b=document.createElement("div");b.className="cb "+(os==="warn"?"hw":"hg");var rows=cat.items.map(function(it){var esc=it.n.replace(/"/g,"&quot;");return'<div class="ir" onclick="op(\''+cat.id+'\',\''+esc+'\')"><div><div class="in">'+it.n+'</div><div class="is">'+it.s2+'</div></div><div class="irr"><span class="iv '+icls(it)+'">'+it.v+'</span>'+iarr(it)+'<span class="iu">'+it.u+'</span><span class="ia">›</span></div></div>';}).join("");var badge=os==="warn"?'<span class="cbg bwn">주의</span>':'<span class="cbg bok">정상</span>';b.innerHTML='<div class="ch" onclick="tg(\''+cat.id+'\')"><div class="cl"><span class="ct">'+cat.title+'</span>'+badge+'</div><span class="cv" id="cv-'+cat.id+'">▼</span></div><div class="cbody" id="bd-'+cat.id+'">'+rows+'</div>';c.appendChild(b);});}
+function tg(id){document.getElementById("bd-"+id).classList.toggle("op");document.getElementById("cv-"+id).classList.toggle("op");}
+function buildBar(it){var rbo=document.getElementById("rbo");rbo.style.display="block";var av=parseFloat(it.v);var nv=(it.nv&&!isNaN(parseFloat(it.nv)))?parseFloat(it.nv):av;if(it.a1c){var ap=Math.min(97,Math.max(3,Math.round((nv-4.5)/(10-4.5)*100)));document.getElementById("rmk").style.left=ap+"%";if(ON_DM_MED){document.getElementById("rtr").innerHTML='<div style="flex:36;background:#e8a838;"></div><div style="flex:9;background:#7db87d;"></div><div style="flex:55;background:#d9736a;"></div>';document.getElementById("rll").innerHTML='<span style="position:absolute;left:36%;transform:translateX(-50%);">6.5%</span><span style="position:absolute;left:45%;transform:translateX(-50%);">7.0%</span>';document.getElementById("rlg").innerHTML='<div class="lgi"><div class="lgd" style="background:#e8a838"></div>과조절주의(&lt;6.5%)</div><div class="lgi"><div class="lgd" style="background:#7db87d"></div>목표범위(6.5~7.0%)</div><div class="lgi"><div class="lgd" style="background:#d9736a"></div>조절필요(&gt;7.0%)</div>';}else{document.getElementById("rtr").innerHTML='<div style="flex:20;background:#7db87d;"></div><div style="flex:16;background:#e8a838;"></div><div style="flex:64;background:#d9736a;"></div>';document.getElementById("rll").innerHTML='<span style="position:absolute;left:20%;transform:translateX(-50%);">5.6%</span><span style="position:absolute;left:36%;transform:translateX(-50%);">6.5%</span>';document.getElementById("rlg").innerHTML='<div class="lgi"><div class="lgd" style="background:#7db87d"></div>정상(&lt;5.6%)</div><div class="lgi"><div class="lgd" style="background:#e8a838"></div>전단계(5.6~6.4%)</div><div class="lgi"><div class="lgd" style="background:#d9736a"></div>당뇨(≥6.5%)</div>';}return;}if(it.glucose){document.getElementById("rtr").innerHTML='<div style="flex:1;background:#7db87d;"></div><div style="flex:1;background:#e8a838;"></div><div style="flex:1;background:#d9736a;"></div>';var p2=Math.min(97,Math.max(3,Math.round((nv-60)/(250-60)*100)));document.getElementById("rmk").style.left=p2+"%";document.getElementById("rll").innerHTML="<span>정상(~99)</span><span>전단계(~125)</span><span>당뇨(126+)</span>";document.getElementById("rlg").innerHTML='<div class="lgi"><div class="lgd" style="background:#7db87d"></div>정상</div><div class="lgi"><div class="lgd" style="background:#e8a838"></div>전단계</div><div class="lgi"><div class="lgd" style="background:#d9736a"></div>당뇨</div>';return;}if(it.hdl){document.getElementById("rtr").innerHTML='<div style="flex:1;background:#aac4e0;"></div><div style="flex:1;background:#7db87d;"></div>';var p3=Math.min(97,Math.max(3,Math.round((nv-30)/(90-30)*100)));document.getElementById("rmk").style.left=p3+"%";document.getElementById("rll").innerHTML="<span>낮음</span><span>60mg/dL</span><span>정상</span>";document.getElementById("rlg").innerHTML='<div class="lgi"><div class="lgd" style="background:#aac4e0"></div>낮음</div><div class="lgi"><div class="lgd" style="background:#7db87d"></div>정상</div>';return;}if(!it.nhi||it.nhi>=900){rbo.style.display="none";return;}document.getElementById("rtr").innerHTML='<div style="flex:1;background:#7db87d;"></div><div style="flex:1;background:#d9736a;"></div>';var p4=nv<=it.nhi?Math.min(47,Math.max(3,Math.round(nv/it.nhi*50))):Math.min(97,Math.max(53,Math.round(50+(nv-it.nhi)/it.nhi*50)));document.getElementById("rmk").style.left=p4+"%";document.getElementById("rll").innerHTML="<span>정상</span><span>"+it.nhi+(it.u||"")+"</span><span>높음</span>";document.getElementById("rlg").innerHTML='<div class="lgi"><div class="lgd" style="background:#7db87d"></div>정상</div><div class="lgi"><div class="lgd" style="background:#d9736a"></div>높음</div>';}
+function drawG(sid,data,nlo,nhi,color){var svg=document.getElementById(sid);svg.innerHTML="";if(!data||data.length<2)return;var W=svg.parentElement.offsetWidth||340;svg.setAttribute("viewBox","0 0 "+W+" 110");var PL=34,PR=20,PT=22,PB=28,gW=W-PL-PR,gH=110-PT-PB;var vals=data.map(function(d){return parseFloat(d.v);}).filter(function(v){return !isNaN(v);});if(!vals.length)return;var allV=vals.slice();if(nlo>0)allV.push(nlo);if(nhi<900)allV.push(nhi);var rMin=Math.min.apply(null,allV),rMax=Math.max.apply(null,allV),rng=rMax-rMin||rMax||1;var mn=Math.max(0,rMin-rng*0.4),mx=rMax+rng*0.3;if(mx<=mn)mx=mn+1;function toY(v){return PT+gH-(((v-mn)/(mx-mn))*gH);}function toX(i){return PL+(i/(data.length-1))*gW;}var ns="http://www.w3.org/2000/svg";function el(tag,a){var e=document.createElementNS(ns,tag);Object.keys(a).forEach(function(k){e.setAttribute(k,a[k]);});return e;}if(nhi<900){var yT=toY(nhi),yB=nlo>0?toY(nlo):PT+gH;svg.appendChild(el("rect",{x:PL,y:yT,width:gW,height:Math.max(0,yB-yT),fill:"#f0faf0",rx:"3"}));if(nlo>0){var t1=el("text",{x:PL-2,y:yB+4,"text-anchor":"end","font-size":"9",fill:"#bbb"});t1.textContent=nlo;svg.appendChild(t1);}var t2=el("text",{x:PL-2,y:yT+9,"text-anchor":"end","font-size":"9",fill:"#bbb"});t2.textContent=nhi;svg.appendChild(t2);}else if(nlo>0){var yB2=toY(nlo);svg.appendChild(el("rect",{x:PL,y:PT,width:gW,height:Math.max(0,yB2-PT),fill:"#f0faf0",rx:"3"}));var t3=el("text",{x:PL-2,y:yB2+4,"text-anchor":"end","font-size":"9",fill:"#bbb"});t3.textContent=nlo;svg.appendChild(t3);}var pts=data.map(function(d,i){var v=parseFloat(d.v);return isNaN(v)?null:toX(i)+","+toY(v);}).filter(Boolean).join(" ");if(pts){var pl=el("polyline",{points:pts,fill:"none","stroke-width":"2.5","stroke-linejoin":"round","stroke-linecap":"round"});pl.setAttribute("stroke",color);svg.appendChild(pl);}data.forEach(function(d,i){var v=parseFloat(d.v);if(isNaN(v))return;var x=toX(i),y=toY(v),isCur=i===0;svg.appendChild(el("circle",{cx:x,cy:y,r:isCur?7:4,fill:isCur?color:"#bbb",stroke:"#fff","stroke-width":"2"}));var tv=el("text",{x:x,y:y-12,"text-anchor":"middle","font-size":isCur?"12":"10","font-weight":isCur?"700":"500"});tv.setAttribute("fill",isCur?color:"#666");tv.textContent=d.v;svg.appendChild(tv);var dt=el("text",{x:x,y:104,"text-anchor":"middle","font-size":"10",fill:isCur?"#333":"#aaa","font-weight":isCur?"700":"400"});dt.textContent=d.d;svg.appendChild(dt);});}
+function op(cid,nm){var cat=D.filter(function(c){return c.id===cid;})[0];var it=cat.items.filter(function(i){return i.n===nm;})[0];var col=it.st==="ok"?"#2e7d32":(it.dir==="low"?"#2471a3":"#c0392b");document.getElementById("pnm").textContent=it.n;document.getElementById("pv").textContent=it.v;document.getElementById("pv").style.color=col;document.getElementById("pu").textContent=it.u;var tag=document.getElementById("ptg");tag.textContent=it.st==="ok"?"정상 범위":(it.dir==="low"?"정상 미만 ↓ — 확인 필요":"정상 초과 ↑ — 확인 필요");tag.className="ptg "+(it.st==="ok"?"tok":(it.dir==="low"?"tlo":"twn"));buildBar(it);var tw=document.getElementById("ptw");var tdata=[{d:"이번",v:it.v}].concat(it.tr||[]);if(tdata.length>=2){tw.style.display="block";setTimeout(function(){drawG("tsvg",tdata,it.nlo||0,it.nhi||999,col);},50);document.getElementById("gnt").textContent="정상 범위: "+(it.nlo>0?it.nlo:"—")+" ~ "+(it.nhi&&it.nhi<900?it.nhi:"—")+" "+it.u;}else{tw.style.display="none";}document.getElementById("pm").textContent=it.m||"";var ab=document.getElementById("pa");ab.textContent=it.a||"";ab.className="ab "+(it.st==="warn"?"awn":"aok");document.getElementById("pbg").classList.add("op");}
+function cp(e){if(!e||e.target===document.getElementById("pbg"))document.getElementById("pbg").classList.remove("op");}
+build();
+</script>
+</body>
+</html>
